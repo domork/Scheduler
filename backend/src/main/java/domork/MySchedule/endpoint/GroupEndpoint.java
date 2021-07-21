@@ -2,6 +2,8 @@ package domork.MySchedule.endpoint;
 
 import domork.MySchedule.endpoint.dto.GroupCredentialsDto;
 import domork.MySchedule.endpoint.dto.GroupDto;
+import domork.MySchedule.endpoint.dto.GroupMemberDto;
+import domork.MySchedule.endpoint.entity.GroupMember;
 import domork.MySchedule.endpoint.mapper.GroupMapper;
 import domork.MySchedule.exception.NotFoundException;
 import domork.MySchedule.exception.PersistenceException;
@@ -59,11 +61,16 @@ public class GroupEndpoint {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/join")
-    public ResponseEntity<GroupDto> joinGroupByNameAndPassword(@RequestBody GroupCredentialsDto groupCredentialsDto) {
+    public ResponseEntity<GroupMemberDto> joinGroupByNameAndPassword(@RequestBody GroupCredentialsDto groupCredentialsDto) {
         LOGGER.info("GET GROUP BY NAME AND PASSWORD /{}" + BASE_URL, groupCredentialsDto);
         try {
-            return null;
-
+            groupCredentialsDto.setUserID
+                    (((UserPrinciple)SecurityContextHolder.getContext().
+                            getAuthentication().getPrincipal()).getId());
+            return new ResponseEntity<>(groupMapper.groupMemberToDto(
+                    groupService.joinGroupByNameAndPassword
+                            (groupMapper.dtoToGroupCredentials
+                                    (groupCredentialsDto))),HttpStatus.OK);
         }
         catch (NotFoundException e) {
             LOGGER.warn("GET GROUP BY NAME AND PASSWORD  (" + groupCredentialsDto + ") THROWS NOT_FOUND_EXCEPTION ({})", e.getMessage(), e);

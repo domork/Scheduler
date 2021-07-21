@@ -4,6 +4,7 @@ import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
 import domork.MySchedule.exception.NotFoundException;
+import domork.MySchedule.exception.ValidationException;
 import domork.MySchedule.persistance.GroupDAO;
 import domork.MySchedule.security.services.UserPrinciple;
 import org.slf4j.Logger;
@@ -59,10 +60,21 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public Group joinGroupByNameAndPassword(GroupCredentials groupCredentials) {
+    public GroupMember joinGroupByNameAndPassword(GroupCredentials groupCredentials) {
         LOGGER.trace("joinGroupByNameAndPassword({})", groupCredentials);
+        final String sql = "SELECT * FROM schedule_group" +
+                " WHERE name = '" + groupCredentials.getName() + "' and password = '" + groupCredentials.getPassword()+"'";
+        List<Group> groups = jdbcTemplate.query(sql, this::mapRow);
+        if (groups.isEmpty()) {
+            throw new ValidationException("The credentials are wrong.");
+        }
+        long groupID = groups.get(0).getID();
+        System.out.println("gigi");
+        String UUID = this.addMemberToTheGroup(new GroupMember
+                (groupID, groupCredentials.getUserID(), null)).getGroup_user_UUID();
+        this.addMemberRoleToTheGroup(UUID, "user");
 
-        return null;
+        return new GroupMember(groupID, groupCredentials.getUserID(), UUID);
     }
 
     @Override
@@ -85,7 +97,6 @@ public class GroupDAOImpl implements GroupDAO {
         return groups.get(0);
     }
 
-    // ToDo: add a service layer for validation
     @Override
     public GroupMember addMemberToTheGroup(GroupMember groupMember) {
         LOGGER.trace("addMemberToTheGroup({})", groupMember);
@@ -104,7 +115,6 @@ public class GroupDAOImpl implements GroupDAO {
         return groupMember;
     }
 
-    // ToDo: add a service layer for validation
     @Override
     public boolean addMemberRoleToTheGroup(String UUID, String role) {
         LOGGER.trace("addMemberRoleToTheGroup({}, {})", role, UUID);

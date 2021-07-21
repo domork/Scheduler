@@ -35,7 +35,7 @@ public interface GroupDAO {
      * @throws PersistenceException when something goes wrong with
      * the DB. (E.X. no connection).
      */
-    Group joinGroupByNameAndPassword(GroupCredentials groupCredentials);
+    GroupMember joinGroupByNameAndPassword(GroupCredentials groupCredentials);
 
     /**
      * Provides all groups for authenticated user, in which user
@@ -62,8 +62,8 @@ public interface GroupDAO {
      * group_id: ID of group, that will contain this user.
      * user_id: ID of user, that will be added to the group.
      * @return a new entity with the unique group-member-ID
-     * @throws ValidationException when the ID does not exist
-     * or current paar already exists.
+     * @throws PersistenceException when something goes wrong with
+     * the DB. (e.x. no connection).
      */
     GroupMember addMemberToTheGroup (GroupMember groupMember);
 
@@ -73,8 +73,8 @@ public interface GroupDAO {
      * @param role is to be added role. Can be either
      *             'user','moderator' or 'admin'.
      * @return true, if the role was successfully added.
-     * @throws ValidationException when a UUID already exists,
-     * the UUID or role are not correct.
+     * @throws PersistenceException when something goes wrong with
+     * the DB. (e.x. no connection).
      */
     boolean addMemberRoleToTheGroup (String UUID, String role);
 }

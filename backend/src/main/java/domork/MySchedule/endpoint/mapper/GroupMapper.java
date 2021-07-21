@@ -1,7 +1,11 @@
 package domork.MySchedule.endpoint.mapper;
 
+import domork.MySchedule.endpoint.dto.GroupCredentialsDto;
 import domork.MySchedule.endpoint.dto.GroupDto;
+import domork.MySchedule.endpoint.dto.GroupMemberDto;
 import domork.MySchedule.endpoint.entity.Group;
+import domork.MySchedule.endpoint.entity.GroupCredentials;
+import domork.MySchedule.endpoint.entity.GroupMember;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,5 +25,13 @@ public class GroupMapper {
             groupDtoList.add(entityToDto(group));
         }
         return groupDtoList;
+    }
+
+    public GroupCredentials dtoToGroupCredentials(GroupCredentialsDto groupCredentialsDto){
+        return new GroupCredentials(groupCredentialsDto.getName(), groupCredentialsDto.getPassword(), groupCredentialsDto.getUserID());
+    }
+
+    public GroupMemberDto groupMemberToDto (GroupMember groupMember){
+        return new GroupMemberDto(groupMember.getGroup_id(), groupMember.getUser_id(), groupMember.getGroup_user_UUID());
     }
 }

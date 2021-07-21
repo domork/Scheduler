@@ -2,6 +2,7 @@ package domork.MySchedule.service.impl;
 
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
+import domork.MySchedule.endpoint.entity.GroupMember;
 import domork.MySchedule.exception.NotFoundException;
 import domork.MySchedule.exception.ValidationException;
 import domork.MySchedule.persistance.GroupDAO;
@@ -27,36 +28,57 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group createNewGroup(Group group) {
-        LOGGER.trace("createNewGroup({})",group);
+        LOGGER.trace("createNewGroup({})", group);
 
         /*
-        Validate the group
+        ToDo: Validate the group.
         */
         try {
             getGroupByName(group.getName());
-        }catch (NotFoundException e){
+        } catch (NotFoundException e) {
             return companyDAO.createNewGroup(group);
         }
-        throw  new ValidationException("Group with given name already exists");
+        throw new ValidationException("Group with given name already exists");
     }
 
     @Override
-    public Group joinGroupByNameAndPassword(GroupCredentials groupCredentials) {
-        LOGGER.trace("joinGroupByNameAndPassword({})",groupCredentials);
+    public GroupMember joinGroupByNameAndPassword(GroupCredentials groupCredentials) {
+        LOGGER.trace("joinGroupByNameAndPassword({})", groupCredentials);
 
-        return null;
+        /*
+        ToDo:  Validate the groupCredentials.
+         */
+        return companyDAO.joinGroupByNameAndPassword(groupCredentials);
     }
 
     @Override
     public List<Group> getGroupsByID(Long ID) {
-        LOGGER.trace("getGroupsByID({})",ID);
-
-        return null;
+        LOGGER.trace("getGroupsByID({})", ID);
+        /*
+        ToDo:  Validate the ID.
+         */
+        return companyDAO.getGroupsByID(ID);
     }
 
     @Override
-    public Group getGroupByName(String name)  {
-        LOGGER.trace("getGroupByName({})",name);
+    public Group getGroupByName(String name) {
+        LOGGER.trace("getGroupByName({})", name);
         return companyDAO.getGroupByName(name);
+    }
+
+    @Override
+    public GroupMember addMemberToTheGroup(GroupMember groupMember) {
+        /*
+        ToDo:  Validate the groupMember.
+         */
+        return companyDAO.addMemberToTheGroup(groupMember);
+    }
+
+    @Override
+    public boolean addMemberRoleToTheGroup(String UUID, String role) {
+        /*
+        ToDo:  Validate the UUID and role.
+         */
+        return companyDAO.addMemberRoleToTheGroup(UUID,role);
     }
 }
