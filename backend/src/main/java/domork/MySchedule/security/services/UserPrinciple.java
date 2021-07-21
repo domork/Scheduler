@@ -94,6 +94,16 @@ public class UserPrinciple implements UserDetails {
     }
 
     @Override
+    public String toString() {
+        return "UserPrinciple{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", authorities=" + authorities +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

@@ -3,13 +3,13 @@ package domork.MySchedule.endpoint.dto;
 import java.sql.Timestamp;
 
 public class TimeIntervalByUserDto {
-    private Long user_unique_group_id;
+    private String group_user_UUID;
     private Timestamp time_start;
     private Timestamp time_end;
 
-    public TimeIntervalByUserDto(Long user_unique_group_id,
+    public TimeIntervalByUserDto(String group_user_UUID,
                                  Timestamp time_start, Timestamp time_end) {
-        this.user_unique_group_id = user_unique_group_id;
+        this.group_user_UUID = group_user_UUID;
         this.time_start = time_start;
         this.time_end = time_end;
     }
@@ -17,12 +17,12 @@ public class TimeIntervalByUserDto {
     public TimeIntervalByUserDto() {
     }
 
-    public Long getUser_unique_group_id() {
-        return user_unique_group_id;
+    public String getGroup_user_UUID() {
+        return group_user_UUID;
     }
 
-    public void setUser_unique_group_id(Long user_unique_group_id) {
-        this.user_unique_group_id = user_unique_group_id;
+    public void setGroup_user_UUID(String group_user_UUID) {
+        this.group_user_UUID = group_user_UUID;
     }
 
     public Timestamp getTime_start() {
@@ -44,7 +44,7 @@ public class TimeIntervalByUserDto {
     @Override
     public String toString() {
         return "TimeIntervalByUserDto{" +
-                "user_unique_group_id=" + user_unique_group_id +
+                "user_unique_group_id=" + group_user_UUID +
                 ", time_start=" + time_start +
                 ", time_end=" + time_end +
                 '}';

@@ -2,6 +2,7 @@ package domork.MySchedule.persistance;
 
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
+import domork.MySchedule.endpoint.entity.GroupMember;
 import domork.MySchedule.exception.*;
 
 import java.util.List;
@@ -45,4 +46,35 @@ public interface GroupDAO {
      * the DB. (e.x. no connection).
      */
     List<Group> getGroupsByID(Long ID);
+
+    /**
+     * Gives back the group with the given name.
+     * @param name of the group to provide.
+     * @return group with the given name.
+     * @throws NotFoundException when no group
+     * with given name is stored.
+     */
+    Group getGroupByName(String name);
+
+    /**
+     * Adds a new person to the group.
+     * @param groupMember:
+     * group_id: ID of group, that will contain this user.
+     * user_id: ID of user, that will be added to the group.
+     * @return a new entity with the unique group-member-ID
+     * @throws ValidationException when the ID does not exist
+     * or current paar already exists.
+     */
+    GroupMember addMemberToTheGroup (GroupMember groupMember);
+
+    /**
+     * Adds the person's role to the group.
+     * @param UUID is the uniques group-person-identifier
+     * @param role is to be added role. Can be either
+     *             'user','moderator' or 'admin'.
+     * @return true, if the role was successfully added.
+     * @throws ValidationException when a UUID already exists,
+     * the UUID or role are not correct.
+     */
+    boolean addMemberRoleToTheGroup (String UUID, String role);
 }

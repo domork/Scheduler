@@ -48,4 +48,12 @@ public interface GroupService {
      */
     List<Group> getGroupsByID(Long ID);
 
+    /**
+     * Gives back the group with the given name.
+     * @param name of the group to provide.
+     * @return group with the given name.
+     * @throws ValidationException when name doesn't
+     * fill the requirements (check them in the Validator).
+     */
+    Group getGroupByName(String name);
 }
