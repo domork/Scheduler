@@ -30,9 +30,7 @@ public class GroupServiceImpl implements GroupService {
     public Group createNewGroup(Group group) {
         LOGGER.trace("createNewGroup({})", group);
 
-        /*
-        ToDo: Validate the group.
-        */
+        validator.groupCheck(group);
         try {
             getGroupByName(group.getName());
         } catch (NotFoundException e) {
@@ -45,40 +43,42 @@ public class GroupServiceImpl implements GroupService {
     public GroupMember joinGroupByNameAndPassword(GroupCredentials groupCredentials) {
         LOGGER.trace("joinGroupByNameAndPassword({})", groupCredentials);
 
-        /*
-        ToDo:  Validate the groupCredentials.
-         */
+        validator.groupCredentialsCheck(groupCredentials);
         return companyDAO.joinGroupByNameAndPassword(groupCredentials);
     }
 
     @Override
     public List<Group> getGroupsByID(Long ID) {
         LOGGER.trace("getGroupsByID({})", ID);
-        /*
-        ToDo:  Validate the ID.
-         */
+
+        validator.idCheck(ID);
         return companyDAO.getGroupsByID(ID);
     }
 
     @Override
     public Group getGroupByName(String name) {
         LOGGER.trace("getGroupByName({})", name);
+
+        validator.nameCheck(name);
         return companyDAO.getGroupByName(name);
     }
 
     @Override
     public GroupMember addMemberToTheGroup(GroupMember groupMember) {
-        /*
-        ToDo:  Validate the groupMember.
-         */
+        LOGGER.trace("addMemberToTheGroup({})", groupMember);
+
+        validator.groupMemberCheck(groupMember);
+
         return companyDAO.addMemberToTheGroup(groupMember);
     }
 
     @Override
     public boolean addMemberRoleToTheGroup(String UUID, String role) {
-        /*
-        ToDo:  Validate the UUID and role.
-         */
+        LOGGER.trace("addMemberToTheGroup({}, {})", UUID, role);
+
+        validator.groupRoleCheck(role);
+        validator.UUIDCheck(UUID);
+
         return companyDAO.addMemberRoleToTheGroup(UUID,role);
     }
 }

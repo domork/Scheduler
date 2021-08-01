@@ -69,7 +69,6 @@ public class GroupDAOImpl implements GroupDAO {
             throw new ValidationException("The credentials are wrong.");
         }
         long groupID = groups.get(0).getID();
-        System.out.println("gigi");
         String UUID = this.addMemberToTheGroup(new GroupMember
                 (groupID, groupCredentials.getUserID(), null)).getGroup_user_UUID();
         this.addMemberRoleToTheGroup(UUID, "user");
@@ -80,8 +79,12 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public List<Group> getGroupsByID(Long ID) {
         LOGGER.trace("getGroupsByID({})", ID);
-
-        return null;
+        final String sql = "SELECT * FROM " + "group_members"
+                + " h RIGHT JOIN schedule_group s on h.group_id= s.id WHERE user_id='" + ID + "'";
+        List<Group> groups = jdbcTemplate.query(sql, this::mapRow);
+        if (groups.isEmpty())
+            throw new NotFoundException("Groups with the ID " + ID + " were not found");
+        return groups;
     }
 
     @Override
@@ -140,5 +143,12 @@ public class GroupDAOImpl implements GroupDAO {
         return group;
     }
 
+    private GroupMember mapRowGroupMember(ResultSet resultSet, int i) throws SQLException {
+        final GroupMember groupMember = new GroupMember();
+        groupMember.setGroup_id(resultSet.getLong("group_ID"));
+        groupMember.setUser_id(resultSet.getLong("user_ID"));
+        groupMember.setGroup_user_UUID(resultSet.getString("group_user_UUID"));
+        return groupMember;
+    }
 
 }
