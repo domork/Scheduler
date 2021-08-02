@@ -1,0 +1,8 @@
+<div *ngIf="errorMessage" class="notification" id="notification">
+  <button class="delete" (click)="this.vanishError();"></button>
+  <strong>Error! </strong> {{ errorMessage }}
+</div>
+<div *ngIf="successMessage" class="notification">
+  <strong> {{ successMessage }}</strong>
+  <button class="delete" (click)="this.vanishSuccess();"></button>
+</div>

@@ -1,0 +1,58 @@
+<div *ngIf="isSignedUp; else signupForm">
+  Your registration is successful. Please login!
+</div>
+
+<ng-template #signupForm>
+
+  <div class="field-body">
+
+
+    <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+
+      <div class="field">
+        <p class="control">
+          <label for="name">Your name</label>
+          <input placeholder="min 3 chars" type="text" class="input" name="name" [(ngModel)]="form.name" #name="ngModel" required />
+        </p>
+      </div>
+
+      <div *ngIf="f.submitted && name.invalid&&name.errors!==null">
+        <div *ngIf="name.errors.required">Name is required</div>
+      </div>
+
+
+      <div class="field">
+        <p class="control">
+          <label for="password">Password</label>
+          <input placeholder="min 6 chars" type="password"
+                 class="input" name="password" [(ngModel)]="form.password" #password="ngModel"
+                 required minlength="6"/>
+        </p>
+      </div>
+
+      <div class="field">
+        <p class="control">
+          <label for="repeated_password">Repeat Password</label>
+          <input placeholder="min 6 chars" type="password" class="input"
+                 name="password" [(ngModel)]="form.repeated_password"
+                 required minlength="6"/>
+        </p>
+      </div>
+
+      <div *ngIf="f.submitted && password.invalid&&password.errors!==null">
+        <div *ngIf="password.errors.required">Password is required</div>
+        <div *ngIf="password.errors.minlength">Password must be at least 6 characters</div>
+      </div>
+
+
+      <button class="button is-primary" style="margin-top: 10px">Register</button>
+      <div *ngIf="f.submitted && isSignUpFailed" class="alert alert-warning">
+        Signup failed!<br/>{{errorMessage}}
+      </div>
+
+
+    </form>
+
+  </div>
+
+</ng-template>

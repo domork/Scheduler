@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {AuthLoginInfo} from "../dto/login-info";
 
 const TOKEN_KEY = 'AuthToken';
 const USERNAME_KEY = 'AuthUsername';

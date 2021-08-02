@@ -1,0 +1,48 @@
+<div class="wrapper">
+<ng-container >
+  <div class="field-body">
+    <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+
+      <div class="field">
+        <p class="control">
+          <label >Username</label>
+          <input type="text" class="input" name="username"
+                 [(ngModel)]="form.username" #username="ngModel"
+                 required/>
+
+        </p>
+      </div>
+
+      <div *ngIf="f.submitted && username.invalid && username.errors!==null">
+        <div *ngIf="username.errors.required">Username is required</div>
+      </div>
+
+      <div class="field">
+        <p class="control">
+          <label >Password</label>
+          <input type="password" class="input" name="password"
+                 [(ngModel)]="form.password" #password="ngModel"
+                 required minlength="6"/>
+
+        </p>
+      </div>
+
+      <div *ngIf="f.submitted && password.invalid&&password.errors!==null">
+        <div *ngIf="password.errors.required">Password is required</div>
+        <div *ngIf="password.errors.minlength">Password must be at least 6 characters</div>
+      </div>
+
+
+      <button class="button is-primary" style="margin-top: 10px">Login</button>
+
+    </form>
+  </div>
+
+
+  <hr/>
+  <div class="field-body" >
+    <p style="margin-left: -10px">Don't have an account? &nbsp; </p>
+    <a routerLink="/signup" class="button is-info"> Sign Up</a>
+  </div>
+</ng-container>
+</div>

@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import {JwtResponse} from '../../dto/jwt-response';
-import {AuthLoginInfo} from '../../dto/login-info';
-import {SignupInfo}    from '../../dto/signup-info';
+import {AuthLoginInfo} from '../../utils/dto/auth-form';
 import {environment}   from '../../../environments/environment';
 
 const httpOptions = {
@@ -27,7 +25,7 @@ export class AuthService {
     return this.http.post(this.loginUrl, credentials, httpOptions);
   }
 
-  signUp(info: SignupInfo): Observable<any> {
+  signUp(info: AuthLoginInfo): Observable<any> {
     return this.http.post(this.signupUrl, info, httpOptions);
   }
 }
