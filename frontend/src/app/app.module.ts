@@ -12,6 +12,8 @@ import { NavBarComponent } from './utils/nav-bar/nav-bar.component';
 import { CreateTemplateComponent } from './utils/create-template/create-template.component';
 import { NotificationHubComponent } from './utils/notification-hub/notification-hub.component';
 import { SignupComponent } from './page/signup/signup.component';
+import { CreateGroupComponent } from './forms/create-group/create-group.component';
+import { MyGroupsComponent } from './page/my-groups/my-groups.component';
 
 
 @NgModule({
@@ -23,7 +25,9 @@ import { SignupComponent } from './page/signup/signup.component';
     NavBarComponent,
     CreateTemplateComponent,
     NotificationHubComponent,
-    SignupComponent
+    SignupComponent,
+    CreateGroupComponent,
+    MyGroupsComponent
   ],
   imports: [
     BrowserModule,

@@ -3,7 +3,6 @@ package domork.MySchedule.endpoint;
 import domork.MySchedule.endpoint.dto.GroupCredentialsDto;
 import domork.MySchedule.endpoint.dto.GroupDto;
 import domork.MySchedule.endpoint.dto.GroupMemberDto;
-import domork.MySchedule.endpoint.entity.GroupMember;
 import domork.MySchedule.endpoint.mapper.GroupMapper;
 import domork.MySchedule.exception.NotFoundException;
 import domork.MySchedule.exception.PersistenceException;
@@ -32,31 +31,31 @@ public class GroupEndpoint {
     private final GroupService groupService;
     private final GroupMapper groupMapper;
     private final UserService userService;
+
     @Autowired
-    public GroupEndpoint (UserService userService,GroupService groupService, GroupMapper groupMapper){
-        this.groupService=groupService;
-        this.groupMapper=groupMapper;
-        this.userService=userService;
+    public GroupEndpoint(UserService userService, GroupService groupService, GroupMapper groupMapper) {
+        this.groupService = groupService;
+        this.groupMapper = groupMapper;
+        this.userService = userService;
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<GroupDto> createNewGroup (@RequestBody GroupDto groupDto){
+    public ResponseEntity<GroupDto> createNewGroup(@RequestBody GroupDto groupDto) {
         LOGGER.info("POST NEW GROUP: " + BASE_URL + "/{}", groupDto);
 
         try {
-            return new ResponseEntity<> (groupMapper.entityToDto
+            return new ResponseEntity<>(groupMapper.entityToDto
                     (groupService.createNewGroup
                             (groupMapper.dtoToEntity(groupDto))), HttpStatus.OK);
 
+        } catch (ValidationException e) {
+            LOGGER.warn("POST GROUP: (" + groupDto + ") THROWS VALIDATION_EXCEPTION ({})", e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        } catch (PersistenceException e) {
+            LOGGER.error("POST GROUP: (" + groupDto + ") THROWS PERSISTENCE_EXCEPTION ({})", e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-     catch (ValidationException e) {
-        LOGGER.warn("POST GROUP: (" + groupDto + ") THROWS VALIDATION_EXCEPTION ({})", e.getMessage(), e);
-        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
-    } catch (PersistenceException e) {
-        LOGGER.error("POST GROUP: (" + groupDto + ") THROWS PERSISTENCE_EXCEPTION ({})", e.getMessage(), e);
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-    }
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -65,18 +64,15 @@ public class GroupEndpoint {
         LOGGER.info("GET GROUP BY NAME AND PASSWORD /{}" + BASE_URL, groupCredentialsDto);
         try {
             groupCredentialsDto.setUserID
-                    (((UserPrinciple)SecurityContextHolder.getContext().
-                            getAuthentication().getPrincipal()).getId());
+                    (getUserID());
             return new ResponseEntity<>(groupMapper.groupMemberToDto(
                     groupService.joinGroupByNameAndPassword
                             (groupMapper.dtoToGroupCredentials
-                                    (groupCredentialsDto))),HttpStatus.OK);
-        }
-        catch (NotFoundException e) {
+                                    (groupCredentialsDto))), HttpStatus.OK);
+        } catch (NotFoundException e) {
             LOGGER.warn("GET GROUP BY NAME AND PASSWORD  (" + groupCredentialsDto + ") THROWS NOT_FOUND_EXCEPTION ({})", e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-        catch (ValidationException e) {
+        } catch (ValidationException e) {
             LOGGER.warn("GET GROUP BY NAME AND PASSWORD  (" + groupCredentialsDto + ") THROWS VALIDATION_EXCEPTION ({})", e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         } catch (PersistenceException e) {
@@ -89,19 +85,17 @@ public class GroupEndpoint {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<GroupDto>> getGroupsByID() {
-        Long userID = ((UserPrinciple)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        Long userID = getUserID();
         LOGGER.info("GET GROUPS BY ID /{}", userID);
 
         try {
             //having PreAuthorize prevents the null pointer exception
             userService.userExists(userID);
-            return new ResponseEntity<>(groupMapper.entityListToDtoList(groupService.getGroupsByID(userID)),HttpStatus.OK);
-        }
-        catch (NotFoundException e) {
+            return new ResponseEntity<>(groupMapper.entityListToDtoList(groupService.getGroupsByID(userID)), HttpStatus.OK);
+        } catch (NotFoundException e) {
             LOGGER.warn("GET GROUPS BY ID   (" + userID + ") THROWS NOT_FOUND_EXCEPTION ({})", e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-        catch (ValidationException e) {
+        } catch (ValidationException e) {
             LOGGER.warn("GET GROUPS BY ID   (" + userID + ") THROWS VALIDATION_EXCEPTION ({})", e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
         } catch (PersistenceException e) {
@@ -110,6 +104,10 @@ public class GroupEndpoint {
         }
     }
 
+    private Long getUserID() {
+        return ((UserPrinciple) SecurityContextHolder.getContext().
+                getAuthentication().getPrincipal()).getId();
 
+    }
 
 }

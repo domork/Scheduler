@@ -1,0 +1,41 @@
+<ng-container #signupForm>
+
+  <div class="field-body">
+
+
+    <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+
+      <div class="field">
+        <p class="control">
+          <label for="name">Name of the group</label>
+          <input id="name" placeholder="min 3 chars" type="text" class="input" name="name" [(ngModel)]="form.name" #name="ngModel" required />
+        </p>
+      </div>
+
+
+      <div class="field">
+        <p class="control">
+          <label for="password">Password</label>
+          <input id = "password" placeholder="min 6 chars" type="password"
+                 class="input" name="password" [(ngModel)]="form.password"
+                 #password="ngModel"
+                 required minlength="3"/>
+        </p>
+      </div>
+
+      <div class="field">
+        <p class="control">
+          <label for="description">Description</label>
+          <input id ="description"
+                 type="text" class="input" name="description"
+                 [(ngModel)]="form.description" #description="ngModel"/>
+        </p>
+      </div>
+
+      <button class="button is-primary" style="margin-top: 10px">Create</button>
+
+    </form>
+
+  </div>
+
+</ng-container>

@@ -9,7 +9,6 @@ import org.apache.tomcat.jni.Time;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -53,14 +52,16 @@ public class ValidatorImpl implements Validator {
     @Override
     public void groupCheck(Group group) {
         if (group != null) {
-            idCheck(group.getID());
+            // idCheck(group.getID());
             nameCheck(group.getName());
             passwordCheck(group.getPassword());
-            nameCheck(group.getDescription());
-            if (group.getTime_to_start().getTime() < (Time.now())) {
-                throw new ValidationException("Group time should be chosen in the future. ");
+            //nameCheck(group.getDescription());
+            Timestamp groupTime = group.getTime_to_start();
+            if (groupTime!=null && groupTime.getTime() < (Time.now()-60)) {
+                throw new ValidationException
+                        ("Group time should be chosen in the future. ");
             }
-            ;
+
         }
     }
 
