@@ -14,6 +14,8 @@ import { NotificationHubComponent } from './utils/notification-hub/notification-
 import { SignupComponent } from './page/signup/signup.component';
 import { CreateGroupComponent } from './forms/create-group/create-group.component';
 import { MyGroupsComponent } from './page/my-groups/my-groups.component';
+import { GroupDetailComponent } from './page/group-detail/group-detail.component';
+import { GroupPreferencesComponent } from './utils/group-preferences/group-preferences.component';
 
 
 @NgModule({
@@ -27,7 +29,9 @@ import { MyGroupsComponent } from './page/my-groups/my-groups.component';
     NotificationHubComponent,
     SignupComponent,
     CreateGroupComponent,
-    MyGroupsComponent
+    MyGroupsComponent,
+    GroupDetailComponent,
+    GroupPreferencesComponent
   ],
   imports: [
     BrowserModule,

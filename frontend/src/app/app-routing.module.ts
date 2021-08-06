@@ -6,6 +6,8 @@ import {LoginComponent} from "./page/login/login.component";
 import {SignupComponent} from "./page/signup/signup.component";
 import {CreateGroupComponent} from "./forms/create-group/create-group.component";
 import {MyGroupsComponent} from "./page/my-groups/my-groups.component";
+import {GroupDetailComponent} from "./page/group-detail/group-detail.component";
+import {GroupPreferencesComponent} from "./utils/group-preferences/group-preferences.component";
 
 const routes: Routes = [
   {path:'', component: SchedulerComponent},
@@ -13,7 +15,9 @@ const routes: Routes = [
   {path:'login', component: LoginComponent},
   {path:'signup', component: SignupComponent},
   {path:'groups', component: MyGroupsComponent},
-  {path:'groups/create', component:CreateGroupComponent}
+  {path:'groups/create', component:CreateGroupComponent},
+  {path:'groups/:id', component: GroupDetailComponent},
+  {path:'groups/:id/preferences', component: GroupPreferencesComponent}
 
 ];
 

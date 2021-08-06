@@ -4,11 +4,21 @@ public class GroupMember {
     Long group_id;
     Long user_id;
     String group_user_UUID;
+    String color;
 
-    public GroupMember(Long group_id, Long user_id, String group_user_UUID) {
+    public GroupMember(Long group_id, Long user_id, String group_user_UUID, String color) {
         this.group_id = group_id;
         this.user_id = user_id;
         this.group_user_UUID = group_user_UUID;
+        this.color = color;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public GroupMember() {

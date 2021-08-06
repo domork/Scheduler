@@ -1,0 +1,128 @@
+<head>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+  <title>Group details</title>
+</head>
+
+<div class="container">
+  <div class="topDate">
+  <span class="icon is-large">
+    <i class="fas fa-arrow-left fa-2x"></i>
+  </span>
+    <div class="content is-medium">
+      <h1>
+        {{currentDate}}
+      </h1>
+    </div>
+    <span class="icon is-large">
+    <i class="fas fa-arrow-right fa-2x"></i>
+  </span>
+
+
+  </div>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>time</th>
+      <th *ngFor="let item of arr">{{item[1]}}</th>
+    </tr>
+
+    </thead>
+
+    <tbody>
+    <tr>
+      <th>08:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(8,item[1])[0]?
+          hourIsActive(8,item[1])[1]:''}}">
+      </th>
+    </tr>
+    <tr>
+      <th>09:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(9,item[1])[0]?
+          hourIsActive(9,item[1])[1]:''}}">
+      </th>
+
+    </tr>
+    <tr>
+      <th>10:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(10,item[1])[0]?
+          hourIsActive(10,item[1])[1]:''}}">
+      </th>
+    </tr>
+    <tr>
+      <th>11:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(11,item[1])[0]?
+          hourIsActive(11,item[1])[1]:''}}">
+      </th>
+    </tr>
+    <tr>
+      <th>12:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(12,item[1])[0]?
+          hourIsActive(12,item[1])[1]:''}}">
+      </th>
+    </tr>
+    <tr>
+      <th>13:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(13,item[1])[0]?
+          hourIsActive(13,item[1])[1]:''}}">
+      </th>
+
+    </tr>
+    <tr>
+      <th>14:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(14,item[1])[0]?
+          hourIsActive(14,item[1])[1]:''}}">
+      </th>
+
+
+    </tr>
+    <tr>
+      <th>15:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(15,item[1])[0]?
+          hourIsActive(15,item[1])[1]:''}}">
+      </th>
+
+
+    </tr>
+    <tr>
+      <th>16:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(16,item[1])[0]?
+          hourIsActive(16,item[1])[1]:''}}">
+      </th>
+
+    </tr>
+    <tr>
+      <th>17:00</th>
+      <th *ngFor="let item of arr"
+          style="{{hourIsActive(17,item[1])[0]?
+          hourIsActive(17,item[1])[1]:''}}">
+      </th>
+
+    </tr>
+    <tr>
+      <th>18:00</th>
+    </tr>
+    <tr>
+      <th>19:00</th>
+    </tr>
+    <tr>
+      <th>20:00</th>
+    </tr>
+    <tr>
+      <th>21:00</th>
+    </tr>
+    <tr>
+      <th>22:00</th>
+    </tr>
+
+    </tbody>
+  </table>
+</div>

@@ -2,11 +2,16 @@ package domork.MySchedule.service;
 
 import domork.MySchedule.endpoint.dto.GroupCredentialsDto;
 import domork.MySchedule.endpoint.dto.GroupDto;
+import domork.MySchedule.endpoint.dto.TimeIntervalByUserDto;
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
+import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 import org.springframework.web.bind.annotation.RequestBody;
 import domork.MySchedule.exception.*;
+
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface GroupService {
@@ -88,4 +93,10 @@ public interface GroupService {
      * @throws NotFoundException when UUID is not presented in DB.
      */
     boolean addMemberRoleToTheGroup (String UUID, String role);
+
+
+    List <TimeIntervalByUser> getGroupInfoForSpecificDate (Long groupID, LocalDate date);
+
+
+    TimeIntervalByUser addNewInterval (TimeIntervalByUser timeIntervalByUser);
 }

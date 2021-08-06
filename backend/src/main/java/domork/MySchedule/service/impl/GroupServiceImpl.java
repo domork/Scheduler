@@ -3,6 +3,7 @@ package domork.MySchedule.service.impl;
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
+import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 import domork.MySchedule.exception.NotFoundException;
 import domork.MySchedule.exception.ValidationException;
 import domork.MySchedule.persistance.GroupDAO;
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -80,5 +83,18 @@ public class GroupServiceImpl implements GroupService {
         validator.UUIDCheck(UUID);
 
         return companyDAO.addMemberRoleToTheGroup(UUID,role);
+    }
+
+    @Override
+    public List <TimeIntervalByUser> getGroupInfoForSpecificDate(Long groupID, LocalDate date) {
+
+        return companyDAO.getGroupInfoForSpecificDate(groupID,date);
+    }
+
+    @Override
+    public TimeIntervalByUser addNewInterval(TimeIntervalByUser timeIntervalByUser) {
+
+        return companyDAO.addNewInterval(timeIntervalByUser);
+
     }
 }

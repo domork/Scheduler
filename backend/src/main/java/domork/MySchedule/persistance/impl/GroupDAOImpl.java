@@ -1,8 +1,12 @@
 package domork.MySchedule.persistance.impl;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.*;
 
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
+import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 import domork.MySchedule.exception.NotFoundException;
 import domork.MySchedule.exception.ValidationException;
 import domork.MySchedule.persistance.GroupDAO;
@@ -16,13 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.Date;
 
 @Service
 public class GroupDAOImpl implements GroupDAO {
@@ -53,10 +51,17 @@ public class GroupDAOImpl implements GroupDAO {
         group.setID(((Number) Objects.requireNonNull(keyHolder.getKeys()).get("id")).longValue());
         String UUID = addMemberToTheGroup(new GroupMember(group.getID(),
                 ((UserPrinciple) SecurityContextHolder.getContext().
-                        getAuthentication().getPrincipal()).getId(), null)).getGroup_user_UUID();
+                        getAuthentication().getPrincipal()).getId(),
+                null, randomHexColor())).getGroup_user_UUID();
         addMemberRoleToTheGroup(UUID, "admin");
 
         return group;
+    }
+
+    private String randomHexColor(){
+        Random random = new Random();
+        int nextInt = random.nextInt(0xffffff + 1);
+        return String.format("#%06x", nextInt);
     }
 
     @Override
@@ -69,11 +74,13 @@ public class GroupDAOImpl implements GroupDAO {
             throw new ValidationException("The credentials are wrong.");
         }
         long groupID = groups.get(0).getID();
+        String color =  randomHexColor();
         String UUID = this.addMemberToTheGroup(new GroupMember
-                (groupID, groupCredentials.getUserID(), null)).getGroup_user_UUID();
+                (groupID, groupCredentials.getUserID(), null,
+                      color )).getGroup_user_UUID();
         this.addMemberRoleToTheGroup(UUID, "user");
 
-        return new GroupMember(groupID, groupCredentials.getUserID(), UUID);
+        return new GroupMember(groupID, groupCredentials.getUserID(), UUID,color);
     }
 
     @Override
@@ -104,14 +111,15 @@ public class GroupDAOImpl implements GroupDAO {
     public GroupMember addMemberToTheGroup(GroupMember groupMember) {
         LOGGER.trace("addMemberToTheGroup({})", groupMember);
         groupMember.setGroup_user_UUID(UUID.randomUUID().toString());
-        final String sql = "INSERT INTO group_members (group_id, user_id, group_user_UUID) VALUES (?,?,?);";
+        final String sql = "INSERT INTO group_members (group_id, user_id, group_user_UUID, color) VALUES (?,?,?,?);";
         jdbcTemplate.update(connection -> {
             PreparedStatement statement =
                     connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             int paramIndex = 1;
             statement.setLong(paramIndex++, groupMember.getGroup_id());
             statement.setLong(paramIndex++, groupMember.getUser_id());
-            statement.setString(paramIndex, groupMember.getGroup_user_UUID());
+            statement.setString(paramIndex++, groupMember.getGroup_user_UUID());
+            statement.setString(paramIndex, groupMember.getColor());
             return statement;
         });
 
@@ -133,6 +141,34 @@ public class GroupDAOImpl implements GroupDAO {
         return true;
     }
 
+    @Override
+    public List<TimeIntervalByUser> getGroupInfoForSpecificDate(Long groupID, LocalDate date) {
+        LOGGER.trace("getGroupInfoForSpecificDate({}, {})", groupID, date);
+        System.out.println(date);
+        final String sql = "SELECT a.group_user_uuid, time_start, time_end, a.color FROM " +
+                "(schedule_group s natural join group_members g ) a " +
+                "join time_of_unique_user_in_group t on t.group_user_uuid = a.group_user_uuid" +
+                " WHERE a.id='" + groupID + "' AND '"+Timestamp.valueOf(date.atStartOfDay().plusDays(1)) + "'>= time_end AND time_end >= '"+Timestamp.valueOf(date.atStartOfDay()) + "'; ";
+        return jdbcTemplate.query(sql, this::mapRowTimeIntervalByUser);
+    }
+
+    @Override
+    public TimeIntervalByUser addNewInterval(TimeIntervalByUser timeIntervalByUser) {
+        LOGGER.trace("addNewInterval({})", timeIntervalByUser);
+        final String sql = "INSERT INTO time_of_unique_user_in_group (group_user_uuid, time_start,time_end) VALUES (?,?,?);";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement statement =
+                    connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS);
+            int paramIndex = 1;
+            statement.setString(paramIndex++, timeIntervalByUser.getGroup_user_UUID());
+            statement.setTimestamp(paramIndex++, timeIntervalByUser.getTime_start());
+            statement.setTimestamp(paramIndex, timeIntervalByUser.getTime_end());
+            return statement;
+        });
+        return timeIntervalByUser;
+
+    }
+
     private Group mapRow(ResultSet resultSet, int i) throws SQLException {
         final Group group = new Group();
         group.setID(resultSet.getLong("id"));
@@ -149,6 +185,15 @@ public class GroupDAOImpl implements GroupDAO {
         groupMember.setUser_id(resultSet.getLong("user_ID"));
         groupMember.setGroup_user_UUID(resultSet.getString("group_user_UUID"));
         return groupMember;
+    }
+
+    private TimeIntervalByUser mapRowTimeIntervalByUser(ResultSet resultSet, int i) throws SQLException{
+        final TimeIntervalByUser timeIntervalByUser = new TimeIntervalByUser();
+        timeIntervalByUser.setColor(resultSet.getString("color"));
+        timeIntervalByUser.setTime_end(resultSet.getTimestamp("time_end"));
+        timeIntervalByUser.setTime_start(resultSet.getTimestamp("time_start"));
+        timeIntervalByUser.setGroup_user_UUID(resultSet.getString("group_user_uuid"));
+        return timeIntervalByUser;
     }
 
 }

@@ -3,6 +3,7 @@ package domork.MySchedule.endpoint;
 import domork.MySchedule.endpoint.dto.GroupCredentialsDto;
 import domork.MySchedule.endpoint.dto.GroupDto;
 import domork.MySchedule.endpoint.dto.GroupMemberDto;
+import domork.MySchedule.endpoint.dto.TimeIntervalByUserDto;
 import domork.MySchedule.endpoint.mapper.GroupMapper;
 import domork.MySchedule.exception.NotFoundException;
 import domork.MySchedule.exception.PersistenceException;
@@ -13,6 +14,7 @@ import domork.MySchedule.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping(GroupEndpoint.BASE_URL)
@@ -86,7 +90,7 @@ public class GroupEndpoint {
     @GetMapping
     public ResponseEntity<List<GroupDto>> getGroupsByID() {
         Long userID = getUserID();
-        LOGGER.info("GET GROUPS BY ID /{}", userID);
+        LOGGER.info("GET GROUPS BY USER ID /{}", userID);
 
         try {
             //having PreAuthorize prevents the null pointer exception
@@ -104,10 +108,39 @@ public class GroupEndpoint {
         }
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<List<TimeIntervalByUserDto>>
+    getGroupInfoForSpecificDate(@PathVariable("id") Long id,
+                                @RequestParam(required = true, value = "date")
+                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
+        Long userID = getUserID();
+        LOGGER.info("GET GROUP INFO BY GROUP ID /{}", id);
+
+        return new ResponseEntity<List<TimeIntervalByUserDto>>(
+                groupMapper.timeIntervalByUserListToDto
+                        (groupService.getGroupInfoForSpecificDate(id, date)), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "/{id}")
+    public ResponseEntity<TimeIntervalByUserDto>
+    addNewInterval(@PathVariable("id") Long id,
+                   @RequestBody TimeIntervalByUserDto timeIntervalByUserDto) {
+        Long userID = getUserID();
+        LOGGER.info("POST GROUP INFO BY GROUP ID /{}", id);
+
+        return new ResponseEntity<TimeIntervalByUserDto>
+                (groupMapper.timeIntervalByUserToDto(
+                        groupService.addNewInterval(
+                                groupMapper.dtoToTimeIntervalByUserTo(timeIntervalByUserDto)))
+                , HttpStatus.OK);
+    }
+
+
     private Long getUserID() {
         return ((UserPrinciple) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal()).getId();
-
     }
 
 }

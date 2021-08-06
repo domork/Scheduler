@@ -3,8 +3,11 @@ package domork.MySchedule.persistance;
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
+import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 import domork.MySchedule.exception.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface GroupDAO {
@@ -77,4 +80,9 @@ public interface GroupDAO {
      * the DB. (e.x. no connection).
      */
     boolean addMemberRoleToTheGroup (String UUID, String role);
+
+    List <TimeIntervalByUser> getGroupInfoForSpecificDate (Long groupID, LocalDate date);
+
+    TimeIntervalByUser addNewInterval (TimeIntervalByUser timeIntervalByUser);
+
 }

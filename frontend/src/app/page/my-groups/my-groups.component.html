@@ -1,1 +1,37 @@
-<p>my-groups works!</p>
+<head>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+  <title>My groups</title>
+</head>
+<div class="container">
+<table class="table is-hoverable ">
+  <thead>
+  <tr>
+    <th></th>
+    <th>name</th>
+    <th>time</th>
+    <th># of people</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let item of myGroups" >
+
+    <th>  <span class="icon has-text-info" routerLink="/groups/{{item.id}}/preferences">
+    <i class="fas fa-user-cog"></i>
+  </span>
+    </th>
+    <th routerLink="/groups/{{item.id}}">{{item.name}}</th>
+    <td> {{parseTime(item)}}
+    </td>
+    <td>3 of 5</td>
+  </tr>
+
+
+
+
+
+
+
+  </tbody>
+</table>
+</div>

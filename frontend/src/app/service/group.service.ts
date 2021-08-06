@@ -4,6 +4,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Group} from "../utils/dto/group";
 import {CreateGroupForm} from "../utils/dto/create-group-form";
+import {GroupMember} from "../utils/dto/group-member";
 
 const baseUri = environment.backendUrl + '/groups';
 
@@ -23,5 +24,10 @@ export class GroupService {
 
   addGroup(group:CreateGroupForm): Observable<Group>{
     return this.http.post<Group>(baseUri,group,this.httpOptions);
+  }
+
+  getGroupParticipantsForDay(date: Date): Observable<GroupMember[]>{
+
+    return this.http.get<GroupMember[]>(baseUri);
   }
 }

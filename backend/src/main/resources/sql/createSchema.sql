@@ -1,8 +1,5 @@
 CREATE TYPE schedule_user_roles AS ENUM ('user','moderator','admin');
 
-
-
-
 CREATE TABLE IF NOT EXISTS schedule_group
 (
     ID                      SERIAL PRIMARY KEY,
@@ -17,6 +14,7 @@ CREATE TABLE IF NOT EXISTS group_members
     group_ID                SERIAL,
     user_ID                 SERIAL,
     group_user_UUID         VARCHAR(255) UNIQUE,
+    color                   VARCHAR(7),
     FOREIGN KEY (group_ID)  REFERENCES schedule_group(ID),
     FOREIGN KEY (user_ID)   REFERENCES users(ID),
     PRIMARY KEY (group_ID, user_ID)
