@@ -4,10 +4,21 @@ public class GroupCredentialsDto {
     private String name;
     private String password;
     private Long userID;
-    public GroupCredentialsDto(String name, String password, Long userID) {
+    private String userName;
+
+    public GroupCredentialsDto(String name, String password, Long userID, String userName) {
         this.name = name;
         this.password = password;
-        this.userID=userID;
+        this.userID = userID;
+        this.userName = userName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public GroupCredentialsDto() {
@@ -42,6 +53,8 @@ public class GroupCredentialsDto {
         return "GroupCredentialsDto{" +
                 "name='" + name + '\'' +
                 ", password='" + password + '\'' +
+                ", userID=" + userID +
+                ", userName='" + userName + '\'' +
                 '}';
     }
 }

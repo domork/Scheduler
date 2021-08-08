@@ -6,16 +6,17 @@ import {HttpClientModule} from "@angular/common/http";
 import { MyProfileComponent } from './page/about/my-profile.component';
 import { SchedulerComponent } from './page/scheduler/scheduler.component';
 import { httpInterceptorProviders } from './auth/auth-interceptor';
-import { LoginComponent } from './page/login/login.component';
+import { LoginComponent } from './forms/login/login.component';
 import {FormsModule} from "@angular/forms";
 import { NavBarComponent } from './utils/nav-bar/nav-bar.component';
 import { CreateTemplateComponent } from './utils/create-template/create-template.component';
 import { NotificationHubComponent } from './utils/notification-hub/notification-hub.component';
-import { SignupComponent } from './page/signup/signup.component';
+import { SignupComponent } from './forms/signup/signup.component';
 import { CreateGroupComponent } from './forms/create-group/create-group.component';
 import { MyGroupsComponent } from './page/my-groups/my-groups.component';
 import { GroupDetailComponent } from './page/group-detail/group-detail.component';
 import { GroupPreferencesComponent } from './utils/group-preferences/group-preferences.component';
+import { JoinTemplateComponent } from './forms/join-template/join-template.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { GroupPreferencesComponent } from './utils/group-preferences/group-prefe
     CreateGroupComponent,
     MyGroupsComponent,
     GroupDetailComponent,
-    GroupPreferencesComponent
+    GroupPreferencesComponent,
+    JoinTemplateComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,7 @@
 import {Component, Inject, OnInit, Renderer2} from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import {DOCUMENT} from '@angular/common';
+import {TokenStorageService} from "../../auth/token-storage.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-nav-bar',
@@ -7,10 +9,17 @@ import { DOCUMENT } from '@angular/common';
   styleUrls: ['./nav-bar.component.scss']
 })
 export class NavBarComponent implements OnInit {
+
   constructor(
     private _renderer2: Renderer2,
-    @Inject(DOCUMENT) private _document: Document
-  ) { }
+    @Inject(DOCUMENT) private _document: Document,
+    private tokenStorage: TokenStorageService,
+    private router: Router) {
+  }
+  isLoggedIn():boolean{
+    return !!this.tokenStorage.getToken();
+
+  }
 
   public ngOnInit() {
 
@@ -44,6 +53,12 @@ export class NavBarComponent implements OnInit {
   });
         `;
     this._renderer2.appendChild(this._document.body, script);
+  }
+
+  logout(): void {
+    if (this.tokenStorage.getUsername()) {
+      this.tokenStorage.signOut();
+    }
   }
 
 }

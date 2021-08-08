@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthLoginInfo} from "../../utils/dto/auth-form";
 import {AuthService} from "../../service/auth.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-signup',
@@ -16,7 +17,8 @@ export class SignupComponent implements OnInit {
   isSignUpFailed = false;
   errorMessage = '';
 
-  constructor(private authService: AuthService) {
+  constructor(private router: Router,
+              private authService: AuthService) {
   }
 
   ngOnInit(): void {
@@ -32,10 +34,9 @@ export class SignupComponent implements OnInit {
       data => {
         this.isSignedUp = true;
         this.isSignUpFailed = false;
+        this.router.navigate(['/groups']);
       }, error => {
-        /*defaultServiceErrorHandling(error);
-        this.errorMessage = error.error.message;
-       */
+        console.log(error);
        this.isSignUpFailed = true;
 
       }

@@ -5,12 +5,14 @@ public class GroupMember {
     Long user_id;
     String group_user_UUID;
     String color;
+    String name;
 
-    public GroupMember(Long group_id, Long user_id, String group_user_UUID, String color) {
+    public GroupMember(Long group_id, Long user_id, String group_user_UUID, String color, String name) {
         this.group_id = group_id;
         this.user_id = user_id;
         this.group_user_UUID = group_user_UUID;
         this.color = color;
+        this.name = name;
     }
 
     public String getColor() {
@@ -48,13 +50,22 @@ public class GroupMember {
         this.group_user_UUID = group_user_UUID;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "GroupMember{" +
                 "group_id=" + group_id +
                 ", user_id=" + user_id +
-                ", user_unique_group_id=" + group_user_UUID +
+                ", group_user_UUID='" + group_user_UUID + '\'' +
+                ", color='" + color + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
-
 }

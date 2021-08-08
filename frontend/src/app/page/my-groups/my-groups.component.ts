@@ -8,13 +8,13 @@ import {GroupService} from "../../service/group.service";
   styleUrls: ['./my-groups.component.scss']
 })
 export class MyGroupsComponent implements OnInit {
-  myGroups: Group[] = [new Group(0, '', '', new Date(), '')];
+  myGroups: any[] = [];
 
   constructor(private groupService: GroupService) {
   }
 
   ngOnInit(): void {
-     this.getAllGroups();
+    this.getAllGroups();
   }
 
   getAllGroups(): void {
@@ -22,12 +22,15 @@ export class MyGroupsComponent implements OnInit {
       this.myGroups = groups;
       console.log(this.myGroups);
     }, err => {
-
+      console.log(err);
     })
   }
 
-  parseTime(group:Group): string {
-    let t = group.time_to_start.toLocaleString();
-    return t.substring(10, 15) + ' | ' + t.substring(0, 3);
+  parseTime(group: Group): string {
+    if (group.time_to_start) {
+      let t = group.time_to_start.toLocaleString();
+      return t.substring(10, 15) + ' | ' + t.substring(0, 3);
+    }
+    return '';
   }
 }

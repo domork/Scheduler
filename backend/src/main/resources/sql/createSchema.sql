@@ -13,8 +13,9 @@ CREATE TABLE IF NOT EXISTS group_members
 (
     group_ID                SERIAL,
     user_ID                 SERIAL,
-    group_user_UUID         VARCHAR(255) UNIQUE,
+    group_user_UUID         VARCHAR(255) NOT NULL UNIQUE,
     color                   VARCHAR(7),
+    name                    VARCHAR(255) NOT NULL ,
     FOREIGN KEY (group_ID)  REFERENCES schedule_group(ID),
     FOREIGN KEY (user_ID)   REFERENCES users(ID),
     PRIMARY KEY (group_ID, user_ID)

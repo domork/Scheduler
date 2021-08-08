@@ -5,12 +5,22 @@ public class GroupMemberDto {
     Long user_id;
     String group_user_UUID;
     String color;
+    String name;
 
-    public GroupMemberDto(Long group_id, Long user_id, String group_user_UUID, String color) {
+    public GroupMemberDto(Long group_id, Long user_id, String group_user_UUID, String color, String name) {
         this.group_id = group_id;
         this.user_id = user_id;
         this.group_user_UUID = group_user_UUID;
         this.color = color;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getColor() {
@@ -55,6 +65,8 @@ public class GroupMemberDto {
                 "group_id=" + group_id +
                 ", user_id=" + user_id +
                 ", group_user_UUID='" + group_user_UUID + '\'' +
+                ", color='" + color + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

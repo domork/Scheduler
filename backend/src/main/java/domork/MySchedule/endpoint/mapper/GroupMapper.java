@@ -16,10 +16,12 @@ import java.util.List;
 @Component
 public class GroupMapper {
     public Group dtoToEntity (GroupDto groupDto) {
-        return new Group(groupDto.getID(),groupDto.getName(), groupDto.getPassword(), groupDto.getTime_to_start(), groupDto.getDescription());
+        return new Group(groupDto.getID(),groupDto.getName(), groupDto.getPassword(),
+                groupDto.getTime_to_start(), groupDto.getDescription(), groupDto.getUserUUID());
     }
     public GroupDto entityToDto (Group group) {
-        return new GroupDto(group.getID(),group.getName(),group.getPassword(),group.getTime_to_start(),group.getDescription());
+        return new GroupDto(group.getID(),group.getName(),group.getPassword(),
+                group.getTime_to_start(),group.getDescription(), group.getUserUUID());
     }
     public List<GroupDto> entityListToDtoList(List<Group> list){
         List <GroupDto> groupDtoList = new ArrayList<>();
@@ -30,11 +32,13 @@ public class GroupMapper {
     }
 
     public GroupCredentials dtoToGroupCredentials(GroupCredentialsDto groupCredentialsDto){
-        return new GroupCredentials(groupCredentialsDto.getName(), groupCredentialsDto.getPassword(), groupCredentialsDto.getUserID());
+        return new GroupCredentials(groupCredentialsDto.getName(), groupCredentialsDto.getPassword(),
+                groupCredentialsDto.getUserID(), groupCredentialsDto.getUserName());
     }
 
     public GroupMemberDto groupMemberToDto (GroupMember groupMember){
-        return new GroupMemberDto(groupMember.getGroup_id(), groupMember.getUser_id(), groupMember.getGroup_user_UUID(), groupMember.getColor());
+        return new GroupMemberDto(groupMember.getGroup_id(), groupMember.getUser_id(),
+                groupMember.getGroup_user_UUID(), groupMember.getColor(), groupMember.getName());
     }
 
     public  List<TimeIntervalByUserDto> timeIntervalByUserListToDto(List <TimeIntervalByUser> timeIntervalByUserList){
@@ -47,10 +51,10 @@ public class GroupMapper {
     }
     public TimeIntervalByUserDto timeIntervalByUserToDto (TimeIntervalByUser t){
         return new TimeIntervalByUserDto(t.getGroup_user_UUID(),t.getTime_start(),
-                t.getTime_end(),t.getColor());
+                t.getTime_end(),t.getColor(),t.getName());
     }
     public TimeIntervalByUser dtoToTimeIntervalByUserTo (TimeIntervalByUserDto t){
         return new TimeIntervalByUser(t.getGroup_user_UUID(),t.getTime_start(),
-                t.getTime_end(),t.getColor());
+                t.getTime_end(),t.getColor(),t.getName());
     }
 }

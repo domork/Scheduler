@@ -1,4 +1,4 @@
-<ng-container >
+<ng-container>
 
   <div class="field-body">
 
@@ -7,8 +7,8 @@
 
       <div class="field">
         <p class="control">
-          <label for="name">Name of the group</label>
-          <input id="name" placeholder="min 3 chars" type="text" class="input" name="name" [(ngModel)]="form.name" #name="ngModel" required />
+          <label for="group_name">Name of the group</label>
+          <input id="group_name" placeholder="min 3 chars" type="text" class="input" name="name" [(ngModel)]="form.name" #name="ngModel" required />
         </p>
       </div>
 
@@ -22,17 +22,14 @@
                  required minlength="3"/>
         </p>
       </div>
-
       <div class="field">
         <p class="control">
-          <label for="description">Description</label>
-          <input id ="description"
-                 type="text" class="input" name="description"
-                 [(ngModel)]="form.description" #description="ngModel"/>
+          <label for="usersName">Your name in the group</label>
+          <input id="usersName" placeholder="min 3 chars" type="text" class="input" name="usersName" [(ngModel)]="form.userName" #userName="ngModel" required />
         </p>
       </div>
 
-      <button class="button is-primary" style="margin-top: 10px">Create</button>
+         <button class="button is-primary" style="margin-top: 10px">Join</button>
 
     </form>
 

@@ -65,7 +65,7 @@ public class GroupEndpoint {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/join")
     public ResponseEntity<GroupMemberDto> joinGroupByNameAndPassword(@RequestBody GroupCredentialsDto groupCredentialsDto) {
-        LOGGER.info("GET GROUP BY NAME AND PASSWORD /{}" + BASE_URL, groupCredentialsDto);
+        LOGGER.info("JOIN GROUP BY NAME AND PASSWORD /{}" + BASE_URL, groupCredentialsDto);
         try {
             groupCredentialsDto.setUserID
                     (getUserID());
@@ -112,12 +112,12 @@ public class GroupEndpoint {
     @GetMapping(value = "/{id}")
     public ResponseEntity<List<TimeIntervalByUserDto>>
     getGroupInfoForSpecificDate(@PathVariable("id") Long id,
-                                @RequestParam(required = true, value = "date")
+                                @RequestParam(value = "date")
                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
         Long userID = getUserID();
         LOGGER.info("GET GROUP INFO BY GROUP ID /{}", id);
 
-        return new ResponseEntity<List<TimeIntervalByUserDto>>(
+        return new ResponseEntity<>(
                 groupMapper.timeIntervalByUserListToDto
                         (groupService.getGroupInfoForSpecificDate(id, date)), HttpStatus.OK);
     }
@@ -128,13 +128,13 @@ public class GroupEndpoint {
     addNewInterval(@PathVariable("id") Long id,
                    @RequestBody TimeIntervalByUserDto timeIntervalByUserDto) {
         Long userID = getUserID();
-        LOGGER.info("POST GROUP INFO BY GROUP ID /{}", id);
+        LOGGER.info("POST NEW INTERVAL ({}) IN GROUP ID /{}",timeIntervalByUserDto, id);
 
-        return new ResponseEntity<TimeIntervalByUserDto>
+        return new ResponseEntity<>
                 (groupMapper.timeIntervalByUserToDto(
                         groupService.addNewInterval(
                                 groupMapper.dtoToTimeIntervalByUserTo(timeIntervalByUserDto)))
-                , HttpStatus.OK);
+                        , HttpStatus.OK);
     }
 
 

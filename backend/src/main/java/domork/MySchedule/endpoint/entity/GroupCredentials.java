@@ -4,11 +4,21 @@ public class GroupCredentials {
     private String name;
     private String password;
     private Long userID;
+    private String username;
 
-    public GroupCredentials(String name, String password, Long userID) {
+    public GroupCredentials(String name, String password, Long userID, String username) {
         this.name = name;
         this.password = password;
-        this.userID=userID;
+        this.userID = userID;
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public GroupCredentials() {
@@ -43,6 +53,8 @@ public class GroupCredentials {
         return "GroupCredentials{" +
                 "name='" + name + '\'' +
                 ", password='" + password + '\'' +
+                ", userID=" + userID +
+                ", username='" + username + '\'' +
                 '}';
     }
 }

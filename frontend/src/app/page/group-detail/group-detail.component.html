@@ -3,17 +3,19 @@
   <title>Group details</title>
 </head>
 
+
 <div class="container">
+  <form name="form" (ngSubmit)="f.form.valid&&onSubmit() " #f="ngForm" novalidate>
   <div class="topDate">
-  <span class="icon is-large">
+  <span class="icon is-large" (click)="setPrevDay()">
     <i class="fas fa-arrow-left fa-2x"></i>
   </span>
     <div class="content is-medium">
       <h1>
-        {{currentDate}}
+        {{currentDate.toLocaleDateString()}}
       </h1>
     </div>
-    <span class="icon is-large">
+    <span class="icon is-large" (click)="setNextDay()">
     <i class="fas fa-arrow-right fa-2x"></i>
   </span>
 
@@ -23,7 +25,7 @@
     <thead>
     <tr>
       <th>time</th>
-      <th *ngFor="let item of arr">{{item[1]}}</th>
+      <th *ngFor="let item of user_names">{{item}}</th>
     </tr>
 
     </thead>
@@ -31,98 +33,125 @@
     <tbody>
     <tr>
       <th>08:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(8,item[1])[0]?
-          hourIsActive(8,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(8,item)[0]?
+          hourIsActive(8,item)[1]:''}}"
+          (click)="setTime(8)">
+
       </th>
     </tr>
     <tr>
       <th>09:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(9,item[1])[0]?
-          hourIsActive(9,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(9,item)[0]?
+          hourIsActive(9,item)[1]:''}}"
+      (click)="setTime(9)">
       </th>
 
     </tr>
     <tr>
       <th>10:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(10,item[1])[0]?
-          hourIsActive(10,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(10,item)[0]?
+          hourIsActive(10,item)[1]:''}}"
+          (click)="setTime(10)">
       </th>
     </tr>
     <tr>
       <th>11:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(11,item[1])[0]?
-          hourIsActive(11,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(11,item)[0]?
+          hourIsActive(11,item)[1]:''}}" (click)="setTime(11)">
       </th>
     </tr>
     <tr>
       <th>12:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(12,item[1])[0]?
-          hourIsActive(12,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(12,item)[0]?
+          hourIsActive(12,item)[1]:''}}" (click)="setTime(12)">
       </th>
     </tr>
     <tr>
       <th>13:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(13,item[1])[0]?
-          hourIsActive(13,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(13,item)[0]?
+          hourIsActive(13,item)[1]:''}}" (click)="setTime(13)">
       </th>
 
     </tr>
     <tr>
       <th>14:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(14,item[1])[0]?
-          hourIsActive(14,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(14,item)[0]?
+          hourIsActive(14,item)[1]:''}}" (click)="setTime(14)">
       </th>
 
 
     </tr>
     <tr>
       <th>15:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(15,item[1])[0]?
-          hourIsActive(15,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(15,item)[0]?
+          hourIsActive(15,item)[1]:''}}" (click)="setTime(15)">
       </th>
 
 
     </tr>
     <tr>
       <th>16:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(16,item[1])[0]?
-          hourIsActive(16,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(16,item)[0]?
+          hourIsActive(16,item)[1]:''}}" (click)="setTime(16)">
       </th>
 
     </tr>
     <tr>
       <th>17:00</th>
-      <th *ngFor="let item of arr"
-          style="{{hourIsActive(17,item[1])[0]?
-          hourIsActive(17,item[1])[1]:''}}">
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(17,item)[0]?
+          hourIsActive(17,item)[1]:''}}" (click)="setTime(17)">
       </th>
 
     </tr>
     <tr>
       <th>18:00</th>
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(18,item)[0]?
+          hourIsActive(18,item)[1]:''}}" (click)="setTime(18)">
+      </th>
     </tr>
     <tr>
       <th>19:00</th>
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(19,item)[0]?
+          hourIsActive(19,item)[1]:''}}" (click)="setTime(19)">
+      </th>
     </tr>
     <tr>
       <th>20:00</th>
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(20,item)[0]?
+          hourIsActive(20,item)[1]:''}}" (click)="setTime(20)">
+      </th>
     </tr>
     <tr>
       <th>21:00</th>
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(21,item)[0]?
+          hourIsActive(21,item)[1]:''}}" (click)="setTime(21)">
+      </th>
     </tr>
     <tr>
       <th>22:00</th>
+      <th *ngFor="let item of user_colors"
+          style="{{hourIsActive(22,item)[0]?
+          hourIsActive(22,item)[1]:''}}" (click)="setTime(22)">
+      </th>
     </tr>
 
     </tbody>
   </table>
+  <button class="button is-primary" style="margin-top: 10px">Add</button>
+
+</form>
 </div>

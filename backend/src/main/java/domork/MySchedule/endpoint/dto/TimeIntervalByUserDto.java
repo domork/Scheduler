@@ -7,15 +7,24 @@ public class TimeIntervalByUserDto {
     private Timestamp time_start;
     private Timestamp time_end;
     private String color;
-
+    private String name;
     public TimeIntervalByUserDto() {
     }
 
-    public TimeIntervalByUserDto(String group_user_UUID, Timestamp time_start, Timestamp time_end, String color) {
+    public TimeIntervalByUserDto(String group_user_UUID, Timestamp time_start, Timestamp time_end, String color, String name) {
         this.group_user_UUID = group_user_UUID;
         this.time_start = time_start;
         this.time_end = time_end;
         this.color = color;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getColor() {
@@ -57,6 +66,7 @@ public class TimeIntervalByUserDto {
                 ", time_start=" + time_start +
                 ", time_end=" + time_end +
                 ", color='" + color + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

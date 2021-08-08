@@ -1,6 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthLoginInfo} from "../../utils/dto/auth-form";
-import {AuthService} from "../../service/auth.service";
 import {CreateGroupForm} from "../../utils/dto/create-group-form";
 import {GroupService} from "../../service/group.service";
 import {Group} from "../../utils/dto/group";
@@ -16,7 +14,7 @@ export class CreateGroupComponent implements OnInit {
   createGroupForm: CreateGroupForm = new CreateGroupForm(
     '', '', '');
   fetchedGroup: Group = new Group(0, '', '',
-    new Date(), '')
+    new Date(), '','')
 
   constructor(private groupService: GroupService) {
   }
@@ -34,8 +32,7 @@ export class CreateGroupComponent implements OnInit {
       data => {
         this.fetchedGroup = data;
       }, error => {
-        /*defaultServiceErrorHandling(error);
-       */
+        console.log(error);
       }
     );
 
