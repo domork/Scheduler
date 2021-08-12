@@ -28,9 +28,13 @@ public interface GroupService {
      *  time_to_start: time for participants to start.
      * Can be changed by adding time intervals.
      *  description: description of the group
+     *  userUUID: unique global ID of the user in the group
+     *            will be generated in DB
      * @return same group with generated ID
      * @throws ValidationException when the group doesn't
-     * fill the requirements (check them in the Validator).
+     * fill the requirements (check them in the Validator.groupCheck()).
+     * @throws ValidationException when the group with
+     * same name already exists.
      */
     Group createNewGroup (Group group);
 
@@ -41,9 +45,11 @@ public interface GroupService {
      *   name*: name of the group.
      *   password*: password of the group.
      *   userID*: The ID of user to join the group.
+     *   username*: representative name of user in the group.
      * @return group if the credentials were correct.
-     * @throws ValidationException when the groupCredentials don't
-     * fill the requirements (check them in the Validator).
+     * @throws ValidationException when the groupCredentials doesn't
+     * fill the requirements
+     * (check them in the Validator.groupCredentialsCheck()).
      */
     GroupMember joinGroupByNameAndPassword(GroupCredentials groupCredentials);
 
@@ -74,9 +80,14 @@ public interface GroupService {
      *  group_id: ID of group, that will contain this user.
      *  user_id: ID of user, that will be added to the group.
      *  group_user_UUID: is ignored.
+     *  color: in which color (HEX) should be the graph printed.
+     *  name: representative name of user in the group.
      * @return a new entity with the unique group-member-ID
      * @throws ValidationException when the ID does not exist
      * or current paar already exists.
+     *  @throws ValidationException when groupMember doesn't
+     *  fill the requirements
+     *  (check them in the Validator.groupMemberCheck()).
      * @throws NotFoundException when either group or user is
      * not saved in DB.
      */
@@ -94,9 +105,40 @@ public interface GroupService {
      */
     boolean addMemberRoleToTheGroup (String UUID, String role);
 
-
+    /**
+     * Provides info about all group's members intervals at given date.
+     * @param groupID of group to be fetched.
+     * @param date will be set to the 00:00 of given day,
+     *             such that the whole day could be fetched.
+     * @return the list of
+     *    group_user_UUID: unique global user ID in the group.
+     *    time_start: user's start of time interval.
+     *    time_end: user's start of time interval.
+     *    color: in which color (HEX) should be the graph printed.
+     *    name: representative name of user in the group.
+     *  @throws ValidationException when a groupID doesn't exist,
+     *   or has a wrong format.
+     *   ToDO: I assume that the date validation is not required since
+     *    it is auto parsed in endpoint
+     *    DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME);
+     *   @throws ValidationException if current user does not
+     *   participate in given groupID.
+     */
     List <TimeIntervalByUser> getGroupInfoForSpecificDate (Long groupID, LocalDate date);
 
 
+    /**
+     * Adds a new Interval by a user.
+     * @param timeIntervalByUser
+     *        group_user_UUID: unique global user ID in the group.
+     *        time_start: user's start of time interval.
+     *        time_end: user's start of time interval.
+     *        color: in which color (HEX) should be the graph printed.
+     *        name: representative name of user in the group.
+     * @return same interval, if it was successfully added.
+     * @throws ValidationException when timeIntervalByUser doesn't
+     *      *  fill the requirements
+     *      *  (check them in the Validator.timeIntervalByUserCheck()).
+     */
     TimeIntervalByUser addNewInterval (TimeIntervalByUser timeIntervalByUser);
 }

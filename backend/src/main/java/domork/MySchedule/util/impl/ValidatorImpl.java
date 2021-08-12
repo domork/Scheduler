@@ -3,6 +3,7 @@ package domork.MySchedule.util.impl;
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
+import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 import domork.MySchedule.exception.ValidationException;
 import domork.MySchedule.util.Validator;
 import org.apache.tomcat.jni.Time;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 public class ValidatorImpl implements Validator {
     private final static Pattern textPattern = Pattern.compile("[a-zA-Z0-9- .:,]*");
     private final static Pattern passPattern = Pattern.compile("[a-zA-Z0-9-+*/ .:,]*");
+    private final static Pattern colorPattern = Pattern.compile("#[a-fA-F0-9]{1,6}");
     private final static Pattern UUIDPattern = Pattern.compile
             ("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i");
 
@@ -41,7 +43,7 @@ public class ValidatorImpl implements Validator {
     @Override
     public void passwordCheck(String pass) {
         if (pass != null) {
-            if (textPattern.matcher(pass).matches()) {
+            if (passPattern.matcher(pass).matches()) {
                 if (pass.length() > 32 || pass.length() < 1)
                     throw new ValidationException("Password must have the length between 1 and 32");
             } else throw new ValidationException("Password contains some illegal characters, try to use " +
@@ -55,9 +57,10 @@ public class ValidatorImpl implements Validator {
             // idCheck(group.getID());
             nameCheck(group.getName());
             passwordCheck(group.getPassword());
-            //nameCheck(group.getDescription());
+            if (group.getDescription() != null)
+                nameCheck(group.getDescription());
             Timestamp groupTime = group.getTime_to_start();
-            if (groupTime!=null && groupTime.getTime() < (Time.now()-60)) {
+            if (groupTime != null && groupTime.getTime() < (Time.now() - 60)) {
                 throw new ValidationException
                         ("Group time should be chosen in the future. ");
             }
@@ -70,6 +73,7 @@ public class ValidatorImpl implements Validator {
         nameCheck(groupCredentials.getName());
         passwordCheck(groupCredentials.getPassword());
         idCheck(groupCredentials.getUserID());
+        nameCheck(groupCredentials.getUsername());
     }
 
     @Override
@@ -77,8 +81,8 @@ public class ValidatorImpl implements Validator {
         idCheck(groupMember.getGroup_id());
         idCheck(groupMember.getUser_id());
         UUIDCheck(groupMember.getGroup_user_UUID());
-        throw new ValidationException("UUID doesn't have a correct template");
-
+        colorCheck(groupMember.getColor());
+        nameCheck(groupMember.getName());
     }
 
     @Override
@@ -96,4 +100,39 @@ public class ValidatorImpl implements Validator {
 
         }
     }
+
+    @Override
+    public void colorCheck(String color) {
+        if (color != null) {
+            if (!colorPattern.matcher(color).matches())
+                throw new ValidationException("Color has wrong format.");
+        }
+    }
+
+    @Override
+    public void timeIntervalByUserCheck(TimeIntervalByUser t) {
+        if (t == null) {
+            throw new ValidationException("Time interval is null.");
+        }
+        UUIDCheck(t.getGroup_user_UUID());
+        colorCheck(t.getColor());
+        nameCheck(t.getName());
+
+        if (t.getTime_start() == null && t.getTime_end() == null)
+            throw new ValidationException("Time interval was not given.");
+
+        else if (t.getTime_start() == null)
+            throw new ValidationException("Start time was not given.");
+
+        else if (t.getTime_end() == null)
+            throw new ValidationException("End time was not given.");
+
+        else if (t.getTime_end().before(t.getTime_start()))
+            throw new ValidationException("End time is before start time.");
+
+        else if (t.getTime_start().toLocalDateTime().getDayOfMonth()!=t.getTime_end().toLocalDateTime().getDayOfMonth())
+            throw new ValidationException("Interval must start and end at the same time.");
+
+    }
+
 }

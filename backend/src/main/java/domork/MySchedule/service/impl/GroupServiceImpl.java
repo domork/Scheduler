@@ -7,10 +7,12 @@ import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 import domork.MySchedule.exception.NotFoundException;
 import domork.MySchedule.exception.ValidationException;
 import domork.MySchedule.persistance.GroupDAO;
+import domork.MySchedule.security.services.UserPrinciple;
 import domork.MySchedule.service.GroupService;
 import domork.MySchedule.util.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -72,6 +74,13 @@ public class GroupServiceImpl implements GroupService {
 
         validator.groupMemberCheck(groupMember);
 
+        List<Group> groups = this.getGroupsByID(groupMember.getUser_id());
+
+        for (Group group : groups) {
+            if (group.getID().equals(groupMember.getGroup_id()))
+                throw new ValidationException("This user is already in this group.");
+        }
+
         return companyDAO.addMemberToTheGroup(groupMember);
     }
 
@@ -82,19 +91,40 @@ public class GroupServiceImpl implements GroupService {
         validator.groupRoleCheck(role);
         validator.UUIDCheck(UUID);
 
-        return companyDAO.addMemberRoleToTheGroup(UUID,role);
+        return companyDAO.addMemberRoleToTheGroup(UUID, role);
     }
 
     @Override
-    public List <TimeIntervalByUser> getGroupInfoForSpecificDate(Long groupID, LocalDate date) {
+    public List<TimeIntervalByUser> getGroupInfoForSpecificDate(Long groupID, LocalDate date) {
+        LOGGER.trace("getGroupInfoForSpecificDate({}, {})", groupID, date);
 
-        return companyDAO.getGroupInfoForSpecificDate(groupID,date);
+        validator.idCheck(groupID);
+        Long userID = this.getUserPrinciple().getId();
+        List<Group> groups = this.getGroupsByID(userID);
+
+
+        for (Group group : groups) {
+            if (group.getID().equals(groupID))
+                return companyDAO.getGroupInfoForSpecificDate(groupID, date);
+        }
+        throw new ValidationException("Not a member of group/ no such a group.");
+
+
     }
 
     @Override
     public TimeIntervalByUser addNewInterval(TimeIntervalByUser timeIntervalByUser) {
+        LOGGER.trace("addNewInterval({})", timeIntervalByUser);
+
+        validator.timeIntervalByUserCheck(timeIntervalByUser);
+
 
         return companyDAO.addNewInterval(timeIntervalByUser);
-
     }
+
+    private UserPrinciple getUserPrinciple(){
+        return ((UserPrinciple) SecurityContextHolder.getContext().
+                getAuthentication().getPrincipal());
+    }
+
 }

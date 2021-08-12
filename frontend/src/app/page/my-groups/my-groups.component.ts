@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Group} from "../../utils/dto/group";
 import {GroupService} from "../../service/group.service";
+import {TokenStorageService} from "../../auth/token-storage.service";
 
 @Component({
   selector: 'app-my-groups',
@@ -10,7 +11,7 @@ import {GroupService} from "../../service/group.service";
 export class MyGroupsComponent implements OnInit {
   myGroups: any[] = [];
 
-  constructor(private groupService: GroupService) {
+  constructor(private groupService: GroupService, private tokenStorage: TokenStorageService) {
   }
 
   ngOnInit(): void {
@@ -22,6 +23,7 @@ export class MyGroupsComponent implements OnInit {
       this.myGroups = groups;
       console.log(this.myGroups);
     }, err => {
+
       console.log(err);
     })
   }
