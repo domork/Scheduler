@@ -2,6 +2,7 @@ package domork.MySchedule.persistance.impl;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import domork.MySchedule.endpoint.entity.Group;
@@ -170,13 +171,13 @@ public class GroupDAOImpl implements GroupDAO {
 
         final String sqlAllGroupMembers = "SELECT g.group_user_uuid, g.name, g.color FROM " +
                 "(schedule_group s join group_members g on s.id=g.group_id) " +
-                " WHERE g.group_id='" + groupID + "' AND g.user_id= "+getUserPrinciple().getId();
+                " WHERE g.group_id='" + groupID + "' AND g.user_id= " + getUserPrinciple().getId();
         List<TimeIntervalByUser> list = jdbcTemplate.query(sqlAllGroupMembers,
                 this::mapRowTimeIntervalByUser);
 
-            timeIntervalByUser.add(
-                    new TimeIntervalByUser(list.get(0).getGroup_user_UUID(),
-                            null, null, list.get(0).getColor(), list.get(0).getName()));
+        timeIntervalByUser.add(
+                new TimeIntervalByUser(list.get(0).getGroup_user_UUID(),
+                        null, null, list.get(0).getColor(), list.get(0).getName()));
 
         return timeIntervalByUser;
     }
@@ -201,10 +202,54 @@ public class GroupDAOImpl implements GroupDAO {
 
     }
 
+    @Override
+    public List<TimeIntervalByUser> getMemberInfoForSpecificDate(String UUID, LocalDate date) {
+        LOGGER.trace("getMemberInfoForSpecificDate({}, {})", UUID, date);
+        final String sql = "SELECT * FROM time_of_unique_user_in_group" +
+                " WHERE group_user_uuid ='" + UUID + "' " +
+                "AND '" + Timestamp.valueOf(date.atStartOfDay().plusDays(1)) + "' >= time_end " +
+                "AND time_end >= '" + Timestamp.valueOf(date.atStartOfDay()) + "'";
+
+
+        return jdbcTemplate.query(sql,
+                this::mapRowTimeIntervalByUserSmall);
+    }
+
+    @Override
+    public void deleteInterval(String UUID, Timestamp date) {
+        LOGGER.trace("deleteInterval({}, {})", UUID, date);
+        Timestamp lowBound = (Timestamp.valueOf(date.toLocalDateTime().minusSeconds(1)));
+        Timestamp highBound = (Timestamp.valueOf(date.toLocalDateTime().plusSeconds(1)));
+
+        String sql = "DELETE FROM time_of_unique_user_in_group" +
+                " WHERE group_user_uuid=? ";
+        LocalDateTime tempTime = date.toLocalDateTime();
+        if (tempTime.getHour()==0&&tempTime.getMinute()==0)
+            sql+= "AND '"+Timestamp.valueOf(date.toLocalDateTime().plusDays(1))+"' > time_end AND time_end > ?";
+        else
+            sql+="AND time_end = ? ";
+        jdbcTemplate.update(sql, UUID, date);
+        System.out.println("a");
+    }
+
+    @Override
+    public void leaveGroup(Long groupID) {
+        Long userID = this.getUserPrinciple().getId();
+        LOGGER.trace("leaveGroup with ID {}", groupID);
+
+        String sql = "DELETE FROM time_of_unique_user_in_group WHERE group_user_uuid = " +
+                "(SELECT group_user_uuid FROM group_members WHERE group_id=? AND user_id=?);" +
+                "DELETE FROM role_of_user_in_specific_group WHERE " +
+                "group_user_uuid =(SELECT group_user_uuid FROM group_members WHERE group_id=? AND user_id=?); " +
+                "DELETE FROM group_members WHERE  group_id = ? AND user_id = ? ";
+        jdbcTemplate.update(sql, groupID, userID,groupID, userID,groupID, userID);
+
+    }
+
     private Group mapRow(ResultSet resultSet, int i) throws SQLException {
         final Group group = new Group();
         group.setID(resultSet.getLong("id"));
-        //    group.setPassword(resultSet.getString("password"));
+
         group.setName(resultSet.getString("name"));
         group.setDescription(resultSet.getString("description"));
         group.setTime_to_start(resultSet.getTimestamp("time_to_start"));
@@ -223,14 +268,22 @@ public class GroupDAOImpl implements GroupDAO {
         try {
             timeIntervalByUser.setTime_end(resultSet.getTimestamp("time_end"));
             timeIntervalByUser.setTime_start(resultSet.getTimestamp("time_start"));
+        } catch (SQLException ignored) {
         }
-      catch (SQLException ignored){}
         timeIntervalByUser.setGroup_user_UUID(resultSet.getString("group_user_uuid"));
         timeIntervalByUser.setName(resultSet.getString("name"));
         return timeIntervalByUser;
     }
 
-    private UserPrinciple getUserPrinciple(){
+    private TimeIntervalByUser mapRowTimeIntervalByUserSmall(ResultSet resultSet, int i) throws SQLException {
+        final TimeIntervalByUser timeIntervalByUser = new TimeIntervalByUser();
+        timeIntervalByUser.setTime_end(resultSet.getTimestamp("time_end"));
+        timeIntervalByUser.setTime_start(resultSet.getTimestamp("time_start"));
+        timeIntervalByUser.setGroup_user_UUID(resultSet.getString("group_user_uuid"));
+        return timeIntervalByUser;
+    }
+
+    private UserPrinciple getUserPrinciple() {
         return ((UserPrinciple) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal());
     }

@@ -7,7 +7,7 @@
 <div class="container">
   <form name="form" (ngSubmit)="f.form.valid&&onSubmit() " #f="ngForm" novalidate>
   <div class="topDate">
-  <span class="icon is-large" (click)="setPrevDay()">
+  <span class="icon is-large" (click)="setPrevDay();resetData()">
     <i class="fas fa-arrow-left fa-2x"></i>
   </span>
     <div class="content is-medium">
@@ -15,7 +15,7 @@
         {{currentDate.toLocaleDateString()}}
       </h1>
     </div>
-    <span class="icon is-large" (click)="setNextDay()">
+    <span class="icon is-large" (click)="setNextDay();resetData()">
     <i class="fas fa-arrow-right fa-2x"></i>
   </span>
 
@@ -151,7 +151,28 @@
 
     </tbody>
   </table>
-  <button class="button is-primary" style="margin-top: 10px">Add</button>
+    <nav class="level is-mobile">
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Start time</p>
+          <p class="title">{{parsedTime_start}}</p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">End time </p>
+          <p class="title">{{parsedTime_end}}</p>
+        </div>
+      </div>
+
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading"></p>
+          <button class="button is-primary">Add</button>
+        </div>
+      </div>
+    </nav>
+
 
 </form>
 </div>

@@ -19,7 +19,9 @@ export class GroupDetailComponent implements OnInit {
   user_names: string[] = [];
   user_colors: string[] = [];
   map = new Map();
-  addForm: TimeIntervalByUser = new TimeIntervalByUser('', new Date(), new Date(), '', '');
+  addForm: TimeIntervalByUser = new TimeIntervalByUser('', undefined, undefined, '', '');
+  parsedTime_start: string|undefined='';
+  parsedTime_end: string|undefined='';
   form: any = {};
 
   constructor(private groupService: GroupService, private route: ActivatedRoute) {
@@ -131,9 +133,10 @@ export class GroupDetailComponent implements OnInit {
     this.arr = [];
     this.user_names = [];
     this.map = new Map();
-    this.addForm.time_end = this.currentDate;
-    this.addForm.time_start = this.currentDate;
-
+    this.addForm.time_end = undefined
+    this.addForm.time_start = undefined
+    this.parsedTime_start='';
+    this.parsedTime_end='';
   }
 
   setPrevDay(): void {
@@ -155,9 +158,13 @@ export class GroupDetailComponent implements OnInit {
     } else {
       this.addForm.time_start = tempDate;
     }
-    console.log(hour+'\n', tempDate+'\n',
-      this.addForm.time_start+'\n', this.addForm.time_end+'\n')
+    console.log(this.addForm.time_start.toLocaleTimeString())
+    console.log(this.addForm.time_end)
+    if (this.addForm.time_start)
+    this.parsedTime_start= this.addForm.time_start.toLocaleTimeString().substring(0, 5);
 
+    if (this.addForm.time_end)
+    this.parsedTime_end= this.addForm.time_end.toLocaleTimeString().substring(0, 5);
   }
 
 

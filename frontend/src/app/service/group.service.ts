@@ -39,4 +39,8 @@ export class GroupService {
   joinGroup(credentials: JoinGroupForm):Observable<JoinGroupForm>{
     return this.http.post<JoinGroupForm>(baseUri+'/join', credentials,this.httpOptions);
   }
+
+  leaveGroup(id:number):Observable<Boolean>{
+    return this.http.post<Boolean>(baseUri+'/'+id+'/leave',this.httpOptions);
+  }
 }

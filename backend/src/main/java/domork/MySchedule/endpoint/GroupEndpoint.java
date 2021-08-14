@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -128,7 +130,7 @@ public class GroupEndpoint {
     addNewInterval(@PathVariable("id") Long id,
                    @RequestBody TimeIntervalByUserDto timeIntervalByUserDto) {
         Long userID = getUserID();
-        LOGGER.info("POST NEW INTERVAL ({}) IN GROUP ID /{}",timeIntervalByUserDto, id);
+        LOGGER.info("POST NEW INTERVAL ({}) IN GROUP ID /{}", timeIntervalByUserDto, id);
 
         return new ResponseEntity<>
                 (groupMapper.timeIntervalByUserToDto(
@@ -138,9 +140,29 @@ public class GroupEndpoint {
     }
 
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @DeleteMapping(value = "/")
+    public ResponseEntity<Boolean> deleteInterval(@RequestParam(required = false, value = "date")
+                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date,
+                                                  @RequestParam(required = false, value = "UUID") String UUID) {
+
+        LOGGER.info("DELETE INTERVAL WITH UUID({}) ON THIS DATE/{}", UUID, date);
+        Timestamp a=  Timestamp.valueOf(date);
+        groupService.deleteInterval(UUID, a);
+        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+    }
+
     private Long getUserID() {
         return ((UserPrinciple) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal()).getId();
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "/{id}/leave")
+    public ResponseEntity<Boolean> leaveGroup(@PathVariable("id") Long id){
+        LOGGER.info("LEAVE GROUP WITH ID({}) ", id);
+        groupService.leaveGroup(id);
+        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
 
 }

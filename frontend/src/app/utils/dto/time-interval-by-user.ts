@@ -6,7 +6,7 @@ export class TimeIntervalByUser {
   name: string
 
 
-  constructor(group_user_UUID: string, time_start: Date, time_end: Date, color: string, name: string) {
+  constructor(group_user_UUID: string, time_start: undefined, time_end: undefined, color: string, name: string) {
     this.group_user_UUID = group_user_UUID;
     this.time_start = time_start;
     this.time_end = time_end;

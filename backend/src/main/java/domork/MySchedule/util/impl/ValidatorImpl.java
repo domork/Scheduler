@@ -18,7 +18,7 @@ public class ValidatorImpl implements Validator {
     private final static Pattern passPattern = Pattern.compile("[a-zA-Z0-9-+*/ .:,]*");
     private final static Pattern colorPattern = Pattern.compile("#[a-fA-F0-9]{1,6}");
     private final static Pattern UUIDPattern = Pattern.compile
-            ("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i");
+            ("[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}");
 
 
     @Override

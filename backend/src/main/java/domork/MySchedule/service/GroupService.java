@@ -10,6 +10,7 @@ import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 import org.springframework.web.bind.annotation.RequestBody;
 import domork.MySchedule.exception.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -141,4 +142,19 @@ public interface GroupService {
      *      *  (check them in the Validator.timeIntervalByUserCheck()).
      */
     TimeIntervalByUser addNewInterval (TimeIntervalByUser timeIntervalByUser);
+
+    /**
+     * Removes the interval from a specific user in the group.
+     * Only the admin and the owner itself can delete the interval
+     * @param UUID of the user in the group
+     * @param date the end of the interval. If the time is of 00:00,
+     *             then it will delete all intervals in that day.
+     */
+    void deleteInterval(String UUID, Timestamp date);
+
+    /**
+     * Leaves the group and deletes all intervals from that user.
+     * @param groupID of group to be exited from/
+     */
+    void leaveGroup(Long groupID);
 }

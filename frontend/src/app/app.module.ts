@@ -17,6 +17,8 @@ import { MyGroupsComponent } from './page/my-groups/my-groups.component';
 import { GroupDetailComponent } from './page/group-detail/group-detail.component';
 import { GroupPreferencesComponent } from './utils/group-preferences/group-preferences.component';
 import { JoinTemplateComponent } from './forms/join-template/join-template.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatDialogModule} from '@angular/material/dialog';
 
 
 @NgModule({
@@ -34,12 +36,15 @@ import { JoinTemplateComponent } from './forms/join-template/join-template.compo
     GroupDetailComponent,
     GroupPreferencesComponent,
     JoinTemplateComponent
+
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    MatDialogModule
   ],
   providers: [httpInterceptorProviders,NotificationHubComponent],
   bootstrap: [AppComponent]

@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {Group} from "../../utils/dto/group";
 import {GroupService} from "../../service/group.service";
 import {TokenStorageService} from "../../auth/token-storage.service";
+import {MatDialog} from '@angular/material/dialog';
+import {GroupPreferencesComponent} from "../../utils/group-preferences/group-preferences.component";
 
 @Component({
   selector: 'app-my-groups',
@@ -11,7 +13,10 @@ import {TokenStorageService} from "../../auth/token-storage.service";
 export class MyGroupsComponent implements OnInit {
   myGroups: any[] = [];
 
-  constructor(private groupService: GroupService, private tokenStorage: TokenStorageService) {
+  constructor(
+    private groupService: GroupService,
+    private tokenStorage: TokenStorageService,
+    public dialog: MatDialog) {
   }
 
   ngOnInit(): void {
@@ -34,5 +39,13 @@ export class MyGroupsComponent implements OnInit {
       return t.substring(10, 15) + ' | ' + t.substring(0, 3);
     }
     return '';
+  }
+
+  onGroupPreferencesClicked(data:any):void{
+    const dialogRef = this.dialog.open(GroupPreferencesComponent, {
+      width: '580px',
+      data: data
+    });
+
   }
 }

@@ -10,17 +10,23 @@ import domork.MySchedule.persistance.GroupDAO;
 import domork.MySchedule.security.services.UserPrinciple;
 import domork.MySchedule.service.GroupService;
 import domork.MySchedule.util.Validator;
+import domork.MySchedule.util.interval.Interval;
+import domork.MySchedule.util.interval.Set;
+import domork.MySchedule.util.interval.Union;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+
 public class GroupServiceImpl implements GroupService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final GroupDAO companyDAO;
@@ -118,13 +124,81 @@ public class GroupServiceImpl implements GroupService {
 
         validator.timeIntervalByUserCheck(timeIntervalByUser);
 
+        timeIntervalByUser.setTime_start(truncateToMinutes(timeIntervalByUser.getTime_start()));
+        timeIntervalByUser.setTime_end(truncateToMinutes(timeIntervalByUser.getTime_end()));
 
-        return companyDAO.addNewInterval(timeIntervalByUser);
+        List<TimeIntervalByUser> list = companyDAO.getMemberInfoForSpecificDate(timeIntervalByUser.getGroup_user_UUID(),
+                timeIntervalByUser.getTime_start().toLocalDateTime().toLocalDate());
+        Union u = new Union();
+
+
+        long addStartTime =  timeIntervalByUser.getTime_start().getTime();
+        long addEndTime =  timeIntervalByUser.getTime_end().getTime();
+        Interval addInterval = new Interval(addStartTime, addEndTime);
+
+        Interval interval;
+        long startTime;
+        long endTime;
+
+        if (list.isEmpty()) {
+            return companyDAO.addNewInterval(timeIntervalByUser);
+        } else if (list.size() == 1) {
+            startTime =  list.get(0).getTime_start().getTime();
+            endTime =  list.get(0).getTime_end().getTime();
+            interval = new Interval(startTime, endTime);
+
+            Set result = addInterval.union(interval);
+            if (!result.isContinuous())
+                return companyDAO.addNewInterval(timeIntervalByUser);
+            else {
+                deleteInterval(list.get(0).getGroup_user_UUID(),list.get(0).getTime_end());
+                timeIntervalByUser.setTime_start(parseFromEpochToTimestamp(((Interval)result).getLower()));
+                timeIntervalByUser.setTime_end(parseFromEpochToTimestamp(((Interval)result).getUpper()));
+                return companyDAO.addNewInterval(timeIntervalByUser);
+            }
+        } else {
+            u.union(addInterval);
+            for (TimeIntervalByUser t : list) {
+                startTime =  t.getTime_start().getTime();
+                endTime = t.getTime_end().getTime();
+                interval = new Interval(startTime, endTime);
+                u.union(interval);
+            }
+            deleteInterval(timeIntervalByUser.getGroup_user_UUID(),
+                    Timestamp.valueOf(timeIntervalByUser.getTime_end().toLocalDateTime().withHour(0).withMinute(0)));
+
+            for (Interval i :u.getList()){
+                timeIntervalByUser.setTime_start(parseFromEpochToTimestamp(i.getLower()));
+                timeIntervalByUser.setTime_end(parseFromEpochToTimestamp(i.getUpper()));
+                companyDAO.addNewInterval(timeIntervalByUser);
+            }
+        }
+
+        return timeIntervalByUser;
     }
 
-    private UserPrinciple getUserPrinciple(){
+    @Override
+    public void deleteInterval(String UUID, Timestamp date) {
+        date = truncateToMinutes(date);
+        companyDAO.deleteInterval(UUID, date);
+    }
+
+    @Override
+    public void leaveGroup(Long groupID) {
+        companyDAO.leaveGroup(groupID);
+    }
+
+    private UserPrinciple getUserPrinciple() {
         return ((UserPrinciple) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal());
     }
 
+    private Timestamp truncateToMinutes(Timestamp date) {
+        LocalDateTime localDateTime = date.toLocalDateTime().truncatedTo(ChronoUnit.MINUTES);
+        return Timestamp.valueOf(localDateTime);
+    }
+
+    private Timestamp parseFromEpochToTimestamp(long i) {
+        return new Timestamp(i);
+    }
 }

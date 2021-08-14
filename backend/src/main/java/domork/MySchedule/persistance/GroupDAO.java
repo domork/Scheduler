@@ -6,6 +6,7 @@ import domork.MySchedule.endpoint.entity.GroupMember;
 import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 import domork.MySchedule.exception.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -112,4 +113,27 @@ public interface GroupDAO {
      */
     TimeIntervalByUser addNewInterval (TimeIntervalByUser timeIntervalByUser);
 
+    /**
+     * Works almost same as getGroupInfoForSpecificDate. Instead, only one
+     * member's intervals are searched (not the whole group's one).
+     * @param UUID of user in specific group to check.
+     * @param date the day, in which intervals will be returned.
+     * @return the list of all intervals by a given user at specific date (date's day).
+     */
+    List <TimeIntervalByUser> getMemberInfoForSpecificDate (String UUID, LocalDate date);
+
+    /**
+     * Removes the interval from a specific user in the group.
+     * Only the admin and the owner itself can delete the interval
+     * @param UUID of the user in the group
+     * @param date the end of the interval. If the time is of 00:00,
+     *             then it will delete all intervals in that day.
+     */
+    void deleteInterval(String UUID, Timestamp date);
+
+    /**
+     * Leaves the group and deletes all intervals from that user.
+     * @param groupID of group to be exited from/
+     */
+    void leaveGroup(Long groupID);
 }
