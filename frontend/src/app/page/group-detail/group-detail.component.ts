@@ -37,7 +37,7 @@ export class GroupDetailComponent implements OnInit {
     (this.currentDate, this.id).subscribe(data => {
       console.log(data);
       this.arr = data;
-      let currentUser = data.pop();
+      let currentUser = data[data.length-1];
       if (currentUser) {
         this.addForm.group_user_UUID = currentUser.group_user_UUID;
         this.addForm.color = currentUser.color;

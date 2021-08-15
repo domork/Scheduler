@@ -151,8 +151,8 @@ public class GroupDAOImpl implements GroupDAO {
         final String sql = " SELECT second.group_user_uuid, time_start,time_end,second.color,second.name FROM " +
                 "( " +
                 "SELECT g.group_user_uuid, time_start, time_end, g.color, g.name " +
-                "FROM (schedule_group s join group_members g on s.id = g.group_id)" +
-                "join time_of_unique_user_in_group t on t.group_user_uuid = g.group_user_uuid " +
+                "FROM group_members g " +
+                "natural join time_of_unique_user_in_group t  " +
                 "WHERE g.group_id = '" + groupID + "'" +
                 "AND '" + Timestamp.valueOf(date.atStartOfDay().plusDays(1)) + "' >= time_end " +
                 "AND time_end >= '" + Timestamp.valueOf(date.atStartOfDay()) + "'" +
@@ -160,26 +160,15 @@ public class GroupDAOImpl implements GroupDAO {
                 "   first FULL OUTER JOIN " +
                 "(" +
                 "SELECT g.group_user_uuid, g.name, g.color FROM" +
-                "(schedule_group s join group_members g on s.id=g.group_id)" +
-                "WHERE g.group_id='1'" +
+                " group_members g " +
+                "WHERE g.group_id='"+groupID+"'" +
                 ")" +
-                "   second ON second.group_user_uuid=first.group_user_uuid";
+                "   second ON second.group_user_uuid=first.group_user_uuid ";
 
 
-        List<TimeIntervalByUser> timeIntervalByUser = jdbcTemplate.query(sql,
+        return jdbcTemplate.query(sql,
                 this::mapRowTimeIntervalByUser);
 
-        final String sqlAllGroupMembers = "SELECT g.group_user_uuid, g.name, g.color FROM " +
-                "(schedule_group s join group_members g on s.id=g.group_id) " +
-                " WHERE g.group_id='" + groupID + "' AND g.user_id= " + getUserPrinciple().getId();
-        List<TimeIntervalByUser> list = jdbcTemplate.query(sqlAllGroupMembers,
-                this::mapRowTimeIntervalByUser);
-
-        timeIntervalByUser.add(
-                new TimeIntervalByUser(list.get(0).getGroup_user_UUID(),
-                        null, null, list.get(0).getColor(), list.get(0).getName()));
-
-        return timeIntervalByUser;
     }
 
     @Override

@@ -41,10 +41,10 @@ export class MyGroupsComponent implements OnInit {
     return '';
   }
 
-  onGroupPreferencesClicked(data:any):void{
+  onGroupPreferencesClicked(groupID:number):void{
     const dialogRef = this.dialog.open(GroupPreferencesComponent, {
       width: '580px',
-      data: data
+      data: groupID
     });
 
   }
