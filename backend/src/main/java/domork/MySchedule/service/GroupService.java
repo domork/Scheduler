@@ -136,12 +136,13 @@ public interface GroupService {
      *        time_end: user's start of time interval.
      *        color: in which color (HEX) should be the graph printed.
      *        name: representative name of user in the group.
+     * @param groupID for validation.
      * @return same interval, if it was successfully added.
      * @throws ValidationException when timeIntervalByUser doesn't
-     *      *  fill the requirements
-     *      *  (check them in the Validator.timeIntervalByUserCheck()).
+     *         fill the requirements
+     *         (check them in the Validator.timeIntervalByUserCheck()).
      */
-    TimeIntervalByUser addNewInterval (TimeIntervalByUser timeIntervalByUser);
+    TimeIntervalByUser addNewInterval (TimeIntervalByUser timeIntervalByUser, Long groupID);
 
     /**
      * Removes the interval from a specific user in the group.
@@ -157,4 +158,12 @@ public interface GroupService {
      * @param groupID of group to be exited from/
      */
     void leaveGroup(Long groupID);
+
+    /**
+     * Provides the UUID of the current logged-in user, for a given group id.
+     * When there is no such a relation of user and group -> null is returned.
+     * @param groupID of group
+     * @return unique UUID of group's member.
+     */
+    String getUUIDOfCurrentUserByGroupId(Long groupID);
 }

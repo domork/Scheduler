@@ -70,7 +70,7 @@ public class GroupServiceImpl implements GroupService {
     public Group getGroupByName(String name) {
         LOGGER.trace("getGroupByName({})", name);
 
-        validator.nameCheck(name);
+        //validator.nameCheck(name);
         return companyDAO.getGroupByName(name);
     }
 
@@ -119,11 +119,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public TimeIntervalByUser addNewInterval(TimeIntervalByUser timeIntervalByUser) {
+    public TimeIntervalByUser addNewInterval(TimeIntervalByUser timeIntervalByUser, Long groupID) {
         LOGGER.trace("addNewInterval({})", timeIntervalByUser);
 
         validator.timeIntervalByUserCheck(timeIntervalByUser);
-
+        timeIntervalByUser.setGroup_user_UUID(this.getUUIDOfCurrentUserByGroupId(groupID));
         timeIntervalByUser.setTime_start(truncateToMinutes(timeIntervalByUser.getTime_start()));
         timeIntervalByUser.setTime_end(truncateToMinutes(timeIntervalByUser.getTime_end()));
 
@@ -186,6 +186,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void leaveGroup(Long groupID) {
         companyDAO.leaveGroup(groupID);
+    }
+
+    @Override
+    public String getUUIDOfCurrentUserByGroupId(Long groupID) {
+        return companyDAO.getUUIDOfCurrentUserByGroupId(groupID);
     }
 
     private UserPrinciple getUserPrinciple() {

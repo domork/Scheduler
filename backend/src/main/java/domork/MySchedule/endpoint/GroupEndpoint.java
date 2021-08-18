@@ -135,7 +135,7 @@ public class GroupEndpoint {
         return new ResponseEntity<>
                 (groupMapper.timeIntervalByUserToDto(
                         groupService.addNewInterval(
-                                groupMapper.dtoToTimeIntervalByUserTo(timeIntervalByUserDto)))
+                                groupMapper.dtoToTimeIntervalByUserTo(timeIntervalByUserDto),id))
                         , HttpStatus.OK);
     }
 

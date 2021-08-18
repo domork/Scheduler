@@ -44,7 +44,7 @@ public class ValidatorImpl implements Validator {
     public void passwordCheck(String pass) {
         if (pass != null) {
             if (passPattern.matcher(pass).matches()) {
-                if (pass.length() > 32 || pass.length() < 1)
+                if (pass.length() > 32 || pass.length() <= 1)
                     throw new ValidationException("Password must have the length between 1 and 32");
             } else throw new ValidationException("Password contains some illegal characters, try to use " +
                     " [a-zA-Z0-9-+* /.:,]* instead");
@@ -55,10 +55,10 @@ public class ValidatorImpl implements Validator {
     public void groupCheck(Group group) {
         if (group != null) {
             // idCheck(group.getID());
-            nameCheck(group.getName());
-            passwordCheck(group.getPassword());
-            if (group.getDescription() != null)
-                nameCheck(group.getDescription());
+            //nameCheck(group.getName());
+            //passwordCheck(group.getPassword());
+            //if (group.getDescription() != null)
+            //    nameCheck(group.getDescription());
             Timestamp groupTime = group.getTime_to_start();
             if (groupTime != null && groupTime.getTime() < (Time.now() - 60)) {
                 throw new ValidationException
@@ -82,7 +82,7 @@ public class ValidatorImpl implements Validator {
         idCheck(groupMember.getUser_id());
         UUIDCheck(groupMember.getGroup_user_UUID());
         colorCheck(groupMember.getColor());
-        nameCheck(groupMember.getName());
+        //nameCheck(groupMember.getName());
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ValidatorImpl implements Validator {
         }
         UUIDCheck(t.getGroup_user_UUID());
         colorCheck(t.getColor());
-        nameCheck(t.getName());
+        //nameCheck(t.getName());
 
         if (t.getTime_start() == null && t.getTime_end() == null)
             throw new ValidationException("Time interval was not given.");

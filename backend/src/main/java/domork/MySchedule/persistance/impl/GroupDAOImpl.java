@@ -16,6 +16,7 @@ import domork.MySchedule.security.services.UserPrinciple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -70,8 +71,13 @@ public class GroupDAOImpl implements GroupDAO {
     public GroupMember joinGroupByNameAndPassword(GroupCredentials groupCredentials) {
         LOGGER.trace("joinGroupByNameAndPassword({})", groupCredentials);
         final String sql = "SELECT * FROM schedule_group" +
-                " WHERE name = '" + groupCredentials.getName() + "' and password = '" + groupCredentials.getPassword() + "'";
-        List<Group> groups = jdbcTemplate.query(sql, this::mapRow);
+                " WHERE name = ? and password = ?";
+
+
+        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> {
+            preparedStatement.setString(1, groupCredentials.getName());
+            preparedStatement.setString(2, groupCredentials.getPassword());
+        }, this::mapRow);
         if (groups.isEmpty()) {
             throw new ValidationException("The credentials are wrong.");
         }
@@ -90,8 +96,10 @@ public class GroupDAOImpl implements GroupDAO {
         LOGGER.trace("getGroupsByID({})", ID);
         final String sql = "SELECT s.id, s.name, s.time_to_start," +
                 " s.description, group_user_uuid FROM " + "group_members"
-                + " h RIGHT JOIN schedule_group s on h.group_id= s.id WHERE user_id='" + ID + "'";
-        List<Group> groups = jdbcTemplate.query(sql, this::mapRow);
+                + " h RIGHT JOIN schedule_group s on h.group_id= s.id WHERE user_id= ?";
+        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> {
+            preparedStatement.setLong(1, ID);
+        }, this::mapRow);
         if (groups.isEmpty())
             throw new NotFoundException("Groups with the ID " + ID + " were not found");
         return groups;
@@ -102,9 +110,11 @@ public class GroupDAOImpl implements GroupDAO {
         LOGGER.trace("getGroupByName({})", name);
 
         final String sql = "SELECT * FROM " + TABLE_NAME
-                + " WHERE name='" + name + "'";
+                + " WHERE name= ?";
 
-        List<Group> groups = jdbcTemplate.query(sql, this::mapRow);
+        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> {
+            preparedStatement.setString(1, name);
+        }, this::mapRow);
         if (groups.isEmpty())
             throw new NotFoundException("Group with the name " + name + " was not found");
         return groups.get(0);
@@ -153,20 +163,25 @@ public class GroupDAOImpl implements GroupDAO {
                 "SELECT g.group_user_uuid, time_start, time_end, g.color, g.name " +
                 "FROM group_members g " +
                 "natural join time_of_unique_user_in_group t  " +
-                "WHERE g.group_id = '" + groupID + "'" +
-                "AND '" + Timestamp.valueOf(date.atStartOfDay().plusDays(1)) + "' >= time_end " +
-                "AND time_end >= '" + Timestamp.valueOf(date.atStartOfDay()) + "'" +
+                "WHERE g.group_id =  ? " +
+                "AND ? >= time_end " +
+                "AND time_end >= ?" +
                 ") " +
                 "   first FULL OUTER JOIN " +
                 "(" +
                 "SELECT g.group_user_uuid, g.name, g.color FROM" +
                 " group_members g " +
-                "WHERE g.group_id='"+groupID+"'" +
-                ")" +
+                "WHERE g.group_id= ?) " +
                 "   second ON second.group_user_uuid=first.group_user_uuid ";
 
 
-        return jdbcTemplate.query(sql,
+        return jdbcTemplate.query(sql, preparedStatement -> {
+                    preparedStatement.setLong(1, groupID);
+                    preparedStatement.setTimestamp(2, Timestamp.valueOf(date.atStartOfDay().plusDays(1)));
+                    preparedStatement.setTimestamp(3, Timestamp.valueOf(date.atStartOfDay()));
+                    preparedStatement.setLong(4, groupID);
+
+                },
                 this::mapRowTimeIntervalByUser);
 
     }
@@ -195,30 +210,37 @@ public class GroupDAOImpl implements GroupDAO {
     public List<TimeIntervalByUser> getMemberInfoForSpecificDate(String UUID, LocalDate date) {
         LOGGER.trace("getMemberInfoForSpecificDate({}, {})", UUID, date);
         final String sql = "SELECT * FROM time_of_unique_user_in_group" +
-                " WHERE group_user_uuid ='" + UUID + "' " +
-                "AND '" + Timestamp.valueOf(date.atStartOfDay().plusDays(1)) + "' >= time_end " +
-                "AND time_end >= '" + Timestamp.valueOf(date.atStartOfDay()) + "'";
+                " WHERE group_user_uuid =? " +
+                "AND ? >= time_end " +
+                "AND time_end >= ?";
 
 
-        return jdbcTemplate.query(sql,
+        return jdbcTemplate.query(sql, preparedStatement -> {
+                    preparedStatement.setString(1, UUID);
+                    preparedStatement.setTimestamp(2, Timestamp.valueOf(date.atStartOfDay().plusDays(1)));
+                    preparedStatement.setTimestamp(3, Timestamp.valueOf(date.atStartOfDay()));
+
+
+                },
                 this::mapRowTimeIntervalByUserSmall);
     }
 
     @Override
     public void deleteInterval(String UUID, Timestamp date) {
         LOGGER.trace("deleteInterval({}, {})", UUID, date);
-        Timestamp lowBound = (Timestamp.valueOf(date.toLocalDateTime().minusSeconds(1)));
-        Timestamp highBound = (Timestamp.valueOf(date.toLocalDateTime().plusSeconds(1)));
+
 
         String sql = "DELETE FROM time_of_unique_user_in_group" +
                 " WHERE group_user_uuid=? ";
         LocalDateTime tempTime = date.toLocalDateTime();
-        if (tempTime.getHour()==0&&tempTime.getMinute()==0)
-            sql+= "AND '"+Timestamp.valueOf(date.toLocalDateTime().plusDays(1))+"' > time_end AND time_end > ?";
-        else
-            sql+="AND time_end = ? ";
-        jdbcTemplate.update(sql, UUID, date);
-        System.out.println("a");
+        if (tempTime.getHour() == 0 && tempTime.getMinute() == 0) {
+            sql += "AND ? > time_end AND time_end > ?";
+            jdbcTemplate.update(sql, UUID, Timestamp.valueOf(date.toLocalDateTime().plusDays(1)), date);
+
+        } else {
+            sql += "AND time_end = ? ";
+            jdbcTemplate.update(sql, UUID, date);
+        }
     }
 
     @Override
@@ -231,8 +253,27 @@ public class GroupDAOImpl implements GroupDAO {
                 "DELETE FROM role_of_user_in_specific_group WHERE " +
                 "group_user_uuid =(SELECT group_user_uuid FROM group_members WHERE group_id=? AND user_id=?); " +
                 "DELETE FROM group_members WHERE  group_id = ? AND user_id = ? ";
-        jdbcTemplate.update(sql, groupID, userID,groupID, userID,groupID, userID);
+        jdbcTemplate.update(sql, groupID, userID, groupID, userID, groupID, userID);
 
+    }
+
+    @Override
+    public String getUUIDOfCurrentUserByGroupId(Long groupID) {
+        LOGGER.trace("getUUIDOfCurrentUserByGroupId with ID {}", groupID);
+        String sql = "SELECT group_user_uuid FROM group_members WHERE group_id = ?" +
+                " AND user_id = ?";
+        List<String> list = jdbcTemplate.query(sql, preparedStatement -> {
+            preparedStatement.setLong(1,groupID);
+            preparedStatement.setLong(2,this.getUserPrinciple().getId());
+        }
+                ,this::getUUIDFromMapRow);
+        if (list.isEmpty())
+            throw new NotFoundException("nope");
+        return list.get(0);
+    }
+
+    private String getUUIDFromMapRow(ResultSet resultSet, int i) throws SQLException {
+        return resultSet.getString("group_user_uuid");
     }
 
     private Group mapRow(ResultSet resultSet, int i) throws SQLException {

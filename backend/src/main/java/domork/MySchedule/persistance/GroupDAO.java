@@ -136,4 +136,12 @@ public interface GroupDAO {
      * @param groupID of group to be exited from/
      */
     void leaveGroup(Long groupID);
+
+    /**
+     * Provides the UUID of the current logged-in user, for a given group id.
+     * When there is no such a relation of user and group -> null is returned.
+     * @param groupID of group
+     * @return unique UUID of group's member.
+     */
+    String getUUIDOfCurrentUserByGroupId(Long groupID);
 }
