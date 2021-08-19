@@ -16,7 +16,6 @@ import domork.MySchedule.security.services.UserPrinciple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -188,6 +187,26 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
+    public List<TimeIntervalByUser> getGroupInfoForSpecificDateWithFullIntervalsOnly(Long groupID, LocalDate date) {
+        LOGGER.trace("getGroupInfoForSpecificDateWithIntervalsOnly({}, {})", groupID, date);
+        final String sql = "SELECT g.group_user_uuid, time_start, time_end, g.color, g.name " +
+                "FROM group_members g " +
+                "natural join time_of_unique_user_in_group t  " +
+                "WHERE g.group_id =  ? " +
+                "AND ? >= time_end " +
+                "AND time_end >= ?" +
+                " ORDER BY g.name";
+
+
+        return jdbcTemplate.query(sql, preparedStatement -> {
+                    preparedStatement.setLong(1, groupID);
+                    preparedStatement.setTimestamp(2, Timestamp.valueOf(date.atStartOfDay().plusDays(1)));
+                    preparedStatement.setTimestamp(3, Timestamp.valueOf(date.atStartOfDay()));
+                },
+                this::mapRowTimeIntervalByUser);
+    }
+
+    @Override
     public TimeIntervalByUser addNewInterval(TimeIntervalByUser timeIntervalByUser) {
         LOGGER.trace("addNewInterval({})", timeIntervalByUser);
         final String sql = "INSERT INTO time_of_unique_user_in_group " +
@@ -264,13 +283,74 @@ public class GroupDAOImpl implements GroupDAO {
         String sql = "SELECT group_user_uuid FROM group_members WHERE group_id = ?" +
                 " AND user_id = ?";
         List<String> list = jdbcTemplate.query(sql, preparedStatement -> {
-            preparedStatement.setLong(1,groupID);
-            preparedStatement.setLong(2,this.getUserPrinciple().getId());
-        }
-                ,this::getUUIDFromMapRow);
+                    preparedStatement.setLong(1, groupID);
+                    preparedStatement.setLong(2, this.getUserPrinciple().getId());
+                }
+                , this::getUUIDFromMapRow);
         if (list.isEmpty())
             throw new NotFoundException("nope");
         return list.get(0);
+    }
+
+    @Override
+    public Timestamp calculateNextMeetingByGroupId(Long groupID) {
+        List<TimeIntervalByUser> temp = null;
+        long[] hours = new long[23];
+        long[] minutes = new long[23];
+        LocalDateTime localDateTime = null;
+        int hourStart;
+        int hourEnd;
+        int minuteStart;
+        int minuteEnd;
+        for (int i = 0; i < 7; i++) {
+            temp = this.getGroupInfoForSpecificDateWithFullIntervalsOnly(groupID, (LocalDate.now().plusDays(i)));
+            if (!temp.isEmpty()) {
+                for (TimeIntervalByUser t : temp) {
+                    localDateTime = t.getTime_end().toLocalDateTime();
+                    hourEnd = localDateTime.getHour();
+                    minuteEnd = localDateTime.getMinute();
+                    localDateTime = t.getTime_start().toLocalDateTime();
+                    hourStart = localDateTime.getHour();
+                    minuteStart = localDateTime.getMinute();
+                    for (int j = 0; j <= hourEnd - hourStart; j++) {
+                        hours[hourEnd - j]++;
+                        minutes[hourEnd - j]++;
+                    }
+                    if (minuteEnd < 45) {
+                        minutes[hourEnd]--;
+                        if (minuteEnd < 15) {
+                            hours[hourEnd]--;
+                        }
+                    }
+                    if (minuteStart > 15) {
+                        hours[hourStart]--;
+                        if (minuteStart > 45) {
+                            minutes[hourStart]--;
+                        }
+                    }
+                }
+                long max = 0;
+                int pos = 0;
+                boolean isHours = true;
+                for (int j = 0; j < hours.length; j++) {
+                    if (hours[j] > max) {
+                        max = hours[j];
+                        isHours = true;
+                        pos = j;
+                    }
+                    if (minutes[j] > max) {
+                        max = minutes[j];
+                        isHours = false;
+                        pos = j;
+                    }
+                }
+                Timestamp time = Timestamp.valueOf(localDateTime.withHour(pos).withMinute(isHours ? 0 : 30));
+                String sql = "UPDATE schedule_group SET time_to_start = ? WHERE id =?";
+                jdbcTemplate.update(sql, time, groupID);
+                return time;
+            }
+        }
+        return null;
     }
 
     private String getUUIDFromMapRow(ResultSet resultSet, int i) throws SQLException {

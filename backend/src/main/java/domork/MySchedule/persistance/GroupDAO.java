@@ -89,6 +89,7 @@ public interface GroupDAO {
 
     /**
      * Provides info about all group's members intervals at given date.
+     * Contains all members, even if they have no intervals at this day.
      * @param groupID of group to be fetched.
      * @param date will be set to the 00:00 of given day,
      *             such that the whole day could be fetched.
@@ -100,6 +101,21 @@ public interface GroupDAO {
      *    name: representative name of user in the group.
      */
     List <TimeIntervalByUser> getGroupInfoForSpecificDate (Long groupID, LocalDate date);
+
+    /**
+     * Same as getGroupInfoForSpecificDate but returns non-empty intervals.
+     * @param groupID of group to be fetched.
+     * @param date will be set to the 00:00 of given day,
+     *             such that the whole day could be fetched.
+     * @return the list of
+     *    group_user_UUID: unique global user ID in the group.
+     *    time_start: user's start of time interval.
+     *    time_end: user's start of time interval.
+     *    color: in which color (HEX) should be the graph printed.
+     *    name: representative name of user in the group.
+     */
+    List <TimeIntervalByUser>
+    getGroupInfoForSpecificDateWithFullIntervalsOnly(Long groupID, LocalDate date);
 
     /**
      * Adds a new Interval by a user.
@@ -144,4 +160,14 @@ public interface GroupDAO {
      * @return unique UUID of group's member.
      */
     String getUUIDOfCurrentUserByGroupId(Long groupID);
+
+    /**
+     * Computes the time, that would work for most of the people
+     * for this/next 6 days.
+     * If no one has interval for the day, then it will calculate the next day.
+     * @param groupID of group, which time is needed.
+     * @return the time of next meeting.
+     * If the time is epoch => no interval for 7 days is given.
+     */
+    Timestamp calculateNextMeetingByGroupId(Long groupID);
 }

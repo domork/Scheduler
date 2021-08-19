@@ -35,8 +35,13 @@ export class MyGroupsComponent implements OnInit {
 
   parseTime(group: Group): string {
     if (group.time_to_start) {
-      let t = group.time_to_start.toLocaleString();
-      return t.substring(10, 15) + ' | ' + t.substring(0, 3);
+      let ret ='';
+      let t = new Date(group.time_to_start);
+
+      ret+=t.getHours()+":"+t.getMinutes();
+      ret+=' on '+t.getDate() + '.';
+      ret+=t.getMonth();
+      return ret;
     }
     return '';
   }

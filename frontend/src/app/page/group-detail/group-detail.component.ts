@@ -51,16 +51,30 @@ export class GroupDetailComponent implements OnInit {
 
   setInMap(hour: number, temp: any[]): void {
     let hourValueInMap = this.map.get(hour);
+    let tempArr:any[] =[];
     if (hourValueInMap) {
-      this.map.get(hour).push([temp[0], temp[1]])
-    } else {
+      hourValueInMap.forEach((data: any) => {
+
+        if (data[1] !== temp[1]) {
+          tempArr.push(data);
+        }
+
+      })
+      this.map.delete(hour);
       this.map.set(hour, [[temp[0], temp[1]]]);
-    }
+      tempArr.forEach((data:any)=>{
+        this.map.get(hour).push(data);
+      })
+
+    } else this.map.set(hour, [temp]);
   }
 
   addIntervalsToMap(): void {
     //loop through arr
-    for (let i = 0; i < this.arr.length; i++) {
+    for (let i = 0; i < this.arr.length; i++
+    ) {
+      if (!this.arr[i].time_end)
+        continue;
       let hourEnd = new Date(this.arr[i].time_end).getHours();
       let hourStart = new Date(this.arr[i].time_start).getHours();
       let hoursDifference = hourEnd - hourStart;
@@ -79,56 +93,11 @@ export class GroupDetailComponent implements OnInit {
       * 3 cut both
       * */
 
-      if (hoursDifference == 0) {
-
-        if (!minuteStartInFirstQuarter)
-          //15:20-15:45 => 15:30-16:00
-          this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
-        else {
-          //15:14-15:45 => 15:00-15:30
-          this.setInMap(hourStart * 100, [!minuteEndInLastQuarter ? 3 : 1, this.arr[i].color])
-          if (minuteEndInLastQuarter)
-            this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
-        }
-      } else if (hoursDifference == 1 && minuteDifference < 15) {
-        if (minuteEndInFirstQuarter) {
-          this.setInMap(hourStart * 100, [1, this.arr[i].color])
-          this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
-        } else
-          this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
-      } else if (hoursDifference >= 1) {
-
-        //start
-        if (minuteStartInFirstQuarter) {
-          this.setInMap(hourStart * 100, [1, this.arr[i].color])
-
-          if (hoursDifference != 1)
-            this.setInMap(hourStart * 100 + 1, [0, this.arr[i].color])
-
-          if (!minuteEndInFirstQuarter) {
-            this.setInMap(hourStart * 100 + 1, [0, this.arr[i].color])
-            this.setInMap(hourEnd * 100, [2, this.arr[i].color])
-
-          } else if (hoursDifference == 1)
-            this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
-        } else if (!minuteStartInLastQuarter && !minuteEndInFirstQuarter) {
-          this.setInMap(hourStart * 100 + 1, [1, this.arr[i].color])
-          if (minuteEndInLastQuarter) {
-            this.setInMap(hourEnd * 100, [0, this.arr[i].color])
-            this.setInMap(hourEnd * 100 + 1, [2, this.arr[i].color])
-          } else
-            this.setInMap(hourEnd * 100, [2, this.arr[i].color])
-
-        } else if (hoursDifference == 1 && !minuteStartInLastQuarter && minuteEndInFirstQuarter)
-          this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
-        //end
-        else
-          this.setInMap(hourStart * 100 + 1, [1, this.arr[i].color])
-
-      }
       if (hoursDifference > 1) {
+
+
         this.setInMap((hourEnd - 1) * 100, [0, this.arr[i].color]);
-        this.setInMap((hourEnd - 1) * 100 + 1, [minuteEndInFirstQuarter ? 2 : 0, this.arr[i].color]);
+        this.setInMap((hourEnd - 1) * 100 + 1, [0, this.arr[i].color]);
         for (let k = 2; k < hoursDifference; k++) {
           let hour = hourEnd - k;
           this.setInMap(hour * 100, [0, this.arr[i].color]);
@@ -136,20 +105,53 @@ export class GroupDetailComponent implements OnInit {
         }
 
       }
+      if (hoursDifference === 0) {
+
+        if (!minuteStartInFirstQuarter) {
+          //15:20-15:45 => 15:30-16:00
+          this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
+
+        } else {
+          //15:14-15:45 => 15:00-15:30
+          this.setInMap(hourStart * 100, [!minuteEndInLastQuarter ? 3 : 1, this.arr[i].color])
+
+          if (minuteEndInLastQuarter)
+            this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
+        }
+      } else if (hoursDifference === 1 && minuteEndInFirstQuarter) {
+        if (!minuteStartInFirstQuarter) {
+          //15:20-15:45 => 15:30-16:00
+          this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
+
+        } else {
+          //15:14-15:45 => 15:00-15:30
+          this.setInMap(hourStart * 100, [1, this.arr[i].color])
+          this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
+        }
+      } else {
+        if (minuteStartInFirstQuarter) {
+          this.setInMap(hourStart * 100, [1, this.arr[i].color])
+        }
+        this.setInMap(hourStart * 100 + 1, [minuteStartInFirstQuarter ? 0 : 1, this.arr[i].color])
+
+        if (minuteEndInFirstQuarter)
+          this.setInMap((hourEnd-1)*100+1, [2, this.arr[i].color]);
+        else if (!minuteEndInLastQuarter) {
+          this.setInMap(hourEnd * 100, [2, this.arr[i].color])
+        } else {
+          this.setInMap(hourEnd * 100, [0, this.arr[i].color])
+          this.setInMap(hourEnd * 100 + 1, [2, this.arr[i].color])
+        }
+      }
+
 
       if (!this.usersInGroup.has(this.arr[i].color)) {
         this.usersInGroup.set(this.arr[i].color, this.arr[i].name);
       }
     }
 
-    // for (let [key, value] of this.map) {
-    //   console.log(key + " = " + value);
-    // }
-
-    this
-      .user_names = [...this.usersInGroup.values()];
-    this
-      .user_colors = [...this.usersInGroup.keys()];
+    this.user_names = [...this.usersInGroup.values()];
+    this.user_colors = [...this.usersInGroup.keys()];
   }
 
 
@@ -230,7 +232,7 @@ export class GroupDetailComponent implements OnInit {
     console.log(this.addForm);
     this.groupService.addNewInterval(this.id, this.addForm).subscribe(
       data => {
-        this.arr.push(data);
+        this.resetData();
         this.getGroupParticipantsForCurrentDay();
         this.addForm.time_end = undefined;
         this.addForm.time_start = undefined;

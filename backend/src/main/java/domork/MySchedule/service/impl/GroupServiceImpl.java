@@ -107,7 +107,7 @@ public class GroupServiceImpl implements GroupService {
         validator.idCheck(groupID);
         Long userID = this.getUserPrinciple().getId();
         List<Group> groups = this.getGroupsByID(userID);
-
+        calculateNextMeetingByGroupId(groupID);
 
         for (Group group : groups) {
             if (group.getID().equals(groupID))
@@ -173,7 +173,7 @@ public class GroupServiceImpl implements GroupService {
                 companyDAO.addNewInterval(timeIntervalByUser);
             }
         }
-
+        this.calculateNextMeetingByGroupId(groupID);
         return timeIntervalByUser;
     }
 
@@ -191,6 +191,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public String getUUIDOfCurrentUserByGroupId(Long groupID) {
         return companyDAO.getUUIDOfCurrentUserByGroupId(groupID);
+    }
+
+    @Override
+    public Timestamp calculateNextMeetingByGroupId(Long groupID) {
+        return companyDAO.calculateNextMeetingByGroupId(groupID);
     }
 
     private UserPrinciple getUserPrinciple() {

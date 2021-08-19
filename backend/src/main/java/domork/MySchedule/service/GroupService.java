@@ -166,4 +166,14 @@ public interface GroupService {
      * @return unique UUID of group's member.
      */
     String getUUIDOfCurrentUserByGroupId(Long groupID);
+
+    /**
+     * Computes the time, that would work for most of the people
+     * for this/next 6 days.
+     * If no one has interval for the day, then it will calculate the next day.
+     * @param groupID of group, which time is needed.
+     * @return the time of next meeting.
+     * If the time is epoch => no interval for 7 days is given.
+     */
+    Timestamp calculateNextMeetingByGroupId(Long groupID);
 }
