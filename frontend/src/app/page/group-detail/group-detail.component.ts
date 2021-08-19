@@ -20,8 +20,8 @@ export class GroupDetailComponent implements OnInit {
   user_colors: string[] = [];
   map = new Map();
   addForm: TimeIntervalByUser = new TimeIntervalByUser('', undefined, undefined, '', '');
-  parsedTime_start: string|undefined='';
-  parsedTime_end: string|undefined='';
+  parsedTime_start: string | undefined = '';
+  parsedTime_end: string | undefined = '';
   form: any = {};
 
   constructor(private groupService: GroupService, private route: ActivatedRoute) {
@@ -37,7 +37,7 @@ export class GroupDetailComponent implements OnInit {
     (this.currentDate, this.id).subscribe(data => {
       console.log(data);
       this.arr = data;
-      let currentUser = data[data.length-1];
+      let currentUser = data[data.length - 1];
       if (currentUser) {
         this.addForm.group_user_UUID = currentUser.group_user_UUID;
         this.addForm.color = currentUser.color;
@@ -63,64 +63,119 @@ export class GroupDetailComponent implements OnInit {
     for (let i = 0; i < this.arr.length; i++) {
       let hourEnd = new Date(this.arr[i].time_end).getHours();
       let hourStart = new Date(this.arr[i].time_start).getHours();
-      let hours = hourEnd - hourStart;
+      let hoursDifference = hourEnd - hourStart;
       let minuteEnd = new Date(this.arr[i].time_end).getMinutes();
       let minuteStart = new Date(this.arr[i].time_start).getMinutes();
-      if (hours > 0) {
-        this.setInMap(hourEnd, [minuteEnd / 60, this.arr[i].color])
-        this.setInMap(hourStart, [(minuteStart / 60) - 1, this.arr[i].color])
-      } else if (hours == 0) {
-        this.setInMap(hourStart, [[(minuteStart / 60) - 1, (minuteEnd / 60) - 1], this.arr[i].color])
-      }
-      if (hours > 1) {
-        for (let k = 1; k < hours; k++) {
-          let hour = hourEnd - k;
-          this.setInMap(hour, [1, this.arr[i].color]);
+      let minuteDifference = minuteEnd - minuteStart;
+
+      let minuteStartInFirstQuarter = minuteStart <= 15;
+      let minuteEndInFirstQuarter = minuteEnd <= 15;
+      let minuteStartInLastQuarter = minuteStart > 45;
+      let minuteEndInLastQuarter = minuteEnd > 45;
+      /*
+      * 0 full
+      * 1 cut top
+      * 2 cut bottom
+      * 3 cut both
+      * */
+
+      if (hoursDifference == 0) {
+
+        if (!minuteStartInFirstQuarter)
+          //15:20-15:45 => 15:30-16:00
+          this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
+        else {
+          //15:14-15:45 => 15:00-15:30
+          this.setInMap(hourStart * 100, [!minuteEndInLastQuarter ? 3 : 1, this.arr[i].color])
+          if (minuteEndInLastQuarter)
+            this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
         }
+      } else if (hoursDifference == 1 && minuteDifference < 15) {
+        if (minuteEndInFirstQuarter) {
+          this.setInMap(hourStart * 100, [1, this.arr[i].color])
+          this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
+        } else
+          this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
+      } else if (hoursDifference >= 1) {
+
+        //start
+        if (minuteStartInFirstQuarter) {
+          this.setInMap(hourStart * 100, [1, this.arr[i].color])
+
+          if (hoursDifference != 1)
+            this.setInMap(hourStart * 100 + 1, [0, this.arr[i].color])
+
+          if (!minuteEndInFirstQuarter) {
+            this.setInMap(hourStart * 100 + 1, [0, this.arr[i].color])
+            this.setInMap(hourEnd * 100, [2, this.arr[i].color])
+
+          } else if (hoursDifference == 1)
+            this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
+        } else if (!minuteStartInLastQuarter && !minuteEndInFirstQuarter) {
+          this.setInMap(hourStart * 100 + 1, [1, this.arr[i].color])
+          if (minuteEndInLastQuarter) {
+            this.setInMap(hourEnd * 100, [0, this.arr[i].color])
+            this.setInMap(hourEnd * 100 + 1, [2, this.arr[i].color])
+          } else
+            this.setInMap(hourEnd * 100, [2, this.arr[i].color])
+
+        } else if (hoursDifference == 1 && !minuteStartInLastQuarter && minuteEndInFirstQuarter)
+          this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
+        //end
+        else
+          this.setInMap(hourStart * 100 + 1, [1, this.arr[i].color])
+
+      }
+      if (hoursDifference > 1) {
+        this.setInMap((hourEnd - 1) * 100, [0, this.arr[i].color]);
+        this.setInMap((hourEnd - 1) * 100 + 1, [minuteEndInFirstQuarter ? 2 : 0, this.arr[i].color]);
+        for (let k = 2; k < hoursDifference; k++) {
+          let hour = hourEnd - k;
+          this.setInMap(hour * 100, [0, this.arr[i].color]);
+          this.setInMap(hour * 100 + 1, [0, this.arr[i].color]);
+        }
+
       }
 
       if (!this.usersInGroup.has(this.arr[i].color)) {
         this.usersInGroup.set(this.arr[i].color, this.arr[i].name);
       }
     }
+
     // for (let [key, value] of this.map) {
     //   console.log(key + " = " + value);
     // }
 
-    this.user_names = [...this.usersInGroup.values()];
-    this.user_colors = [...this.usersInGroup.keys()];
+    this
+      .user_names = [...this.usersInGroup.values()];
+    this
+      .user_colors = [...this.usersInGroup.keys()];
   }
 
 
-  hourIsActive(hour: number, color: string): any[] {
+  hourIsActive(hour: number, color: string): any {
     let hourInMap = this.map.get(hour);
+
     if (hourInMap) {
       for (let i = 0; i < hourInMap.length; i++) {
         if (hourInMap[i][1] === color) {
-          // console.log(hour, hourInMap[i]);
-          let text, startPercentage, endPercentage;
-          if (hourInMap[i][0] == 1) {
-            text = `background-color: ${color}`;
-          } else if (Array.isArray(hourInMap[i][0])) {
-            startPercentage = (hourInMap[i][0][0] + 1) * 100;
-            endPercentage = (hourInMap[i][0][1] + 1) * 100;
-            text = `background: linear-gradient(180deg,
-             #FFFFFF ${startPercentage}%, ${color} ${startPercentage}% ${endPercentage}%, #FFFFFF ${endPercentage}%);`;
-
-          } else {
-            startPercentage = (hourInMap[i][0]) * 100;
-
-            if (startPercentage < 0) {
-              text = `background: linear-gradient(180deg, #FFFFFF ${startPercentage += 100}%, ${color} 0%);`;
-            } else {
-              text = `background: linear-gradient(180deg, ${color} ${startPercentage}%, #FFFFFF ${startPercentage}%);`;
-            }
+          let text = `background-color: ${color}; ${hour % 2 == 0 ? 'opacity: 0.696; ' : ''}`;
+          switch (hourInMap[i][0]) {
+            case 0:
+              return text + 'border-bottom-width: 0;';
+            case 1:
+              return text + ` border-radius: 50% 10% 0 0; border-bottom-width: 0;`;
+            case 2:
+              return text + ` border-radius: 0 0 50% 10%; `;
+            case 3:
+              return text + ` border-radius: 0.5em;`;
           }
-          return [true, text];
+
+
         }
       }
     }
-    return [false, 0];
+    return '';
   }
 
   setNextDay(): void {
@@ -135,8 +190,8 @@ export class GroupDetailComponent implements OnInit {
     this.map = new Map();
     this.addForm.time_end = undefined
     this.addForm.time_start = undefined
-    this.parsedTime_start='';
-    this.parsedTime_end='';
+    this.parsedTime_start = '';
+    this.parsedTime_end = '';
   }
 
   setPrevDay(): void {
@@ -147,9 +202,11 @@ export class GroupDetailComponent implements OnInit {
 
   setTime(hour: number): void {
     let tempDate = new Date(this.currentDate.getTime());
-    tempDate.setHours(hour);
-    tempDate.setMinutes(0);
-    if (this.addForm.time_start) {
+    tempDate.setHours(Math.floor(hour / 100));
+    tempDate.setMinutes(hour % 2 == 0 ? 0 : 30);
+    tempDate.setSeconds(0);
+    if (this.addForm.time_start
+    ) {
       if (this.addForm.time_start.getTime() > tempDate.getTime()) {
         this.addForm.time_start = tempDate;
       } else {
@@ -161,26 +218,26 @@ export class GroupDetailComponent implements OnInit {
     console.log(this.addForm.time_start.toLocaleTimeString())
     console.log(this.addForm.time_end)
     if (this.addForm.time_start)
-    this.parsedTime_start= this.addForm.time_start.toLocaleTimeString().substring(0, 5);
+      this.parsedTime_start = this.addForm.time_start.toLocaleTimeString().substring(0, 5);
 
     if (this.addForm.time_end)
-    this.parsedTime_end= this.addForm.time_end.toLocaleTimeString().substring(0, 5);
+      this.parsedTime_end = this.addForm.time_end.toLocaleTimeString().substring(0, 5);
   }
 
 
   onSubmit(): void {
 
     console.log(this.addForm);
-     this.groupService.addNewInterval(this.id, this.addForm).subscribe(
-       data => {
-         this.arr.push(data);
-         this.getGroupParticipantsForCurrentDay();
-         this.addForm.time_end = undefined;
-         this.addForm.time_start = undefined;
-       }, error => {
-         console.log(error);
-       }
-     );
+    this.groupService.addNewInterval(this.id, this.addForm).subscribe(
+      data => {
+        this.arr.push(data);
+        this.getGroupParticipantsForCurrentDay();
+        this.addForm.time_end = undefined;
+        this.addForm.time_start = undefined;
+      }, error => {
+        console.log(error);
+      }
+    );
 
   }
 

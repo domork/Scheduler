@@ -96,7 +96,7 @@ public class GroupDAOImpl implements GroupDAO {
         LOGGER.trace("getGroupsByID({})", ID);
         final String sql = "SELECT s.id, s.name, s.time_to_start," +
                 " s.description, group_user_uuid FROM " + "group_members"
-                + " h RIGHT JOIN schedule_group s on h.group_id= s.id WHERE user_id= ?";
+                + " h RIGHT JOIN schedule_group s on h.group_id= s.id WHERE user_id= ? ORDER BY name";
         List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> {
             preparedStatement.setLong(1, ID);
         }, this::mapRow);
@@ -172,7 +172,8 @@ public class GroupDAOImpl implements GroupDAO {
                 "SELECT g.group_user_uuid, g.name, g.color FROM" +
                 " group_members g " +
                 "WHERE g.group_id= ?) " +
-                "   second ON second.group_user_uuid=first.group_user_uuid ";
+                "   second ON second.group_user_uuid=first.group_user_uuid " +
+                "ORDER BY name";
 
 
         return jdbcTemplate.query(sql, preparedStatement -> {
@@ -212,7 +213,7 @@ public class GroupDAOImpl implements GroupDAO {
         final String sql = "SELECT * FROM time_of_unique_user_in_group" +
                 " WHERE group_user_uuid =? " +
                 "AND ? >= time_end " +
-                "AND time_end >= ?";
+                "AND time_end >= ? ORDER BY time_end";
 
 
         return jdbcTemplate.query(sql, preparedStatement -> {
