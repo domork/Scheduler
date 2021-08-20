@@ -26,7 +26,7 @@
     <th routerLink="/groups/{{item.id}}">{{item.name}}</th>
     <td> {{parseTime(item)}}
     </td>
-    <td>3 of 5</td>
+    <td>{{item.numOfRdyPeople}} of {{item.numOfAllPeople}} {{item.iPickedTime?'✔️':'✖️'}}</td>
   </tr>
 
 

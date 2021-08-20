@@ -96,9 +96,7 @@ public class GroupDAOImpl implements GroupDAO {
         final String sql = "SELECT s.id, s.name, s.time_to_start," +
                 " s.description, group_user_uuid FROM " + "group_members"
                 + " h RIGHT JOIN schedule_group s on h.group_id= s.id WHERE user_id= ? ORDER BY name";
-        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> {
-            preparedStatement.setLong(1, ID);
-        }, this::mapRow);
+        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> preparedStatement.setLong(1, ID), this::mapRow);
         if (groups.isEmpty())
             throw new NotFoundException("Groups with the ID " + ID + " were not found");
         return groups;
@@ -111,9 +109,7 @@ public class GroupDAOImpl implements GroupDAO {
         final String sql = "SELECT * FROM " + TABLE_NAME
                 + " WHERE name= ?";
 
-        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> {
-            preparedStatement.setString(1, name);
-        }, this::mapRow);
+        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> preparedStatement.setString(1, name), this::mapRow);
         if (groups.isEmpty())
             throw new NotFoundException("Group with the name " + name + " was not found");
         return groups.get(0);
@@ -157,30 +153,26 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public List<TimeIntervalByUser> getGroupInfoForSpecificDate(Long groupID, LocalDate date) {
         LOGGER.trace("getGroupInfoForSpecificDate({}, {})", groupID, date);
-        final String sql = " SELECT second.group_user_uuid, time_start,time_end,second.color,second.name FROM " +
-                "( " +
-                "SELECT g.group_user_uuid, time_start, time_end, g.color, g.name " +
-                "FROM group_members g " +
-                "natural join time_of_unique_user_in_group t  " +
-                "WHERE g.group_id =  ? " +
-                "AND ? >= time_end " +
-                "AND time_end >= ?" +
-                ") " +
-                "   first FULL OUTER JOIN " +
-                "(" +
-                "SELECT g.group_user_uuid, g.name, g.color FROM" +
-                " group_members g " +
-                "WHERE g.group_id= ?) " +
-                "   second ON second.group_user_uuid=first.group_user_uuid " +
-                "ORDER BY name";
+        final String sql =
+                "WITH default_group_users AS (SELECT DISTINCT g.group_user_uuid, g.color, g.name" +
+                        " FROM group_members g" +
+                        " LEFT JOIN time_of_unique_user_in_group t ON g.group_user_uuid=t.group_user_uuid" +
+                        " WHERE g.group_id = ? " +
+                        " ORDER BY g.name)" +
+                        " SELECT d.group_user_uuid, time_start, time_end, color, name" +
+                        " FROM default_group_users d" +
+                        " full outer join (SELECT *" +
+                        "                FROM time_of_unique_user_in_group" +
+                        "        WHERE ? >= time_end" +
+                        " AND time_end >= ?) t on t.group_user_uuid = d.group_user_uuid" +
+                        " WHERE name IS NOT NULL " +
+                        "ORDER BY name";
 
 
         return jdbcTemplate.query(sql, preparedStatement -> {
                     preparedStatement.setLong(1, groupID);
                     preparedStatement.setTimestamp(2, Timestamp.valueOf(date.atStartOfDay().plusDays(1)));
                     preparedStatement.setTimestamp(3, Timestamp.valueOf(date.atStartOfDay()));
-                    preparedStatement.setLong(4, groupID);
-
                 },
                 this::mapRowTimeIntervalByUser);
 
@@ -294,7 +286,7 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public Timestamp calculateNextMeetingByGroupId(Long groupID) {
-        List<TimeIntervalByUser> temp = null;
+        List<TimeIntervalByUser> temp ;
         long[] hours = new long[23];
         long[] minutes = new long[23];
         LocalDateTime localDateTime = null;

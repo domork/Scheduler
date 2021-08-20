@@ -10,7 +10,8 @@ import {TimeIntervalByUser} from "../../utils/dto/time-interval-by-user";
 })
 export class GroupDetailComponent implements OnInit {
 
-  currentDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+  //getTime() + 24 * 60 * 60 * 1000 => next day.
+  currentDate = new Date(new Date().getTime());
 
   // @ts-ignore
   id: number = +this.route.snapshot.paramMap.get('id');
@@ -19,7 +20,7 @@ export class GroupDetailComponent implements OnInit {
   user_names: string[] = [];
   user_colors: string[] = [];
   map = new Map();
-  addForm: TimeIntervalByUser = new TimeIntervalByUser('', undefined, undefined, '', '');
+  addForm: TimeIntervalByUser = new TimeIntervalByUser('', undefined, undefined, undefined, undefined);
   parsedTime_start: string | undefined = '';
   parsedTime_end: string | undefined = '';
   form: any = {};
@@ -37,12 +38,7 @@ export class GroupDetailComponent implements OnInit {
     (this.currentDate, this.id).subscribe(data => {
       console.log(data);
       this.arr = data;
-      let currentUser = data[data.length - 1];
-      if (currentUser) {
-        this.addForm.group_user_UUID = currentUser.group_user_UUID;
-        this.addForm.color = currentUser.color;
-        this.addForm.name = currentUser.name;
-      }
+
       this.addIntervalsToMap();
     }, error => {
       console.log(error);
@@ -71,20 +67,17 @@ export class GroupDetailComponent implements OnInit {
 
   addIntervalsToMap(): void {
     //loop through arr
-    for (let i = 0; i < this.arr.length; i++
-    ) {
-      if (!this.arr[i].time_end)
-        continue;
+
+    for (let i = 0; i < this.arr.length; i++) {
+
       let hourEnd = new Date(this.arr[i].time_end).getHours();
       let hourStart = new Date(this.arr[i].time_start).getHours();
       let hoursDifference = hourEnd - hourStart;
       let minuteEnd = new Date(this.arr[i].time_end).getMinutes();
       let minuteStart = new Date(this.arr[i].time_start).getMinutes();
-      let minuteDifference = minuteEnd - minuteStart;
 
       let minuteStartInFirstQuarter = minuteStart <= 15;
       let minuteEndInFirstQuarter = minuteEnd <= 15;
-      let minuteStartInLastQuarter = minuteStart > 45;
       let minuteEndInLastQuarter = minuteEnd > 45;
       /*
       * 0 full
@@ -146,6 +139,7 @@ export class GroupDetailComponent implements OnInit {
 
 
       if (!this.usersInGroup.has(this.arr[i].color)) {
+
         this.usersInGroup.set(this.arr[i].color, this.arr[i].name);
       }
     }

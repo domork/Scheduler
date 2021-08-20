@@ -4,7 +4,6 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Group} from "../utils/dto/group";
 import {CreateGroupForm} from "../utils/dto/create-group-form";
-import {GroupMember} from "../utils/dto/group-member";
 import {TimeIntervalByUser} from "../utils/dto/time-interval-by-user";
 import {JoinGroupForm} from "../utils/dto/join-group-form";
 
@@ -28,8 +27,8 @@ export class GroupService {
     return this.http.post<Group>(baseUri,group,this.httpOptions);
   }
 
-  getGroupParticipantsForDay(date: Date, groupID: number): Observable<GroupMember[]>{
-    return this.http.get<GroupMember[]>(baseUri+'/'+groupID+'?date='+date.toISOString());
+  getGroupParticipantsForDay(date: Date, groupID: number): Observable<TimeIntervalByUser[]>{
+    return this.http.get<TimeIntervalByUser[]>(baseUri+'/'+groupID+'?date='+date.toISOString());
   }
 
   addNewInterval(groupID: number, timeInterval:TimeIntervalByUser): Observable<TimeIntervalByUser>{

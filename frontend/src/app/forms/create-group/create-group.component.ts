@@ -15,7 +15,7 @@ export class CreateGroupComponent implements OnInit {
   createGroupForm: CreateGroupForm = new CreateGroupForm(
     '', '', '');
   fetchedGroup: Group = new Group(0, '', '',
-    new Date(), '','')
+    new Date(), '','', undefined,undefined,undefined)
 
   constructor(private groupService: GroupService,
               private router: Router) {

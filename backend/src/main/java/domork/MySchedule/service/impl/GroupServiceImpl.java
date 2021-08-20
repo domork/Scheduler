@@ -121,9 +121,9 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public TimeIntervalByUser addNewInterval(TimeIntervalByUser timeIntervalByUser, Long groupID) {
         LOGGER.trace("addNewInterval({})", timeIntervalByUser);
+        timeIntervalByUser.setGroup_user_UUID(this.getUUIDOfCurrentUserByGroupId(groupID));
 
         validator.timeIntervalByUserCheck(timeIntervalByUser);
-        timeIntervalByUser.setGroup_user_UUID(this.getUUIDOfCurrentUserByGroupId(groupID));
         timeIntervalByUser.setTime_start(truncateToMinutes(timeIntervalByUser.getTime_start()));
         timeIntervalByUser.setTime_end(truncateToMinutes(timeIntervalByUser.getTime_end()));
 

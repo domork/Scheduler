@@ -26,6 +26,28 @@ export class MyGroupsComponent implements OnInit {
   getAllGroups(): void {
     this.groupService.getAllGroups().subscribe(groups => {
       this.myGroups = groups;
+      if (groups) {
+        this.myGroups.forEach(group => {
+          this.groupService.getGroupParticipantsForDay(new Date(group.time_to_start), group.id).subscribe(
+            fetchedData =>{
+              console.log(fetchedData);
+              let setOfAllUsers = new Set();
+              let setOfActiveUsers = new Set();
+
+              fetchedData.forEach(i=>{
+                setOfAllUsers.add(i.group_user_UUID);
+                if (i.time_end)
+                  setOfActiveUsers.add(i.group_user_UUID);
+              })
+              let indexOfGroup = this.myGroups.indexOf(group);
+              this.myGroups[indexOfGroup].numOfAllPeople = setOfAllUsers.size;
+              this.myGroups[indexOfGroup].numOfRdyPeople = setOfActiveUsers.size;
+              this.myGroups[indexOfGroup].iPickedTime = setOfActiveUsers.has(group.userUUID);
+
+            }
+          );
+        })
+      }
       console.log(this.myGroups);
     }, err => {
 
@@ -35,18 +57,18 @@ export class MyGroupsComponent implements OnInit {
 
   parseTime(group: Group): string {
     if (group.time_to_start) {
-      let ret ='';
+      let ret = '';
       let t = new Date(group.time_to_start);
-
-      ret+=t.getHours()+":"+t.getMinutes();
-      ret+=' on '+t.getDate() + '.';
-      ret+=t.getMonth();
+      console.log(t, t.getMonth());
+      ret += t.getHours() + ":" + (t.getMinutes()<10?'0'+t.getMinutes():t.getMinutes());
+      ret += ' on ' + t.getDate() + '.';
+      ret += t.getMonth()+1;
       return ret;
     }
     return '';
   }
 
-  onGroupPreferencesClicked(groupID:number):void{
+  onGroupPreferencesClicked(groupID: number): void {
     const dialogRef = this.dialog.open(GroupPreferencesComponent, {
       width: '580px',
       data: groupID

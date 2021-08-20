@@ -116,7 +116,6 @@ public class GroupEndpoint {
     getGroupInfoForSpecificDate(@PathVariable("id") Long id,
                                 @RequestParam(value = "date")
                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
-        Long userID = getUserID();
         LOGGER.info("GET GROUP INFO BY GROUP ID /{}", id);
 
         return new ResponseEntity<>(
@@ -149,7 +148,7 @@ public class GroupEndpoint {
         LOGGER.info("DELETE INTERVAL WITH UUID({}) ON THIS DATE/{}", UUID, date);
         Timestamp a=  Timestamp.valueOf(date);
         groupService.deleteInterval(UUID, a);
-        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     private Long getUserID() {
@@ -162,7 +161,7 @@ public class GroupEndpoint {
     public ResponseEntity<Boolean> leaveGroup(@PathVariable("id") Long id){
         LOGGER.info("LEAVE GROUP WITH ID({}) ", id);
         groupService.leaveGroup(id);
-        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
 }
