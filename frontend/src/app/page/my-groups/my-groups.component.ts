@@ -3,7 +3,8 @@ import {Group} from "../../utils/dto/group";
 import {GroupService} from "../../service/group.service";
 import {TokenStorageService} from "../../auth/token-storage.service";
 import {MatDialog} from '@angular/material/dialog';
-import {GroupPreferencesComponent} from "../../utils/group-preferences/group-preferences.component";
+import {Router} from "@angular/router";
+import {GroupMember} from "../../utils/dto/group-member";
 
 @Component({
   selector: 'app-my-groups',
@@ -11,16 +12,20 @@ import {GroupPreferencesComponent} from "../../utils/group-preferences/group-pre
   styleUrls: ['./my-groups.component.scss']
 })
 export class MyGroupsComponent implements OnInit {
-  myGroups: any[] = [];
+  isLoggedIn = false;
 
+  myGroups: any[] = [];
+  selectedGroupMember: GroupMember | undefined;
+  selectedGroupName: string = '';
   constructor(
     private groupService: GroupService,
     private tokenStorage: TokenStorageService,
-    public dialog: MatDialog) {
+    private router: Router) {
   }
 
   ngOnInit(): void {
     this.getAllGroups();
+    this.isLoggedIn=!!this.tokenStorage.getAuthorities();
   }
 
   getAllGroups(): void {
@@ -29,12 +34,11 @@ export class MyGroupsComponent implements OnInit {
       if (groups) {
         this.myGroups.forEach(group => {
           this.groupService.getGroupParticipantsForDay(new Date(group.time_to_start), group.id).subscribe(
-            fetchedData =>{
-              console.log(fetchedData);
+            fetchedData => {
               let setOfAllUsers = new Set();
               let setOfActiveUsers = new Set();
 
-              fetchedData.forEach(i=>{
+              fetchedData.forEach(i => {
                 setOfAllUsers.add(i.group_user_UUID);
                 if (i.time_end)
                   setOfActiveUsers.add(i.group_user_UUID);
@@ -48,7 +52,6 @@ export class MyGroupsComponent implements OnInit {
           );
         })
       }
-      console.log(this.myGroups);
     }, err => {
 
       console.log(err);
@@ -59,20 +62,43 @@ export class MyGroupsComponent implements OnInit {
     if (group.time_to_start) {
       let ret = '';
       let t = new Date(group.time_to_start);
-      console.log(t, t.getMonth());
-      ret += t.getHours() + ":" + (t.getMinutes()<10?'0'+t.getMinutes():t.getMinutes());
+      ret += t.getHours() + ":" + (t.getMinutes() < 10 ? '0' + t.getMinutes() : t.getMinutes());
       ret += ' on ' + t.getDate() + '.';
-      ret += t.getMonth()+1;
+      ret += t.getMonth() + 1;
       return ret;
     }
     return '';
   }
 
-  onGroupPreferencesClicked(groupID: number): void {
-    const dialogRef = this.dialog.open(GroupPreferencesComponent, {
-      width: '580px',
-      data: groupID
-    });
+  onGroupPreferencesClicked(group: any): void {
+    this.groupService.getMemberInfoByUUID(group.userUUID).subscribe(data => {
+      this.selectedGroupMember = data;
+      this.selectedGroupMember.group_user_UUID=group.userUUID;
+    },error => console.log(error));
+    this.selectedGroupName = group.name;
+  }
 
+  resetSelectedData(): void {
+    this.selectedGroupName = '';
+    this.selectedGroupMember = undefined;
+  }
+
+  leaveGroup(groupID: number): void {
+    this.groupService.leaveGroup(groupID).subscribe(data => {
+      if (data) {
+        this.resetSelectedData();
+        this.getAllGroups();
+
+      }
+    }, error => console.log(error));
+
+  }
+
+  editMemberInfo(data:any):void{
+    console.log(data);
+    this.groupService.updateMemberInfoByUUID(data.group_user_UUID,data.name,data.color).subscribe(data=>{
+    this.resetSelectedData();
+    this.getAllGroups();
+  },error => {})
   }
 }

@@ -132,8 +132,8 @@ public class GroupServiceImpl implements GroupService {
         Union u = new Union();
 
 
-        long addStartTime =  timeIntervalByUser.getTime_start().getTime();
-        long addEndTime =  timeIntervalByUser.getTime_end().getTime();
+        long addStartTime = timeIntervalByUser.getTime_start().getTime();
+        long addEndTime = timeIntervalByUser.getTime_end().getTime();
         Interval addInterval = new Interval(addStartTime, addEndTime);
 
         Interval interval;
@@ -143,23 +143,23 @@ public class GroupServiceImpl implements GroupService {
         if (list.isEmpty()) {
             return companyDAO.addNewInterval(timeIntervalByUser);
         } else if (list.size() == 1) {
-            startTime =  list.get(0).getTime_start().getTime();
-            endTime =  list.get(0).getTime_end().getTime();
+            startTime = list.get(0).getTime_start().getTime();
+            endTime = list.get(0).getTime_end().getTime();
             interval = new Interval(startTime, endTime);
 
             Set result = addInterval.union(interval);
             if (!result.isContinuous())
                 return companyDAO.addNewInterval(timeIntervalByUser);
             else {
-                deleteInterval(list.get(0).getGroup_user_UUID(),list.get(0).getTime_end());
-                timeIntervalByUser.setTime_start(parseFromEpochToTimestamp(((Interval)result).getLower()));
-                timeIntervalByUser.setTime_end(parseFromEpochToTimestamp(((Interval)result).getUpper()));
+                deleteInterval(list.get(0).getGroup_user_UUID(), list.get(0).getTime_end());
+                timeIntervalByUser.setTime_start(parseFromEpochToTimestamp(((Interval) result).getLower()));
+                timeIntervalByUser.setTime_end(parseFromEpochToTimestamp(((Interval) result).getUpper()));
                 return companyDAO.addNewInterval(timeIntervalByUser);
             }
         } else {
             u.union(addInterval);
             for (TimeIntervalByUser t : list) {
-                startTime =  t.getTime_start().getTime();
+                startTime = t.getTime_start().getTime();
                 endTime = t.getTime_end().getTime();
                 interval = new Interval(startTime, endTime);
                 u.union(interval);
@@ -167,7 +167,7 @@ public class GroupServiceImpl implements GroupService {
             deleteInterval(timeIntervalByUser.getGroup_user_UUID(),
                     Timestamp.valueOf(timeIntervalByUser.getTime_end().toLocalDateTime().withHour(0).withMinute(0)));
 
-            for (Interval i :u.getList()){
+            for (Interval i : u.getList()) {
                 timeIntervalByUser.setTime_start(parseFromEpochToTimestamp(i.getLower()));
                 timeIntervalByUser.setTime_end(parseFromEpochToTimestamp(i.getUpper()));
                 companyDAO.addNewInterval(timeIntervalByUser);
@@ -196,6 +196,17 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Timestamp calculateNextMeetingByGroupId(Long groupID) {
         return companyDAO.calculateNextMeetingByGroupId(groupID);
+    }
+
+    @Override
+    public GroupMember getGroupMemberInfoByUUID(String UUID) {
+        return companyDAO.getGroupMemberInfoByUUID(UUID);
+    }
+
+    @Override
+    public void updateGroupMemberInfoByUUID(String UUID, String color, String name) {
+        validator.colorCheck(color);
+        companyDAO.updateGroupMemberInfoByUUID(UUID, color, name);
     }
 
     private UserPrinciple getUserPrinciple() {

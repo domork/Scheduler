@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {environment} from '../../environments/environment';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
@@ -6,6 +6,7 @@ import {Group} from "../utils/dto/group";
 import {CreateGroupForm} from "../utils/dto/create-group-form";
 import {TimeIntervalByUser} from "../utils/dto/time-interval-by-user";
 import {JoinGroupForm} from "../utils/dto/join-group-form";
+import {GroupMember} from "../utils/dto/group-member";
 
 const baseUri = environment.backendUrl + '/groups';
 
@@ -19,27 +20,42 @@ export class GroupService {
   constructor(private http: HttpClient) {
   }
 
-  getAllGroups(): Observable<Group[]>{
+  getAllGroups(): Observable<Group[]> {
     return this.http.get<Group[]>(baseUri);
   }
 
-  addGroup(group:CreateGroupForm): Observable<Group>{
-    return this.http.post<Group>(baseUri,group,this.httpOptions);
+  getMemberInfoByUUID(UUID: string): Observable<GroupMember> {
+    console.log(baseUri + '/' + UUID + '/memberInfo')
+    return this.http.get<GroupMember>(baseUri + '/' + UUID + '/memberInfo');
   }
 
-  getGroupParticipantsForDay(date: Date, groupID: number): Observable<TimeIntervalByUser[]>{
-    return this.http.get<TimeIntervalByUser[]>(baseUri+'/'+groupID+'?date='+date.toISOString());
+  updateMemberInfoByUUID(UUID: string, name: string, color: string): Observable<any> {
+    //These params don't work. Need to check later.
+    /*let params = new HttpParams().set('color',color).set('name', name);
+    const opt = {headers: new HttpHeaders({'Content-Type': 'application/json'}), params};
+     */
+    return this.http.post<GroupMember>
+    (baseUri + '/' + UUID + '/memberInfo?color=' + encodeURIComponent(color) + '&name=' + encodeURIComponent(name), this.httpOptions);
+
   }
 
-  addNewInterval(groupID: number, timeInterval:TimeIntervalByUser): Observable<TimeIntervalByUser>{
-    return this.http.post<TimeIntervalByUser>(baseUri+'/'+groupID, timeInterval,this.httpOptions);
+  addGroup(group: CreateGroupForm): Observable<Group> {
+    return this.http.post<Group>(baseUri, group, this.httpOptions);
   }
 
-  joinGroup(credentials: JoinGroupForm):Observable<JoinGroupForm>{
-    return this.http.post<JoinGroupForm>(baseUri+'/join', credentials,this.httpOptions);
+  getGroupParticipantsForDay(date: Date, groupID: number): Observable<TimeIntervalByUser[]> {
+    return this.http.get<TimeIntervalByUser[]>(baseUri + '/' + groupID + '?date=' + date.toISOString());
   }
 
-  leaveGroup(id:number):Observable<Boolean>{
-    return this.http.post<Boolean>(baseUri+'/'+id+'/leave',this.httpOptions);
+  addNewInterval(groupID: number, timeInterval: TimeIntervalByUser): Observable<TimeIntervalByUser> {
+    return this.http.post<TimeIntervalByUser>(baseUri + '/' + groupID, timeInterval, this.httpOptions);
+  }
+
+  joinGroup(credentials: JoinGroupForm): Observable<JoinGroupForm> {
+    return this.http.post<JoinGroupForm>(baseUri + '/join', credentials, this.httpOptions);
+  }
+
+  leaveGroup(id: number): Observable<Boolean> {
+    return this.http.post<Boolean>(baseUri + '/' + id + '/leave', this.httpOptions);
   }
 }

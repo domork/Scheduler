@@ -141,9 +141,9 @@ public class GroupEndpoint {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping(value = "/")
-    public ResponseEntity<Boolean> deleteInterval(@RequestParam(required = false, value = "date")
+    public ResponseEntity<Boolean> deleteInterval(@RequestParam(value = "date")
                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date,
-                                                  @RequestParam(required = false, value = "UUID") String UUID) {
+                                                  @RequestParam(value = "UUID") String UUID) {
 
         LOGGER.info("DELETE INTERVAL WITH UUID({}) ON THIS DATE/{}", UUID, date);
         Timestamp a=  Timestamp.valueOf(date);
@@ -164,4 +164,21 @@ public class GroupEndpoint {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @GetMapping(value = "/{id}/memberInfo")
+    public ResponseEntity<GroupMemberDto> getGroupMemberInfoByUUID(@PathVariable("id") String UUID){
+        LOGGER.info("GET GROUP MEMBER INFO BY GROUP ID ({}) ", UUID);
+
+        return new ResponseEntity<>(groupMapper.groupMemberToDto(groupService.getGroupMemberInfoByUUID(UUID)), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping(value = "/{id}/memberInfo")
+    public ResponseEntity<Boolean> updateGroupMemberInfoByUUID(@PathVariable("id") String UUID,
+                                                                      @RequestParam(value = "color") String color,
+                                                                      @RequestParam(value = "name") String name){
+        LOGGER.info("UPDATE GROUP MEMBER INFO BY GROUP ID ({}), WITH COLOR {} AND NAME {}", UUID, color, name);
+        groupService.updateGroupMemberInfoByUUID(UUID,color,name);
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
 }

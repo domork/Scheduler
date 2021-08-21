@@ -1,7 +1,6 @@
-import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
-import {GroupService} from "../../service/group.service";
-import {MAT_DIALOG_DATA} from "@angular/material/dialog";
-import {Router} from "@angular/router";
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+
+import {GroupMember} from "../dto/group-member";
 
 @Component({
   selector: 'app-group-preferences',
@@ -10,23 +9,45 @@ import {Router} from "@angular/router";
 })
 export class GroupPreferencesComponent implements OnInit {
 
-  @Input() groupID: number=-1;
-  @Output() quitGroup: EventEmitter<any> = new EventEmitter<any>();
-  constructor(private service: GroupService,
-              @Inject(MAT_DIALOG_DATA) public data: number,
-              private router: Router) { }
+  @Input() groupMember: GroupMember = new GroupMember(-1,-1,'','','');
+  @Input() groupName: string = '';
+
+  @Output() close: EventEmitter<any> = new EventEmitter<any>();
+  @Output() quitGroup: EventEmitter<number> = new EventEmitter<number>();
+  @Output() editInfo: EventEmitter<any>= new EventEmitter<any>();
+  editButtonClicked: boolean = false;
+  form: any = {};
+
+  constructor() {
+  }
 
   ngOnInit(): void {
+    this.form.username=this.groupMember.name;
+    this.form.color= this.groupMember.color;
+    this.form.group_user_UUID=this.groupMember.group_user_UUID;
   }
 
-  onLeaveButtonClicked():void{
-    this.service.leaveGroup(this.data).subscribe(data=>{
-
-      if (data)
-        this.router.navigate(['/']);
-    },error => console.log(error));
-
+  onLeaveButtonClicked(): void {
+    this.quitGroup.emit(this.groupMember?.group_id);
   }
 
+  closeModal(): void {
+    this.close.emit();
+  }
 
+  onEditButtonClicked(): void {
+    this.editButtonClicked = true;
+
+  }
+  onDiscardButtonClicked(): void {
+    this.closeModal();
+  }
+
+  changeColor(c:any):void{
+    this.form.color=c.color.hex;
+  }
+  onSubmit(): void {
+    this.editInfo.emit({name:this.form.username,color:this.form.color, group_user_UUID:this.form.group_user_UUID});
+    this.closeModal();
+  }
 }

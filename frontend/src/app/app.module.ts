@@ -19,6 +19,8 @@ import { GroupPreferencesComponent } from './utils/group-preferences/group-prefe
 import { JoinTemplateComponent } from './forms/join-template/join-template.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatDialogModule} from '@angular/material/dialog';
+import { ColorSketchModule } from 'ngx-color/sketch';
+import {ColorChromeModule} from "ngx-color/chrome";
 
 
 @NgModule({
@@ -44,7 +46,9 @@ import {MatDialogModule} from '@angular/material/dialog';
     HttpClientModule,
     FormsModule,
     BrowserAnimationsModule,
-    MatDialogModule
+    ColorSketchModule,
+    MatDialogModule,
+    ColorChromeModule
   ],
   providers: [httpInterceptorProviders,NotificationHubComponent],
   bootstrap: [AppComponent]

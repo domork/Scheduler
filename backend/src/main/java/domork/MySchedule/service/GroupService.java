@@ -176,4 +176,20 @@ public interface GroupService {
      * If the time is epoch => no interval for 7 days is given.
      */
     Timestamp calculateNextMeetingByGroupId(Long groupID);
+
+    /**
+     * Provides the member info of current user,
+     * such as color or name by the given group ID.
+     * @param UUID is a combo of the group and user
+     * @return member info
+     */
+    GroupMember getGroupMemberInfoByUUID (String UUID);
+
+    /**
+     * Update the color and name of user by given UUID.
+     * @param UUID is the unique group-user relationship.
+     * @param color is the new value for change. Must be in hex format.
+     * @param name is the new value for change.
+     */
+    void updateGroupMemberInfoByUUID (String UUID, String color, String name);
 }

@@ -1,4 +1,43 @@
 <div class="container">
-  <button class="button is-warning">Edit</button>
-  <button class="button is-danger" (click)="onLeaveButtonClicked()">Leave the group</button>
+  <div class="modal is-active">
+    <div class="modal-background " (click)="closeModal()">
+    </div>
+    <div class="modal-content">
+      {{groupName}} Options:
+      <div class="container" [ngClass]="editButtonClicked?'edit-view':''">
+        <ng-container *ngIf="editButtonClicked">
+
+          <form name="form" (ngSubmit)="onSubmit()" class="form">
+            <div class="wrapper">
+
+              <div class="field">
+              <p class="control">
+              <label>Nickname:</label>
+              <input type="text" class="input" name="username"
+                     [(ngModel)]="form.username" #username="ngModel"
+                     required/>
+              </p>
+              </div>
+              <div class="changeColor">
+                Color:
+                <color-chrome [color]="groupMember.color"
+                              (onChangeComplete)="changeColor($event)"></color-chrome>
+              </div>
+            </div>
+            <button class="button is-success " (click)="onSubmit()" >Save changes
+            </button>
+          </form>
+        </ng-container>
+
+        <button class="button is-warning" (click)="onEditButtonClicked()" *ngIf="!editButtonClicked">Edit</button>
+        <button class="button is-danger" (click)="onLeaveButtonClicked()" *ngIf="!editButtonClicked">Leave the group
+        </button>
+
+
+      </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
+  </div>
+
 </div>
+

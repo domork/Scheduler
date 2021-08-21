@@ -3,5 +3,10 @@
   justify-content: center;
 }
 .button{
-  margin: 5em;
+  margin: 1.5em;
+}
+@media (min-width: 1023px) {
+  .button{
+    margin: 5em;
+  }
 }

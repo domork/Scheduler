@@ -286,7 +286,7 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public Timestamp calculateNextMeetingByGroupId(Long groupID) {
-        List<TimeIntervalByUser> temp ;
+        List<TimeIntervalByUser> temp;
         long[] hours = new long[23];
         long[] minutes = new long[23];
         LocalDateTime localDateTime = null;
@@ -345,6 +345,24 @@ public class GroupDAOImpl implements GroupDAO {
         return null;
     }
 
+    @Override
+    public GroupMember getGroupMemberInfoByUUID(String UUID) {
+        LOGGER.trace("getGroupMemberInfoByGroupID with ID {}", UUID);
+        String sql = "SELECT * FROM group_members WHERE group_user_uuid=?";
+        List<GroupMember> groupMember = jdbcTemplate.query
+                (sql, preparedStatement -> preparedStatement.setString(1, UUID),this::groupMemberMapRow);
+        if (groupMember.isEmpty())
+            throw new NotFoundException("You are either not part of this group or this group doesn't exist.");
+        return groupMember.get(0);
+    }
+
+    @Override
+    public void updateGroupMemberInfoByUUID(String UUID, String color, String name) {
+        LOGGER.trace("updateGroupMemberInfoByUUID with ID {}. New color is: {}, and new name is: {}", UUID,color,name);
+        String sql = "UPDATE group_members SET color = ?, name=? WHERE group_user_uuid =?";
+        jdbcTemplate.update(sql, color, name, UUID);
+    }
+
     private String getUUIDFromMapRow(ResultSet resultSet, int i) throws SQLException {
         return resultSet.getString("group_user_uuid");
     }
@@ -389,5 +407,15 @@ public class GroupDAOImpl implements GroupDAO {
     private UserPrinciple getUserPrinciple() {
         return ((UserPrinciple) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal());
+    }
+
+    private GroupMember groupMemberMapRow(ResultSet resultSet, int i) throws SQLException{
+        final GroupMember groupMember = new GroupMember();
+        groupMember.setGroup_id(resultSet.getLong("group_id"));
+        groupMember.setUser_id(resultSet.getLong("user_id"));
+        groupMember.setColor(resultSet.getString("color"));
+        groupMember.setName(resultSet.getString("name"));
+        groupMember.setGroup_user_UUID(resultSet.getString("group_user_uuid"));
+        return groupMember;
     }
 }

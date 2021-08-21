@@ -3,38 +3,47 @@
   <title>My groups</title>
 </head>
 
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      <strong>You are not authorized</strong>
+      <br>
+      Please <a routerLink="/login"> log in </a> first
+    </p>
+  </div>
+</footer>
 
 <div class="container">
+  <app-group-preferences *ngIf="selectedGroupMember"
+                         [groupMember]="selectedGroupMember" [groupName]="selectedGroupName"
+                         (quitGroup)="leaveGroup($event)"
+                         (editInfo)="editMemberInfo($event)"
+                         (close)="resetSelectedData()"></app-group-preferences>
 
-<table class="table is-hoverable ">
-  <thead>
-  <tr>
-    <th></th>
-    <th>name</th>
-    <th>time</th>
-    <th># of people</th>
-  </tr>
-  </thead>
+  <table class="table is-hoverable ">
+    <thead>
+    <tr>
+      <th></th>
+      <th>name</th>
+      <th>time</th>
+      <th># of people</th>
+    </tr>
+    </thead>
 
-  <tbody>
-  <tr *ngFor="let item of myGroups" >
-
-    <th>  <span class="icon has-text-info" (click)="onGroupPreferencesClicked(item.id)">
+    <tbody>
+    <tr *ngFor="let item of myGroups">
+      <th>  <span class="icon has-text-info" (click)="onGroupPreferencesClicked(item)">
     <i class="fas fa-user-cog"></i>
   </span>
-    </th>
-    <th routerLink="/groups/{{item.id}}">{{item.name}}</th>
-    <td> {{parseTime(item)}}
-    </td>
-    <td>{{item.numOfRdyPeople}} of {{item.numOfAllPeople}} {{item.iPickedTime?'✔️':'✖️'}}</td>
-  </tr>
+      </th>
+      <th routerLink="/groups/{{item.id}}">{{item.name}}</th>
+      <td> {{parseTime(item)}}
+      </td>
+      <td>{{item.numOfRdyPeople}} of {{item.numOfAllPeople}} {{item.iPickedTime ? '✔️' : '✖️'}}</td>
+    </tr>
 
 
-
-
-
-
-
-  </tbody>
-</table>
+    </tbody>
+  </table>
 </div>
+
