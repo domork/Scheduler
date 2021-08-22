@@ -17,6 +17,7 @@ export class MyGroupsComponent implements OnInit {
   myGroups: any[] = [];
   selectedGroupMember: GroupMember | undefined;
   selectedGroupName: string = '';
+
   constructor(
     private groupService: GroupService,
     private tokenStorage: TokenStorageService,
@@ -25,7 +26,12 @@ export class MyGroupsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllGroups();
-    this.isLoggedIn=!!this.tokenStorage.getAuthorities();
+    this.checkIfIsLoggedIn();
+  }
+
+  checkIfIsLoggedIn(): void {
+    this.isLoggedIn = !!this.tokenStorage.getToken();
+
   }
 
   getAllGroups(): void {
@@ -73,8 +79,8 @@ export class MyGroupsComponent implements OnInit {
   onGroupPreferencesClicked(group: any): void {
     this.groupService.getMemberInfoByUUID(group.userUUID).subscribe(data => {
       this.selectedGroupMember = data;
-      this.selectedGroupMember.group_user_UUID=group.userUUID;
-    },error => console.log(error));
+      this.selectedGroupMember.group_user_UUID = group.userUUID;
+    }, error => console.log(error));
     this.selectedGroupName = group.name;
   }
 
@@ -94,11 +100,11 @@ export class MyGroupsComponent implements OnInit {
 
   }
 
-  editMemberInfo(data:any):void{
-    console.log(data);
-    this.groupService.updateMemberInfoByUUID(data.group_user_UUID,data.name,data.color).subscribe(data=>{
-    this.resetSelectedData();
-    this.getAllGroups();
-  },error => {})
+  editMemberInfo(data: any): void {
+    this.groupService.updateMemberInfoByUUID(data.group_user_UUID, data.name, data.color).subscribe(data => {
+      this.resetSelectedData();
+      this.getAllGroups();
+    }, error => {
+    })
   }
 }

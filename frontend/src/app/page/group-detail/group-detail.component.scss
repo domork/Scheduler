@@ -11,6 +11,50 @@
   border-right-width:thin;
   opacity: 0.7;
   width:6em;
+  max-width:6em;
+  min-width:6em;
+  overflow: auto;
+}
+.table>thead>tr>th{
+padding-bottom: 0.5em;
 
+}
+.th ::-webkit-scrollbar {
+  display: none;
+}
+.table ::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar space */
+ // background: transparent;  /* Optional: just make scrollbar invisible */
+}
+::-webkit-scrollbar-thumb {
+  background: #efe1e1;
+}
+.section{
+  line-height: 1.2;
+}
+.box{
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: flex-start;
 
+}
+.dot {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.users-color{
+  background-color: #f9fafc;
+
+  margin: 1em;
+  overflow: auto;
+  max-height: 870px;
+  max-width: 20em;
+}
+.is-four-fifths{
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
 }

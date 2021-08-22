@@ -93,6 +93,7 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public List<Group> getGroupsByID(Long ID) {
         LOGGER.trace("getGroupsByID({})", ID);
+
         final String sql = "SELECT s.id, s.name, s.time_to_start," +
                 " s.description, group_user_uuid FROM " + "group_members"
                 + " h RIGHT JOIN schedule_group s on h.group_id= s.id WHERE user_id= ? ORDER BY name";
@@ -166,13 +167,14 @@ public class GroupDAOImpl implements GroupDAO {
                         "        WHERE ? >= time_end" +
                         " AND time_end >= ?) t on t.group_user_uuid = d.group_user_uuid" +
                         " WHERE name IS NOT NULL " +
-                        "ORDER BY name";
-
+                        "ORDER BY t.group_user_uuid= ?, d.group_user_uuid=?, time_start, name";
 
         return jdbcTemplate.query(sql, preparedStatement -> {
                     preparedStatement.setLong(1, groupID);
                     preparedStatement.setTimestamp(2, Timestamp.valueOf(date.atStartOfDay().plusDays(1)));
                     preparedStatement.setTimestamp(3, Timestamp.valueOf(date.atStartOfDay()));
+                    preparedStatement.setString(4, getUUIDOfCurrentUserByGroupId(groupID));
+                    preparedStatement.setString(5, getUUIDOfCurrentUserByGroupId(groupID));
                 },
                 this::mapRowTimeIntervalByUser);
 

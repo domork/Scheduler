@@ -69,74 +69,74 @@ export class GroupDetailComponent implements OnInit {
     //loop through arr
 
     for (let i = 0; i < this.arr.length; i++) {
+      if (this.arr[i].time_end) {
+        let hourEnd = new Date(this.arr[i].time_end).getHours();
+        let hourStart = new Date(this.arr[i].time_start).getHours();
+        let hoursDifference = hourEnd - hourStart;
+        let minuteEnd = new Date(this.arr[i].time_end).getMinutes();
+        let minuteStart = new Date(this.arr[i].time_start).getMinutes();
 
-      let hourEnd = new Date(this.arr[i].time_end).getHours();
-      let hourStart = new Date(this.arr[i].time_start).getHours();
-      let hoursDifference = hourEnd - hourStart;
-      let minuteEnd = new Date(this.arr[i].time_end).getMinutes();
-      let minuteStart = new Date(this.arr[i].time_start).getMinutes();
+        let minuteStartInFirstQuarter = minuteStart <= 15;
+        let minuteEndInFirstQuarter = minuteEnd <= 15;
+        let minuteEndInLastQuarter = minuteEnd > 45;
+        /*
+        * 0 full
+        * 1 cut top
+        * 2 cut bottom
+        * 3 cut both
+        * */
 
-      let minuteStartInFirstQuarter = minuteStart <= 15;
-      let minuteEndInFirstQuarter = minuteEnd <= 15;
-      let minuteEndInLastQuarter = minuteEnd > 45;
-      /*
-      * 0 full
-      * 1 cut top
-      * 2 cut bottom
-      * 3 cut both
-      * */
-
-      if (hoursDifference > 1) {
+        if (hoursDifference > 1) {
 
 
-        this.setInMap((hourEnd - 1) * 100, [0, this.arr[i].color]);
-        this.setInMap((hourEnd - 1) * 100 + 1, [0, this.arr[i].color]);
-        for (let k = 2; k < hoursDifference; k++) {
-          let hour = hourEnd - k;
-          this.setInMap(hour * 100, [0, this.arr[i].color]);
-          this.setInMap(hour * 100 + 1, [0, this.arr[i].color]);
+          this.setInMap((hourEnd - 1) * 100, [0, this.arr[i].color]);
+          this.setInMap((hourEnd - 1) * 100 + 1, [0, this.arr[i].color]);
+          for (let k = 2; k < hoursDifference; k++) {
+            let hour = hourEnd - k;
+            this.setInMap(hour * 100, [0, this.arr[i].color]);
+            this.setInMap(hour * 100 + 1, [0, this.arr[i].color]);
+          }
+
         }
+        if (hoursDifference === 0) {
 
-      }
-      if (hoursDifference === 0) {
+          if (!minuteStartInFirstQuarter) {
+            //15:20-15:45 => 15:30-16:00
+            this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
 
-        if (!minuteStartInFirstQuarter) {
-          //15:20-15:45 => 15:30-16:00
-          this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
+          } else {
+            //15:14-15:45 => 15:00-15:30
+            this.setInMap(hourStart * 100, [!minuteEndInLastQuarter ? 3 : 1, this.arr[i].color])
 
-        } else {
-          //15:14-15:45 => 15:00-15:30
-          this.setInMap(hourStart * 100, [!minuteEndInLastQuarter ? 3 : 1, this.arr[i].color])
+            if (minuteEndInLastQuarter)
+              this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
+          }
+        } else if (hoursDifference === 1 && minuteEndInFirstQuarter) {
+          if (!minuteStartInFirstQuarter) {
+            //15:20-15:45 => 15:30-16:00
+            this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
 
-          if (minuteEndInLastQuarter)
+          } else {
+            //15:14-15:45 => 15:00-15:30
+            this.setInMap(hourStart * 100, [1, this.arr[i].color])
             this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
-        }
-      } else if (hoursDifference === 1 && minuteEndInFirstQuarter) {
-        if (!minuteStartInFirstQuarter) {
-          //15:20-15:45 => 15:30-16:00
-          this.setInMap(hourStart * 100 + 1, [3, this.arr[i].color])
-
+          }
         } else {
-          //15:14-15:45 => 15:00-15:30
-          this.setInMap(hourStart * 100, [1, this.arr[i].color])
-          this.setInMap(hourStart * 100 + 1, [2, this.arr[i].color])
-        }
-      } else {
-        if (minuteStartInFirstQuarter) {
-          this.setInMap(hourStart * 100, [1, this.arr[i].color])
-        }
-        this.setInMap(hourStart * 100 + 1, [minuteStartInFirstQuarter ? 0 : 1, this.arr[i].color])
+          if (minuteStartInFirstQuarter) {
+            this.setInMap(hourStart * 100, [1, this.arr[i].color])
+          }
+          this.setInMap(hourStart * 100 + 1, [minuteStartInFirstQuarter ? 0 : 1, this.arr[i].color])
 
-        if (minuteEndInFirstQuarter)
-          this.setInMap((hourEnd-1)*100+1, [2, this.arr[i].color]);
-        else if (!minuteEndInLastQuarter) {
-          this.setInMap(hourEnd * 100, [2, this.arr[i].color])
-        } else {
-          this.setInMap(hourEnd * 100, [0, this.arr[i].color])
-          this.setInMap(hourEnd * 100 + 1, [2, this.arr[i].color])
+          if (minuteEndInFirstQuarter)
+            this.setInMap((hourEnd - 1) * 100 + 1, [2, this.arr[i].color]);
+          else if (!minuteEndInLastQuarter) {
+            this.setInMap(hourEnd * 100, [2, this.arr[i].color])
+          } else {
+            this.setInMap(hourEnd * 100, [0, this.arr[i].color])
+            this.setInMap(hourEnd * 100 + 1, [2, this.arr[i].color])
+          }
         }
       }
-
 
       if (!this.usersInGroup.has(this.arr[i].color)) {
 
@@ -160,11 +160,11 @@ export class GroupDetailComponent implements OnInit {
             case 0:
               return text + 'border-bottom-width: 0;';
             case 1:
-              return text + ` border-radius: 50% 10% 0 0; border-bottom-width: 0;`;
+              return text + ` border-radius: 7px 7px 0 0; border-bottom-width: 0;`;
             case 2:
-              return text + ` border-radius: 0 0 50% 10%; `;
+              return text + ` border-radius: 0 0 7px 7px; `;
             case 3:
-              return text + ` border-radius: 0.5em;`;
+              return text + ` border-radius: 10px;`;
           }
 
 
@@ -211,8 +211,6 @@ export class GroupDetailComponent implements OnInit {
     } else {
       this.addForm.time_start = tempDate;
     }
-    console.log(this.addForm.time_start.toLocaleTimeString())
-    console.log(this.addForm.time_end)
     if (this.addForm.time_start)
       this.parsedTime_start = this.addForm.time_start.toLocaleTimeString().substring(0, 5);
 
@@ -223,7 +221,6 @@ export class GroupDetailComponent implements OnInit {
 
   onSubmit(): void {
 
-    console.log(this.addForm);
     this.groupService.addNewInterval(this.id, this.addForm).subscribe(
       data => {
         this.resetData();

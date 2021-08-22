@@ -103,36 +103,35 @@ public class ValidatorImpl implements Validator {
 
     @Override
     public void colorCheck(String color) {
-        if (color != null) {
-            if (!colorPattern.matcher(color).matches())
+        if (color != null && !colorPattern.matcher(color).matches())
                 throw new ValidationException("Color has wrong format.");
         }
-    }
 
-    @Override
-    public void timeIntervalByUserCheck(TimeIntervalByUser t) {
-        if (t == null) {
-            throw new ValidationException("Time interval is null.");
+
+        @Override
+        public void timeIntervalByUserCheck (TimeIntervalByUser t){
+            if (t == null) {
+                throw new ValidationException("Time interval is null.");
+            }
+            UUIDCheck(t.getGroup_user_UUID());
+            colorCheck(t.getColor());
+            //nameCheck(t.getName());
+
+            if (t.getTime_start() == null && t.getTime_end() == null)
+                throw new ValidationException("Time interval was not given.");
+
+            else if (t.getTime_start() == null)
+                throw new ValidationException("Start time was not given.");
+
+            else if (t.getTime_end() == null)
+                throw new ValidationException("End time was not given.");
+
+            else if (t.getTime_end().before(t.getTime_start()))
+                throw new ValidationException("End time is before start time.");
+
+            else if (t.getTime_start().toLocalDateTime().getDayOfMonth() != t.getTime_end().toLocalDateTime().getDayOfMonth())
+                throw new ValidationException("Interval must start and end at the same time.");
+
         }
-        UUIDCheck(t.getGroup_user_UUID());
-        colorCheck(t.getColor());
-        //nameCheck(t.getName());
-
-        if (t.getTime_start() == null && t.getTime_end() == null)
-            throw new ValidationException("Time interval was not given.");
-
-        else if (t.getTime_start() == null)
-            throw new ValidationException("Start time was not given.");
-
-        else if (t.getTime_end() == null)
-            throw new ValidationException("End time was not given.");
-
-        else if (t.getTime_end().before(t.getTime_start()))
-            throw new ValidationException("End time is before start time.");
-
-        else if (t.getTime_start().toLocalDateTime().getDayOfMonth()!=t.getTime_end().toLocalDateTime().getDayOfMonth())
-            throw new ValidationException("Interval must start and end at the same time.");
 
     }
-
-}

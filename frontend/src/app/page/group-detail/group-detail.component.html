@@ -22,244 +22,247 @@
 
     </div>
     <div class="box">
-    <table class="table is-striped is-narrow ">
-      <thead>
-      <tr>
-        <th>time</th>
-        <th *ngFor="let item of user_names" >{{item}}</th>
-      </tr>
 
-      </thead>
+      <div class="table-container">
+        <table class="table is-striped is-narrow ">
+          <thead>
+          <tr>
+            <th></th>
+            <th *ngFor="let item of user_names"> {{item}}</th>
+          </tr>
 
-      <tbody>
-      <tr>
-        <th>08:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(800,item)}}"
-            (click)="setTime(800)">
+          </thead>
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(801,item)}}"
-            (click)="setTime(801)">
-        </th>
-      </tr>
-      <tr>
-        <th>09:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(900,item)}}"
-            (click)="setTime(900)">
+          <tbody>
+          <tr>
+            <th>08:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(800,item)}}"
+                (click)="setTime(800)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(901,item)}}"
-            (click)="setTime(901)">
-        </th>
-      </tr>
-      <tr>
-        <th>10:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1000,item)}}"
-            (click)="setTime(1000)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(801,item)}}"
+                (click)="setTime(801)">
+            </th>
+          </tr>
+          <tr>
+            <th>09:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(900,item)}}"
+                (click)="setTime(900)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1001,item)}}"
-            (click)="setTime(1001)">
-        </th>
-      </tr>
-      <tr>
-        <th>11:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1100,item)}}"
-            (click)="setTime(1100)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(901,item)}}"
+                (click)="setTime(901)">
+            </th>
+          </tr>
+          <tr>
+            <th>10:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1000,item)}}"
+                (click)="setTime(1000)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1101,item)}}"
-            (click)="setTime(1101)">
-        </th>
-      </tr>
-      <tr>
-        <th>12:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1200,item)}}"
-            (click)="setTime(1200)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1001,item)}}"
+                (click)="setTime(1001)">
+            </th>
+          </tr>
+          <tr>
+            <th>11:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1100,item)}}"
+                (click)="setTime(1100)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1201,item)}}"
-            (click)="setTime(1201)">
-        </th>
-      </tr>
-      <tr>
-        <th>13:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1300,item)}}"
-            (click)="setTime(1300)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1101,item)}}"
+                (click)="setTime(1101)">
+            </th>
+          </tr>
+          <tr>
+            <th>12:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1200,item)}}"
+                (click)="setTime(1200)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1301,item)}}"
-            (click)="setTime(1301)">
-        </th>
-      </tr>
-      <tr>
-        <th>14:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1400,item)}}"
-            (click)="setTime(1400)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1201,item)}}"
+                (click)="setTime(1201)">
+            </th>
+          </tr>
+          <tr>
+            <th>13:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1300,item)}}"
+                (click)="setTime(1300)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1401,item)}}"
-            (click)="setTime(1401)">
-        </th>
-      </tr>
-      <tr>
-        <th>15:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1500,item)}}"
-            (click)="setTime(1500)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1301,item)}}"
+                (click)="setTime(1301)">
+            </th>
+          </tr>
+          <tr>
+            <th>14:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1400,item)}}"
+                (click)="setTime(1400)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1501,item)}}"
-            (click)="setTime(1501)">
-        </th>
-      </tr>
-      <tr>
-        <th>16:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1600,item)}}"
-            (click)="setTime(1600)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1401,item)}}"
+                (click)="setTime(1401)">
+            </th>
+          </tr>
+          <tr>
+            <th>15:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1500,item)}}"
+                (click)="setTime(1500)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1601,item)}}"
-            (click)="setTime(1601)">
-        </th>
-      </tr>
-      <tr>
-        <th>17:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1700,item)}}"
-            (click)="setTime(1700)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1501,item)}}"
+                (click)="setTime(1501)">
+            </th>
+          </tr>
+          <tr>
+            <th>16:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1600,item)}}"
+                (click)="setTime(1600)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1701,item)}}"
-            (click)="setTime(1701)">
-        </th>
-      </tr>
-      <tr>
-        <th>18:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1800,item)}}"
-            (click)="setTime(1800)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1601,item)}}"
+                (click)="setTime(1601)">
+            </th>
+          </tr>
+          <tr>
+            <th>17:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1700,item)}}"
+                (click)="setTime(1700)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1801,item)}}"
-            (click)="setTime(1801)">
-        </th>
-      </tr>
-      <tr>
-        <th>19:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1900,item)}}"
-            (click)="setTime(1900)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1701,item)}}"
+                (click)="setTime(1701)">
+            </th>
+          </tr>
+          <tr>
+            <th>18:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1800,item)}}"
+                (click)="setTime(1800)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(1901,item)}}"
-            (click)="setTime(1901)">
-        </th>
-      </tr>
-      <tr>
-        <th>20:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(2000,item)}}"
-            (click)="setTime(2000)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1801,item)}}"
+                (click)="setTime(1801)">
+            </th>
+          </tr>
+          <tr>
+            <th>19:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1900,item)}}"
+                (click)="setTime(1900)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(2001,item)}}"
-            (click)="setTime(2001)">
-        </th>
-      </tr>
-      <tr>
-        <th>21:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(2100,item)}}"
-            (click)="setTime(2100)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(1901,item)}}"
+                (click)="setTime(1901)">
+            </th>
+          </tr>
+          <tr>
+            <th>20:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(2000,item)}}"
+                (click)="setTime(2000)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(2101,item)}}"
-            (click)="setTime(2101)">
-        </th>
-      </tr>
-      <tr>
-        <th>22:00</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(2200,item)}}"
-            (click)="setTime(2200)">
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(2001,item)}}"
+                (click)="setTime(2001)">
+            </th>
+          </tr>
+          <tr>
+            <th>21:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(2100,item)}}"
+                (click)="setTime(2100)">
 
-        </th>
-      </tr>
-      <tr>
-        <th>&nbsp;</th>
-        <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(2201,item)}}"
-            (click)="setTime(2201)">
-        </th>
-      </tr>
-      </tbody>
-    </table>
-    </div>
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(2101,item)}}"
+                (click)="setTime(2101)">
+            </th>
+          </tr>
+          <tr>
+            <th>22:00</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(2200,item)}}"
+                (click)="setTime(2200)">
+
+            </th>
+          </tr>
+          <tr>
+            <th>&nbsp;</th>
+            <th *ngFor="let item of user_colors"
+                style="{{hourIsActive(2201,item)}}"
+                (click)="setTime(2201)">
+            </th>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      </div>
     <nav class="level is-mobile">
       <div class="level-item has-text-centered">
         <div>

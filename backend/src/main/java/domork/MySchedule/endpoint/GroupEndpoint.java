@@ -128,7 +128,6 @@ public class GroupEndpoint {
     public ResponseEntity<TimeIntervalByUserDto>
     addNewInterval(@PathVariable("id") Long id,
                    @RequestBody TimeIntervalByUserDto timeIntervalByUserDto) {
-        Long userID = getUserID();
         LOGGER.info("POST NEW INTERVAL ({}) IN GROUP ID /{}", timeIntervalByUserDto, id);
 
         return new ResponseEntity<>

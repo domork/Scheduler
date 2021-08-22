@@ -25,7 +25,6 @@ export class GroupService {
   }
 
   getMemberInfoByUUID(UUID: string): Observable<GroupMember> {
-    console.log(baseUri + '/' + UUID + '/memberInfo')
     return this.http.get<GroupMember>(baseUri + '/' + UUID + '/memberInfo');
   }
 
