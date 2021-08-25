@@ -16,14 +16,14 @@
         </h1>
       </div>
       <span class="icon is-large" (click)="setNextDay();resetData()">
-    <i class="fas fa-arrow-right fa-2x"></i>
-  </span>
+         <i class="fas fa-arrow-right fa-2x"></i>
+      </span>
 
 
     </div>
     <div class="box">
-
-      <div class="table-container">
+      <mat-progress-spinner mode="indeterminate" *ngIf="!fetchedData"></mat-progress-spinner>
+      <div class="table-container" *ngIf="fetchedData">
         <table class="table is-striped is-narrow ">
           <thead>
           <tr>
@@ -262,26 +262,71 @@
           </tbody>
         </table>
       </div>
-      </div>
-    <nav class="level is-mobile">
+    </div>
+    <nav class="level is-mobile" *ngIf="addForm.time_start">
       <div class="level-item has-text-centered">
         <div>
           <p class="heading">Start time</p>
-          <p class="title">{{parsedTime_start}}</p>
+          <p class="title">
+            <mat-form-field>
+              <input matInput class="time-input"
+                     name="selected_time_start"
+                     [format]="24"
+                     [(ngModel)]="parsedTime_start"
+                     [ngxMatTimepicker]="pickerA"
+                     [min]="'08:00'"
+                     [max]="'22:00'"
+
+                     readonly/>
+              <mat-icon matSuffix
+                        (click)="pickerA.open()">
+                watch_later
+              </mat-icon>
+            </mat-form-field>
+            <ngx-mat-timepicker color="primary"
+                                [minutesGap]="30"
+                                (timeSet)="timepickerToAddForm($event,0)"
+                                #pickerA>
+
+            </ngx-mat-timepicker>
+          </p>
         </div>
       </div>
       <div class="level-item has-text-centered">
         <div>
           <p class="heading">End time </p>
-          <p class="title">{{parsedTime_end}}</p>
+          <p class="title">
+            <mat-form-field>
+              <input matInput class="time-input"
+                     name="selected_time_end"
+                     [format]="24"
+                     [(ngModel)]="parsedTime_end"
+                     [ngxMatTimepicker]="pickerB"
+                     [min]="'08:00'"
+                     [max]="'22:00'"
+
+                     readonly/>
+              <mat-icon matSuffix
+                        (click)="pickerB.open()">
+                watch_later
+              </mat-icon>
+            </mat-form-field>
+            <ngx-mat-timepicker color="primary"
+                                [minutesGap]="30"
+                                (timeSet)="timepickerToAddForm($event,1)"
+                                #pickerB></ngx-mat-timepicker>
+          </p>
         </div>
       </div>
+
 
       <div class="level-item has-text-centered">
         <div>
           <p class="heading"></p>
           <button class="button is-primary">Add</button>
         </div>
+      </div>
+      <div class="form-remove" (click)="closeForm()">
       </div>
     </nav>
 

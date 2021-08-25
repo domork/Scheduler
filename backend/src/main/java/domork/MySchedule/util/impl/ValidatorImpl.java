@@ -54,11 +54,6 @@ public class ValidatorImpl implements Validator {
     @Override
     public void groupCheck(Group group) {
         if (group != null) {
-            // idCheck(group.getID());
-            //nameCheck(group.getName());
-            //passwordCheck(group.getPassword());
-            //if (group.getDescription() != null)
-            //    nameCheck(group.getDescription());
             Timestamp groupTime = group.getTime_to_start();
             if (groupTime != null && groupTime.getTime() < (Time.now() - 60)) {
                 throw new ValidationException
@@ -70,10 +65,8 @@ public class ValidatorImpl implements Validator {
 
     @Override
     public void groupCredentialsCheck(GroupCredentials groupCredentials) {
-        nameCheck(groupCredentials.getName());
         passwordCheck(groupCredentials.getPassword());
         idCheck(groupCredentials.getUserID());
-        nameCheck(groupCredentials.getUsername());
     }
 
     @Override

@@ -1,0 +1,10 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+@media (min-width: 650px) {
+  .notification {
+    min-width: 400px
+  }
+}

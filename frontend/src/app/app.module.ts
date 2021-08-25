@@ -21,6 +21,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatDialogModule} from '@angular/material/dialog';
 import { ColorSketchModule } from 'ngx-color/sketch';
 import {ColorChromeModule} from "ngx-color/chrome";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatInputModule} from "@angular/material/input";
+import {NgxMatTimepickerModule} from "ngx-mat-timepicker";
+import {MatIconModule} from "@angular/material/icon";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 
 @NgModule({
@@ -37,19 +44,26 @@ import {ColorChromeModule} from "ngx-color/chrome";
     MyGroupsComponent,
     GroupDetailComponent,
     GroupPreferencesComponent,
-    JoinTemplateComponent
+    JoinTemplateComponent,
 
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    ColorSketchModule,
-    MatDialogModule,
-    ColorChromeModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        ColorSketchModule,
+        MatDialogModule,
+        ColorChromeModule,
+        MatFormFieldModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatInputModule,
+        NgxMatTimepickerModule.setLocale('en-GB'),
+        MatIconModule,
+        MatProgressSpinnerModule
+    ],
   providers: [httpInterceptorProviders,NotificationHubComponent],
   bootstrap: [AppComponent]
 })

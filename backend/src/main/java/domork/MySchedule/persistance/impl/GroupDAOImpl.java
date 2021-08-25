@@ -43,7 +43,7 @@ public class GroupDAOImpl implements GroupDAO {
             PreparedStatement statement =
                     connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             int paramIndex = 1;
-            statement.setString(paramIndex++, group.getName());
+            statement.setString(paramIndex++, group.getName().toLowerCase());
             statement.setString(paramIndex++, group.getPassword());
             statement.setString(paramIndex++, group.getDescription());
             statement.setTimestamp(paramIndex, group.getTime_to_start());
@@ -74,7 +74,7 @@ public class GroupDAOImpl implements GroupDAO {
 
 
         List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> {
-            preparedStatement.setString(1, groupCredentials.getName());
+            preparedStatement.setString(1, groupCredentials.getName().toLowerCase());
             preparedStatement.setString(2, groupCredentials.getPassword());
         }, this::mapRow);
         if (groups.isEmpty()) {
@@ -110,7 +110,7 @@ public class GroupDAOImpl implements GroupDAO {
         final String sql = "SELECT * FROM " + TABLE_NAME
                 + " WHERE name= ?";
 
-        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> preparedStatement.setString(1, name), this::mapRow);
+        List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> preparedStatement.setString(1, name.toLowerCase()), this::mapRow);
         if (groups.isEmpty())
             throw new NotFoundException("Group with the name " + name + " was not found");
         return groups.get(0);
@@ -167,14 +167,13 @@ public class GroupDAOImpl implements GroupDAO {
                         "        WHERE ? >= time_end" +
                         " AND time_end >= ?) t on t.group_user_uuid = d.group_user_uuid" +
                         " WHERE name IS NOT NULL " +
-                        "ORDER BY t.group_user_uuid= ?, d.group_user_uuid=?, time_start, name";
+                        "ORDER BY time_start, name";
 
         return jdbcTemplate.query(sql, preparedStatement -> {
                     preparedStatement.setLong(1, groupID);
                     preparedStatement.setTimestamp(2, Timestamp.valueOf(date.atStartOfDay().plusDays(1)));
                     preparedStatement.setTimestamp(3, Timestamp.valueOf(date.atStartOfDay()));
-                    preparedStatement.setString(4, getUUIDOfCurrentUserByGroupId(groupID));
-                    preparedStatement.setString(5, getUUIDOfCurrentUserByGroupId(groupID));
+
                 },
                 this::mapRowTimeIntervalByUser);
 

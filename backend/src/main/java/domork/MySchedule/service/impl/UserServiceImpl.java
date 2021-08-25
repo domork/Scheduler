@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean userExists(Long ID) {
+        LOGGER.trace("userExists({})", ID);
         return userDAO.userExists(ID);
     }
 }

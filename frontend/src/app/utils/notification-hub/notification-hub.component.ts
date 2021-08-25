@@ -1,17 +1,22 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit} from '@angular/core';
+import {NotificationService} from "../../service/notification.service";
+
+
 
 @Component({
   selector: 'app-notification-hub',
   templateUrl: './notification-hub.component.html',
   styleUrls: ['./notification-hub.component.scss']
 })
+
 export class NotificationHubComponent implements OnInit {
 
-  successMessage = '';
-  errorMessage = '';
+ successMessage = '';
+ errorMessage = '';
 
 
-  constructor() {
+  constructor(private service:NotificationService) {
+    service.notification = this;
   }
 
   ngOnInit(): void {
@@ -30,7 +35,6 @@ export class NotificationHubComponent implements OnInit {
   }
 
   public defaultServiceErrorHandling(error: any): void {
-
     (async () => {
       if (error.status === 0) {
         // If status is 0, the backend is probably down
@@ -45,7 +49,7 @@ export class NotificationHubComponent implements OnInit {
       }
       await this.delay(7000);
       this.vanishError();
-    })();
+    })()
   }
 
   public defaultServiceSuccessHandling(msg: string): void {
@@ -55,4 +59,5 @@ export class NotificationHubComponent implements OnInit {
       this.vanishSuccess();
     })();
   }
+
 }

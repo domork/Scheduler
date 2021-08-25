@@ -3,6 +3,7 @@ import {GroupService} from "../../service/group.service";
 import {ActivatedRoute} from "@angular/router";
 import {TimeIntervalByUser} from "../../utils/dto/time-interval-by-user";
 
+
 @Component({
   selector: 'app-group-detail',
   templateUrl: './group-detail.component.html',
@@ -12,7 +13,6 @@ export class GroupDetailComponent implements OnInit {
 
   //getTime() + 24 * 60 * 60 * 1000 => next day.
   currentDate = new Date(new Date().getTime());
-
   // @ts-ignore
   id: number = +this.route.snapshot.paramMap.get('id');
   arr: any[] = [];
@@ -21,9 +21,9 @@ export class GroupDetailComponent implements OnInit {
   user_colors: string[] = [];
   map = new Map();
   addForm: TimeIntervalByUser = new TimeIntervalByUser('', undefined, undefined, undefined, undefined);
-  parsedTime_start: string | undefined = '';
-  parsedTime_end: string | undefined = '';
-  form: any = {};
+  parsedTime_start: string = '';
+  parsedTime_end: string = '';
+  fetchedData = false;
 
   constructor(private groupService: GroupService, private route: ActivatedRoute) {
   }
@@ -31,23 +31,26 @@ export class GroupDetailComponent implements OnInit {
   //please be patient :)
   ngOnInit(): void {
     this.getGroupParticipantsForCurrentDay();
+    console.log(this.currentDate.toLocaleTimeString(navigator.language, {hour: '2-digit', minute: '2-digit'}));
   }
 
   getGroupParticipantsForCurrentDay(): void {
+    this.fetchedData = false;
     this.groupService.getGroupParticipantsForDay
     (this.currentDate, this.id).subscribe(data => {
-      console.log(data);
       this.arr = data;
-
       this.addIntervalsToMap();
+      this.fetchedData = true;
     }, error => {
       console.log(error);
+      this.fetchedData = true;
+
     })
   }
 
   setInMap(hour: number, temp: any[]): void {
     let hourValueInMap = this.map.get(hour);
-    let tempArr:any[] =[];
+    let tempArr: any[] = [];
     if (hourValueInMap) {
       hourValueInMap.forEach((data: any) => {
 
@@ -58,11 +61,12 @@ export class GroupDetailComponent implements OnInit {
       })
       this.map.delete(hour);
       this.map.set(hour, [[temp[0], temp[1]]]);
-      tempArr.forEach((data:any)=>{
+      tempArr.forEach((data: any) => {
         this.map.get(hour).push(data);
       })
 
     } else this.map.set(hour, [temp]);
+
   }
 
   addIntervalsToMap(): void {
@@ -142,8 +146,8 @@ export class GroupDetailComponent implements OnInit {
 
         this.usersInGroup.set(this.arr[i].color, this.arr[i].name);
       }
-    }
 
+    }
     this.user_names = [...this.usersInGroup.values()];
     this.user_colors = [...this.usersInGroup.keys()];
   }
@@ -188,6 +192,9 @@ export class GroupDetailComponent implements OnInit {
     this.addForm.time_start = undefined
     this.parsedTime_start = '';
     this.parsedTime_end = '';
+    this.usersInGroup = new Map<string, string>();
+    this.user_colors = [];
+    this.user_names = [];
   }
 
   setPrevDay(): void {
@@ -201,23 +208,57 @@ export class GroupDetailComponent implements OnInit {
     tempDate.setHours(Math.floor(hour / 100));
     tempDate.setMinutes(hour % 2 == 0 ? 0 : 30);
     tempDate.setSeconds(0);
-    if (this.addForm.time_start
-    ) {
+    if (this.addForm.time_start) {
       if (this.addForm.time_start.getTime() > tempDate.getTime()) {
         this.addForm.time_start = tempDate;
       } else {
         this.addForm.time_end = tempDate;
       }
+
     } else {
       this.addForm.time_start = tempDate;
     }
     if (this.addForm.time_start)
-      this.parsedTime_start = this.addForm.time_start.toLocaleTimeString().substring(0, 5);
+      this.parsedTime_start = this.addForm.time_start.toLocaleTimeString(navigator.language, {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
 
     if (this.addForm.time_end)
-      this.parsedTime_end = this.addForm.time_end.toLocaleTimeString().substring(0, 5);
+      this.parsedTime_end = this.addForm.time_end.toLocaleTimeString(navigator.language, {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
   }
 
+  timepickerToAddForm(s: string, i: number): void {
+    let hour = Number(s.substring(0, 2));
+    let minute = Number(s.substring(s.length - 2, s.length));
+    switch (i) {
+      case 0: {
+        if (!this.addForm.time_start)
+          this.addForm.time_start = this.currentDate;
+        this.addForm.time_start.setHours(hour);
+        this.addForm.time_start.setMinutes(minute);
+        break;
+      }
+      case 1: {
+        if (!this.addForm.time_end)
+          this.addForm.time_end = this.currentDate;
+        this.addForm.time_end.setHours(hour)
+        this.addForm.time_end.setMinutes(minute)
+      }
+    }
+  }
+
+
+  closeForm(): void {
+    this.addForm.time_start = undefined;
+    this.addForm.time_end = undefined;
+    this.parsedTime_start = '';
+    this.parsedTime_end = '';
+  }
 
   onSubmit(): void {
 

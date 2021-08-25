@@ -4,7 +4,7 @@ import {AuthService} from "../../service/auth.service";
 import {TokenStorageService} from "../../auth/token-storage.service";
 import {AppComponent} from "../../app.component";
 import {Router} from "@angular/router";
-import {NotificationHubComponent} from "../../utils/notification-hub/notification-hub.component";
+import {NotificationService} from "../../service/notification.service";
 
 @Component({
   selector: 'app-login',
@@ -24,8 +24,7 @@ export class LoginComponent implements OnInit {
               private tokenStorage: TokenStorageService,
               private appComp: AppComponent,
               private router: Router,
-              private notificationHub: NotificationHubComponent
-  ) {
+              private notification: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -48,9 +47,8 @@ export class LoginComponent implements OnInit {
         this.isLoggedIn = true;
         this.router.navigate(['/']);
       }, error => {
-        console.log(error);
         this.errorMessage = error.error.message;
-        this.notificationHub.defaultServiceErrorHandling(error);
+        this.notification.sendError(error);
       }
     );
   }

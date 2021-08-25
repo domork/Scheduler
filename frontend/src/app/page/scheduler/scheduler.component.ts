@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {TokenStorageService} from "../../auth/token-storage.service";
 
 @Component({
   selector: 'app-scheduler',
@@ -6,10 +7,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./scheduler.component.scss']
 })
 export class SchedulerComponent implements OnInit {
+  isLoggedIn = false;
 
-  constructor() { }
+  constructor(private tokenStorage:TokenStorageService) { }
 
   ngOnInit(): void {
+    this.checkIfIsLoggedIn();
   }
+  checkIfIsLoggedIn(): void {
+    this.isLoggedIn = !!this.tokenStorage.getToken();
 
+  }
 }

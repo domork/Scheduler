@@ -5,3 +5,20 @@
 
 html, body { height: 100%; }
 
+.mat-toolbar.mat-primary {
+  background: #b88afa;
+  color: #fff;
+}
+.timepicker-dial__time{
+:focus{
+  height: 65px;
+  background-color: rgba(0,0,0,0);
+}}
+.timepicker-dial__control{
+  :focus{
+    background-color: rgba(0,0,0,0);
+  }
+}
+.mat-form-field-infix{
+  border-top: 0;
+}

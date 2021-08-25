@@ -1,13 +1,22 @@
-<section class="hero is-info" routerLink="/groups">
+<section class="hero is-info" routerLink="/groups" *ngIf="isLoggedIn">
   <div class="hero-body">
     <p class="title">
       My groups
     </p>
     <p class="subtitle">
-      Click me and I will bring you to all your groups
+
     </p>
   </div>
 </section>
+<footer class="footer" *ngIf="!isLoggedIn">
+  <div class="content has-text-centered">
+    <p>
+      <strong>You are not authorized</strong>
+      <br>
+      Please <a routerLink="/login"> log in </a> first
+    </p>
+  </div>
+</footer>
 <div class="container">
 
   <div class="buttons">
