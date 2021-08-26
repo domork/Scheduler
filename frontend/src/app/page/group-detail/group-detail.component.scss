@@ -73,7 +73,16 @@
 .mat-form-field-wrapper {
   padding-bottom: 0;
 }
-
+.field-remove{
+  width: 1.25em !important;
+  height: 1.25em !important;
+  background: #663408 !important;
+  top: -0.25em !important;
+  right: -0.4em !important;
+}
+.field-wrapper{
+  position: relative;
+}
 .level {
   position: fixed;
   height: 100px;
@@ -92,6 +101,9 @@
 }
 .progress{
   width: 20em;
+}
+.heading{
+  font-size: 12px;
 }
 @-webkit-keyframes fadeIn {
   0% {

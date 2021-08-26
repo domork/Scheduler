@@ -5,7 +5,7 @@
 
 
 <section class="section">
-  <form name="form" (ngSubmit)="f.form.valid&&onSubmit() " #f="ngForm" novalidate>
+  <form class="" name="form" (ngSubmit)="onSubmit()" novalidate>
     <div class="topDate">
   <span class="icon is-large" (click)="setPrevDay();resetData()">
     <i class="fas fa-arrow-left fa-2x"></i>
@@ -28,18 +28,23 @@
           <thead>
           <tr>
             <th></th>
-            <th *ngFor="let item of user_names"> {{item}}</th>
+            <th *ngFor="let item of user_names"> {{item}}
+            </th>
           </tr>
 
           </thead>
 
-          <tbody>
+          <tbody #table>
           <tr>
             <th>08:00</th>
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(800,item)}}"
                 (click)="setTime(800)">
 
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,800)" (click)="deleteInterval(800)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -47,14 +52,22 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(801,item)}}"
                 (click)="setTime(801)">
+
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,801)" (click)="deleteInterval(801)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
             <th>09:00</th>
-            <th *ngFor="let item of user_colors"
+            <th *ngFor="let item of user_colors" [attr.id]=item+900
                 style="{{hourIsActive(900,item)}}"
                 (click)="setTime(900)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,900)" (click)="deleteInterval(900)"></div>
 
+              </div>
             </th>
           </tr>
           <tr>
@@ -62,6 +75,11 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(901,item)}}"
                 (click)="setTime(901)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,901)" (click)="deleteInterval(901)"></div>
+
+              </div>
+
             </th>
           </tr>
           <tr>
@@ -69,6 +87,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1000,item)}}"
                 (click)="setTime(1000)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1000)" (click)="deleteInterval(1000)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -77,14 +99,22 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1001,item)}}"
                 (click)="setTime(1001)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1001)" (click)="deleteInterval(1001)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
             <th>11:00</th>
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1100,item)}}"
-                (click)="setTime(1100)">
 
+                (click)="setTime(1100)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1100)" (click)="deleteInterval(1100)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -92,6 +122,9 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1101,item)}}"
                 (click)="setTime(1101)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1101)" (click)="deleteInterval(1101)"></div>
+              </div>
             </th>
           </tr>
           <tr>
@@ -99,6 +132,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1200,item)}}"
                 (click)="setTime(1200)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1200)" (click)="deleteInterval(1200)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -107,21 +144,33 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1201,item)}}"
                 (click)="setTime(1201)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1201)" (click)="deleteInterval(1201)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
             <th>13:00</th>
             <th *ngFor="let item of user_colors"
-                style="{{hourIsActive(1300,item)}}"
-                (click)="setTime(1300)">
+                [attr.style]="hourIsActive(1300,item)"
 
+                (click)="setTime(1300)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1300)" (click)="deleteInterval(1300)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
             <th>&nbsp;</th>
             <th *ngFor="let item of user_colors"
-                style="{{hourIsActive(1301,item)}}"
+                [attr.style]="hourIsActive(1301,item)"
                 (click)="setTime(1301)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1301)" (click)="deleteInterval(1301)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -129,6 +178,9 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1400,item)}}"
                 (click)="setTime(1400)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1400)" (click)="deleteInterval(1400)"></div>
+              </div>
 
             </th>
           </tr>
@@ -137,6 +189,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1401,item)}}"
                 (click)="setTime(1401)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1401)" (click)="deleteInterval(1401)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -144,7 +200,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1500,item)}}"
                 (click)="setTime(1500)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1500)" (click)="deleteInterval(1500)"></div>
 
+              </div>
             </th>
           </tr>
           <tr>
@@ -152,6 +211,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1501,item)}}"
                 (click)="setTime(1501)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1501)" (click)="deleteInterval(1501)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -159,6 +222,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1600,item)}}"
                 (click)="setTime(1600)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1600)" (click)="deleteInterval(1600)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -167,6 +234,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1601,item)}}"
                 (click)="setTime(1601)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1601)" (click)="deleteInterval(1601)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -174,6 +245,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1700,item)}}"
                 (click)="setTime(1700)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1700)" (click)="deleteInterval(1700)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -182,6 +257,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1701,item)}}"
                 (click)="setTime(1701)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1701)" (click)="deleteInterval(1701)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -189,6 +268,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1800,item)}}"
                 (click)="setTime(1800)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1800)" (click)="deleteInterval(1800)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -197,6 +280,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1801,item)}}"
                 (click)="setTime(1801)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1801)" (click)="deleteInterval(1801)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -204,6 +291,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1900,item)}}"
                 (click)="setTime(1900)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1900)" (click)="deleteInterval(1900)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -212,6 +303,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(1901,item)}}"
                 (click)="setTime(1901)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,1901)" (click)="deleteInterval(1901)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -219,6 +314,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(2000,item)}}"
                 (click)="setTime(2000)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,2000)" (click)="deleteInterval(2000)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -227,6 +326,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(2001,item)}}"
                 (click)="setTime(2001)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,2001)" (click)="deleteInterval(2001)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -234,6 +337,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(2100,item)}}"
                 (click)="setTime(2100)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,2100)" (click)="deleteInterval(2100)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -242,6 +349,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(2101,item)}}"
                 (click)="setTime(2101)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,2101)" (click)="deleteInterval(2101)"></div>
+
+              </div>
             </th>
           </tr>
           <tr>
@@ -249,6 +360,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(2200,item)}}"
                 (click)="setTime(2200)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,2200)" (click)="deleteInterval(2200)"></div>
+
+              </div>
 
             </th>
           </tr>
@@ -257,6 +372,10 @@
             <th *ngFor="let item of user_colors"
                 style="{{hourIsActive(2201,item)}}"
                 (click)="setTime(2201)">
+              <div class="field-wrapper">
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,2201)" (click)="deleteInterval(2201)"></div>
+
+              </div>
             </th>
           </tr>
           </tbody>

@@ -100,6 +100,7 @@ public class GroupDAOImpl implements GroupDAO {
         List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> preparedStatement.setLong(1, ID), this::mapRow);
         if (groups.isEmpty())
             throw new NotFoundException("Groups with the ID " + ID + " were not found");
+
         return groups;
     }
 
@@ -154,6 +155,7 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public List<TimeIntervalByUser> getGroupInfoForSpecificDate(Long groupID, LocalDate date) {
         LOGGER.trace("getGroupInfoForSpecificDate({}, {})", groupID, date);
+        calculateNextMeetingByGroupId(groupID);
         final String sql =
                 "WITH default_group_users AS (SELECT DISTINCT g.group_user_uuid, g.color, g.name" +
                         " FROM group_members g" +

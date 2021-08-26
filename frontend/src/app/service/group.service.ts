@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {environment} from '../../environments/environment';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Group} from "../utils/dto/group";
 import {CreateGroupForm} from "../utils/dto/create-group-form";
@@ -56,5 +56,11 @@ export class GroupService {
 
   leaveGroup(id: number): Observable<Boolean> {
     return this.http.post<Boolean>(baseUri + '/' + id + '/leave', this.httpOptions);
+  }
+  deleteInterval(uuid:string,date: Date): Observable<boolean>{
+    date.setHours(date.getHours()-date.getTimezoneOffset()/60)
+    let params = new HttpParams().set('date',date.toISOString()).set('UUID', uuid);
+    const opt = {headers: new HttpHeaders({'Content-Type': 'application/json'}), params};
+    return this.http.delete<boolean>(baseUri + '/', opt);
   }
 }
