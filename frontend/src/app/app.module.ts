@@ -9,7 +9,6 @@ import { httpInterceptorProviders } from './auth/auth-interceptor';
 import { LoginComponent } from './forms/login/login.component';
 import {FormsModule} from "@angular/forms";
 import { NavBarComponent } from './utils/nav-bar/nav-bar.component';
-import { CreateTemplateComponent } from './utils/create-template/create-template.component';
 import { NotificationHubComponent } from './utils/notification-hub/notification-hub.component';
 import { SignupComponent } from './forms/signup/signup.component';
 import { CreateGroupComponent } from './forms/create-group/create-group.component';
@@ -37,7 +36,6 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     SchedulerComponent,
     LoginComponent,
     NavBarComponent,
-    CreateTemplateComponent,
     NotificationHubComponent,
     SignupComponent,
     CreateGroupComponent,

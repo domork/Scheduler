@@ -1,17 +1,12 @@
 <ng-container >
-
   <div class="field-body">
-
-
     <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
-
       <div class="field">
         <p class="control">
           <label for="name">Name of the group</label>
           <input id="name" placeholder="min 3 chars" type="text" class="input" name="name" [(ngModel)]="form.name" #name="ngModel" required />
         </p>
       </div>
-
 
       <div class="field">
         <p class="control">

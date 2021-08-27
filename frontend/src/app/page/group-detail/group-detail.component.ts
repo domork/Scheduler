@@ -10,6 +10,8 @@ import {TimeIntervalByUser} from "../../utils/dto/time-interval-by-user";
 })
 export class GroupDetailComponent implements OnInit {
 
+   dayTime:number[] = [800, 801, 900, 901, 1000, 1001, 1100, 1101, 1200, 1201, 1300,
+    1301, 1400, 1401, 1500, 1501, 1600, 1601, 1700, 1701, 1800, 1801, 1900, 1901, 2000, 2001, 2100, 2101, 2200, 2201];
 
   //getTime() + 24 * 60 * 60 * 1000 => next day.
   currentDate = new Date(new Date().getTime());
@@ -24,16 +26,17 @@ export class GroupDetailComponent implements OnInit {
   parsedTime_start: string = '';
   parsedTime_end: string = '';
   fetchedData = false;
-
+  Math:any;
 
   // @ts-ignore
   constructor(private groupService: GroupService, private route: ActivatedRoute) {
-
+    this.Math=Math;
   }
 
 
   //please be patient :)
   ngOnInit(): void {
+
     this.getGroupParticipantsForCurrentDay();
   }
 
@@ -90,7 +93,7 @@ export class GroupDetailComponent implements OnInit {
       let text2 = bgc + ' border-radius: 0 0 7px 7px; ';
       let text3 = bgc + ' border-radius: 10px;';
       if (interval.color?.endsWith('temp')) {
-        bgc = ' border-width: thick; border-color: black; '
+        bgc = ' border-width: initial; border-color: black; '
         let bTop = ' border-top: none; border-bottom-color: black; border-bottom-width: thick; ';
         let bBottom = ' border-bottom: none; border-top-color: black; border-top-width: thick; ';
         text0 += bgc + bTop + bBottom;
@@ -185,10 +188,13 @@ export class GroupDetailComponent implements OnInit {
   }
 
   deleteButtonIsOn(color: string, hour: number): boolean {
+    if (this.user_colors[0]!==color)
+      return false;
     let hourInMap = this.map.get(hour);
     if (hourInMap) {
-      if (hourInMap[0] && hourInMap[0][1] === color && (hourInMap[0][0] === 1 || hourInMap[0][0] === 3))
-        return true;
+      if (hourInMap[0] && hourInMap[0][1] === color && ((hourInMap[0][0] === 1 || hourInMap[0][0] === 3)) || hour==800){
+        return true;}
+
     }
     return false;
   }
@@ -238,51 +244,53 @@ export class GroupDetailComponent implements OnInit {
     }
 
   }
+
   public delay(ms: number): Promise<any> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
   setTime(hour: number): void {
-    (async ()=>{
+    (async () => {
       this.deleteAllTempIntervalsInMap()
       await this.delay(1);
 
-    let tempDate = new Date(this.currentDate.getTime());
-    tempDate.setHours(Math.floor(hour / 100));
-    tempDate.setMinutes(hour % 2 == 0 ? 0 : 30);
-    tempDate.setSeconds(0);
-    if (this.addForm.time_start) {
-      if (this.addForm.time_start.getTime() === tempDate.getTime()) {
-        this.closeForm();
-        return;
-      }
-      if (this.addForm.time_start.getTime() > tempDate.getTime()) {
-        this.addForm.time_start = tempDate;
+      let tempDate = new Date(this.currentDate.getTime());
+      tempDate.setHours(Math.floor(hour / 100));
+      tempDate.setMinutes(hour % 2 == 0 ? 0 : 30);
+      tempDate.setSeconds(0);
+      if (this.addForm.time_start) {
+        if (this.addForm.time_start.getTime() === tempDate.getTime()) {
+          this.closeForm();
+          return;
+        }
+        if (this.addForm.time_start.getTime() > tempDate.getTime()) {
+          this.addForm.time_start = tempDate;
+        } else {
+          this.addForm.time_end = tempDate;
+
+        }
+
       } else {
-        this.addForm.time_end = tempDate;
-
+        this.addForm.time_start = tempDate;
+        this.addForm.time_end = new Date(tempDate.getTime() + 30 * 60000);
       }
+      if (this.addForm.time_start)
+        this.parsedTime_start = this.addForm.time_start.toLocaleTimeString(navigator.language, {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
 
-    } else {
-      this.addForm.time_start = tempDate;
-      this.addForm.time_end = new Date(tempDate.getTime() + 30 * 60000);
-    }
-    if (this.addForm.time_start)
-      this.parsedTime_start = this.addForm.time_start.toLocaleTimeString(navigator.language, {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-
-    if (this.addForm.time_end)
-      this.parsedTime_end = this.addForm.time_end.toLocaleTimeString(navigator.language, {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    this.addIntervalsToMap(new TimeIntervalByUser(this.arr[0].group_user_UUID, this.addForm.time_start, this.addForm.time_end, this.arr[0].color + 'temp', this.arr[0].name));
+      if (this.addForm.time_end)
+        this.parsedTime_end = this.addForm.time_end.toLocaleTimeString(navigator.language, {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      this.addIntervalsToMap(new TimeIntervalByUser(this.arr[0].group_user_UUID, this.addForm.time_start, this.addForm.time_end, this.arr[0].color + 'temp', this.arr[0].name));
     })()
   }
 
   timepickerToAddForm(s: string, i: number): void {
-    (async ()=> {
+    (async () => {
       this.deleteAllTempIntervalsInMap()
       await this.delay(1);
       let hour = Number(s.substring(0, 2));

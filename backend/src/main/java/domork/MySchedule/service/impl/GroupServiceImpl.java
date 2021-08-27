@@ -61,9 +61,12 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<Group> getGroupsByID(Long ID) {
         LOGGER.trace("getGroupsByID({})", ID);
-
         validator.idCheck(ID);
-        return companyDAO.getGroupsByID(ID);
+        List<Group> list =  companyDAO.getGroupsByID(ID);
+        for (Group g: list){
+            calculateNextMeetingByGroupId(g.getID());
+        }
+        return list;
     }
 
     @Override
@@ -107,7 +110,6 @@ public class GroupServiceImpl implements GroupService {
         validator.idCheck(groupID);
         Long userID = this.getUserPrinciple().getId();
         List<Group> groups = this.getGroupsByID(userID);
-        calculateNextMeetingByGroupId(groupID);
 
         for (Group group : groups) {
             if (group.getID().equals(groupID))

@@ -155,9 +155,10 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public List<TimeIntervalByUser> getGroupInfoForSpecificDate(Long groupID, LocalDate date) {
         LOGGER.trace("getGroupInfoForSpecificDate({}, {})", groupID, date);
-        calculateNextMeetingByGroupId(groupID);
+
+        String uuid = getUUIDOfCurrentUserByGroupId(groupID);
         final String sql =
-                "WITH default_group_users AS (SELECT DISTINCT g.group_user_uuid, g.color, g.name" +
+                "WITH q AS ( WITH default_group_users AS (SELECT DISTINCT g.group_user_uuid, g.color, g.name" +
                         " FROM group_members g" +
                         " LEFT JOIN time_of_unique_user_in_group t ON g.group_user_uuid=t.group_user_uuid" +
                         " WHERE g.group_id = ? " +
@@ -169,12 +170,15 @@ public class GroupDAOImpl implements GroupDAO {
                         "        WHERE ? >= time_end" +
                         " AND time_end >= ?) t on t.group_user_uuid = d.group_user_uuid" +
                         " WHERE name IS NOT NULL " +
-                        "ORDER BY time_start, name";
+                        "ORDER BY time_start, name NULLS LAST) SELECT * FROM q WHERE group_user_uuid = ? " +
+                        "UNION ALL SELECT * FROM q WHERE group_user_uuid != ?";
 
         return jdbcTemplate.query(sql, preparedStatement -> {
                     preparedStatement.setLong(1, groupID);
                     preparedStatement.setTimestamp(2, Timestamp.valueOf(date.atStartOfDay().plusDays(1)));
                     preparedStatement.setTimestamp(3, Timestamp.valueOf(date.atStartOfDay()));
+                    preparedStatement.setString(4,uuid);
+                    preparedStatement.setString(5,uuid);
 
                 },
                 this::mapRowTimeIntervalByUser);
