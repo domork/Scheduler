@@ -35,7 +35,9 @@ export class NotificationHubComponent implements OnInit {
   }
 
   public defaultServiceErrorHandling(error: any): void {
+    this.vanishError();
     (async () => {
+
       if (error.status === 0) {
         // If status is 0, the backend is probably down
         this.errorMessage = 'The backend seems not to be reachable';
@@ -44,7 +46,8 @@ export class NotificationHubComponent implements OnInit {
       } else if (error.error.message === 'No message available') {
         // If no detailed error message is provided, fall back to the simple error name
         this.errorMessage = error.error.error;
-      } else {
+      }
+      else {
         this.errorMessage = error.error.message;
       }
       await this.delay(7000);
@@ -53,6 +56,7 @@ export class NotificationHubComponent implements OnInit {
   }
 
   public defaultServiceSuccessHandling(msg: string): void {
+    this.vanishSuccess();
     (async () => {
       this.successMessage = msg;
       await this.delay(7000);

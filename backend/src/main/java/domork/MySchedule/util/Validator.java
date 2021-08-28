@@ -5,49 +5,43 @@ import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
 import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
 
+import java.sql.Timestamp;
+
 public interface Validator {
 
     /**
-     * Checks, if the text contain only allowed
-     * characters, such as [a-zA-Z0-9- .:,] AND has at least 1 char.
+     * Checks, if name has at least 1 char.
      * Maximum length of text is 63 chars.
-     *
+     * Name cannot start with space ' '.
      * @param name is the String to check.
      */
     void nameCheck(String name);
 
     /**
-     * Checks, if the ID is not null, bigger than 0
+     * Checks, if the ID is not null, bigger than MINVALUE
      * and smaller than MAXVALUE.
+     * If ID is negative, it must be for test purposes only.
      * @param ID .
      */
     void idCheck(Long ID);
 
     /**
-     * Checks, if password is not null and
-     * has only allowed chars, such as
-     * [a-zA-Z0-9-+* /.:,] .
+     * Checks, if password is not nul.
      * Password must have at least 1 char.
      * Maximum is 32 chars.
      * @param pass the password to check.
      */
     void passwordCheck (String pass);
 
+
     /**
-     * Checks, if the group is not null and :
-     *  name fills the nameText() requirements.
-     *  password fills the passwordCheck() requirements.
-     *  time_to_start is a valid time.
-     *                if it's not null.
-     *  description fills the nameText() requirements.
-     *              if it's not null.
-     * @param group with given vars.
+     * Checks, if the time_to_start is not null and is a valid time.
+     * @param time with given vars.
      */
-    void groupCheck(Group group);
+    void timeCheck(Timestamp time);
 
     /**
      * Checks, if the group credentials is not null and:
-     *  name fills the nameText() requirements.
      *  password fills the passwordCheck() requirements.
      *  userID fills the idCheck() requirements.
      *  username fills the nameText() requirements.

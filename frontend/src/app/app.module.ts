@@ -28,7 +28,6 @@ import {NgxMatTimepickerModule} from "ngx-mat-timepicker";
 import {MatIconModule} from "@angular/material/icon";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,8 +41,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     MyGroupsComponent,
     GroupDetailComponent,
     GroupPreferencesComponent,
-    JoinTemplateComponent,
-
+    JoinTemplateComponent
   ],
     imports: [
         BrowserModule,
@@ -60,9 +58,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
         MatInputModule,
         NgxMatTimepickerModule.setLocale('en-GB'),
         MatIconModule,
-        MatProgressSpinnerModule
-    ],
-  providers: [httpInterceptorProviders,NotificationHubComponent],
+        MatProgressSpinnerModule],
+  providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

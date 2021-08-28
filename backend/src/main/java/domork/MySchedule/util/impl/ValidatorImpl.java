@@ -24,44 +24,40 @@ public class ValidatorImpl implements Validator {
     @Override
     public void nameCheck(String name) {
         if (name != null) {
-            if (textPattern.matcher(name).matches()) {
                 if (name.length() > 63 || name.length() < 1)
                     throw new ValidationException("Name must have the length between 1 and 63");
                 else if (name.charAt(0) == ' ')
                     throw new ValidationException("Name cannot start with space (' ')");
-            } else throw new ValidationException("Name contains some illegal characters, try to use " +
-                    "the English alphabet instead");
+
         }
     }
 
     @Override
     public void idCheck(Long ID) {
-        if (ID == null || ID < 1)
+        if (ID == null)
             throw new ValidationException("ID must be some positive integer");
     }
 
     @Override
     public void passwordCheck(String pass) {
         if (pass != null) {
-            if (passPattern.matcher(pass).matches()) {
-                if (pass.length() > 32 || pass.length() <= 1)
-                    throw new ValidationException("Password must have the length between 1 and 32");
-            } else throw new ValidationException("Password contains some illegal characters, try to use " +
-                    " [a-zA-Z0-9-+* /.:,]* instead");
-        }
+            if ((pass.length() > 32 || pass.length() <= 1))
+                throw new ValidationException("Password must have the length between 1 and 32.");
+        } else
+            throw new ValidationException("Password was not provided.");
+
     }
 
     @Override
-    public void groupCheck(Group group) {
-        if (group != null) {
-            Timestamp groupTime = group.getTime_to_start();
-            if (groupTime != null && groupTime.getTime() < (Time.now() - 60)) {
+    public void timeCheck(Timestamp time) {
+        if (time != null)
+            if (time.getTime() < (Time.now() - 60)) {
                 throw new ValidationException
                         ("Group time should be chosen in the future. ");
-            }
-
-        }
+            } else throw new ValidationException
+                    ("Time was not provided.");
     }
+
 
     @Override
     public void groupCredentialsCheck(GroupCredentials groupCredentials) {
@@ -75,7 +71,7 @@ public class ValidatorImpl implements Validator {
         idCheck(groupMember.getUser_id());
         UUIDCheck(groupMember.getGroup_user_UUID());
         colorCheck(groupMember.getColor());
-        //nameCheck(groupMember.getName());
+        nameCheck(groupMember.getName());
     }
 
     @Override
@@ -97,34 +93,34 @@ public class ValidatorImpl implements Validator {
     @Override
     public void colorCheck(String color) {
         if (color != null && !colorPattern.matcher(color).matches())
-                throw new ValidationException("Color has wrong format.");
+            throw new ValidationException("Color has wrong format.");
+    }
+
+
+    @Override
+    public void timeIntervalByUserCheck(TimeIntervalByUser t) {
+        if (t == null) {
+            throw new ValidationException("Time interval is null.");
         }
+        UUIDCheck(t.getGroup_user_UUID());
+        colorCheck(t.getColor());
+        //nameCheck(t.getName());
 
+        if (t.getTime_start() == null && t.getTime_end() == null)
+            throw new ValidationException("Time interval was not given.");
 
-        @Override
-        public void timeIntervalByUserCheck (TimeIntervalByUser t){
-            if (t == null) {
-                throw new ValidationException("Time interval is null.");
-            }
-            UUIDCheck(t.getGroup_user_UUID());
-            colorCheck(t.getColor());
-            //nameCheck(t.getName());
+        else if (t.getTime_start() == null)
+            throw new ValidationException("Start time was not given.");
 
-            if (t.getTime_start() == null && t.getTime_end() == null)
-                throw new ValidationException("Time interval was not given.");
+        else if (t.getTime_end() == null)
+            throw new ValidationException("End time was not given.");
 
-            else if (t.getTime_start() == null)
-                throw new ValidationException("Start time was not given.");
+        else if (t.getTime_end().before(t.getTime_start()))
+            throw new ValidationException("End time is before start time.");
 
-            else if (t.getTime_end() == null)
-                throw new ValidationException("End time was not given.");
-
-            else if (t.getTime_end().before(t.getTime_start()))
-                throw new ValidationException("End time is before start time.");
-
-            else if (t.getTime_start().toLocalDateTime().getDayOfMonth() != t.getTime_end().toLocalDateTime().getDayOfMonth())
-                throw new ValidationException("Interval must start and end at the same time.");
-
-        }
+        else if (t.getTime_start().toLocalDateTime().getDayOfMonth() != t.getTime_end().toLocalDateTime().getDayOfMonth())
+            throw new ValidationException("Interval must start and end at the same time.");
 
     }
+
+}

@@ -1,8 +1,8 @@
-import {Component, OnInit, Inject} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GroupService} from "../../service/group.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {TimeIntervalByUser} from "../../utils/dto/time-interval-by-user";
-
+import {NotificationService} from "../../service/notification.service";
 @Component({
   selector: 'app-group-detail',
   templateUrl: './group-detail.component.html',
@@ -10,11 +10,11 @@ import {TimeIntervalByUser} from "../../utils/dto/time-interval-by-user";
 })
 export class GroupDetailComponent implements OnInit {
 
-   dayTime:number[] = [800, 801, 900, 901, 1000, 1001, 1100, 1101, 1200, 1201, 1300,
+  dayTime: number[] = [800, 801, 900, 901, 1000, 1001, 1100, 1101, 1200, 1201, 1300,
     1301, 1400, 1401, 1500, 1501, 1600, 1601, 1700, 1701, 1800, 1801, 1900, 1901, 2000, 2001, 2100, 2101, 2200, 2201];
 
   //getTime() + 24 * 60 * 60 * 1000 => next day.
-  currentDate = new Date(new Date().getTime());
+  currentDate = new Date();
   // @ts-ignore
   id: number = +this.route.snapshot.paramMap.get('id');
   arr: any[] = [];
@@ -26,17 +26,22 @@ export class GroupDetailComponent implements OnInit {
   parsedTime_start: string = '';
   parsedTime_end: string = '';
   fetchedData = false;
-  Math:any;
+  Math: any;
 
   // @ts-ignore
-  constructor(private groupService: GroupService, private route: ActivatedRoute) {
-    this.Math=Math;
+  constructor(private groupService: GroupService, private route: ActivatedRoute,
+              private router:Router, private notification: NotificationService) {
+    this.Math = Math;
   }
 
 
   //please be patient :)
   ngOnInit(): void {
-
+    this.route.queryParams.subscribe(params=>{
+        if (params.date){
+          this.currentDate = new Date(params.date);
+        }
+    })
     this.getGroupParticipantsForCurrentDay();
   }
 
@@ -45,6 +50,7 @@ export class GroupDetailComponent implements OnInit {
     this.groupService.getGroupParticipantsForDay
     (this.currentDate, this.id).subscribe(data => {
       this.arr = data;
+
       for (let i = 0; i < this.arr.length; i++) {
 
         this.addIntervalsToMap(this.arr[i]);
@@ -52,9 +58,8 @@ export class GroupDetailComponent implements OnInit {
       }
       this.fetchedData = true;
     }, error => {
-      console.log(error);
       this.fetchedData = true;
-
+      this.notification.sendError(error);
     })
   }
 
@@ -188,20 +193,28 @@ export class GroupDetailComponent implements OnInit {
   }
 
   deleteButtonIsOn(color: string, hour: number): boolean {
-    if (this.user_colors[0]!==color)
+
+    if (this.user_colors[0] !== color)
       return false;
     let hourInMap = this.map.get(hour);
+
     if (hourInMap) {
-      if (hourInMap[0] && hourInMap[0][1] === color && ((hourInMap[0][0] === 1 || hourInMap[0][0] === 3)) || hour==800){
-        return true;}
+
+      if (hourInMap[hourInMap.length - 1] &&
+        hourInMap[hourInMap.length - 1][1] === color &&
+        ((hourInMap[hourInMap.length - 1][0] === 1 || hourInMap[hourInMap.length - 1][0] === 3)) || hour == 800) {
+        return true;
+      }
 
     }
     return false;
   }
 
-  setNextDay(): void {
+  setDay(i:number): void {
+    this.currentDate.setDate(this.currentDate.getDate() + (i?1:(-1)));
+    this.router.navigate([`/groups/${this.id}`],{queryParams: {date: this.currentDate.toISOString().substring(0,10)}});
     this.resetData();
-    this.currentDate.setDate(this.currentDate.getDate() + 1);
+
     this.getGroupParticipantsForCurrentDay();
   }
 
@@ -218,11 +231,6 @@ export class GroupDetailComponent implements OnInit {
     this.user_names = [];
   }
 
-  setPrevDay(): void {
-    this.resetData();
-    this.currentDate.setDate(this.currentDate.getDate() - 1);
-    this.getGroupParticipantsForCurrentDay();
-  }
 
   deleteAllTempIntervalsInMap(): void {
 
@@ -353,8 +361,7 @@ export class GroupDetailComponent implements OnInit {
         this.resetData();
         this.getGroupParticipantsForCurrentDay();
       }, error => {
-        console.log(error);
-      }
+        this.notification.sendError(error);      }
     );
 
   }

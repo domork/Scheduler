@@ -1,18 +1,13 @@
 package domork.MySchedule.service;
 
-import domork.MySchedule.endpoint.dto.GroupCredentialsDto;
-import domork.MySchedule.endpoint.dto.GroupDto;
-import domork.MySchedule.endpoint.dto.TimeIntervalByUserDto;
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
 import domork.MySchedule.endpoint.entity.TimeIntervalByUser;
-import org.springframework.web.bind.annotation.RequestBody;
 import domork.MySchedule.exception.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface GroupService {
@@ -67,13 +62,12 @@ public interface GroupService {
 
     /**
      * Gives back the group with the given name.
-     * @param name* of the group to provide.
-     * @return group with the given name.
+     * @param name * of the group to provide.
      * @throws ValidationException when name doesn't
      * fill the requirements (check them in the Validator).
      * @throws NotFoundException when no such group name is saved.
      */
-    Group getGroupByName(String name);
+    void getGroupByName(String name);
 
     /**
      * Adds a new person to the group.
@@ -84,9 +78,8 @@ public interface GroupService {
      *  color: in which color (HEX) should be the graph printed.
      *  name: representative name of user in the group.
      * @return a new entity with the unique group-member-ID
-     * @throws ValidationException when the ID does not exist
-     * or current paar already exists.
-     *  @throws ValidationException when groupMember doesn't
+     * @throws ValidationException when current paar already exists.
+     * @throws ValidationException when groupMember doesn't
      *  fill the requirements
      *  (check them in the Validator.groupMemberCheck()).
      * @throws NotFoundException when either group or user is
@@ -119,10 +112,7 @@ public interface GroupService {
      *    name: representative name of user in the group.
      *  @throws ValidationException when a groupID doesn't exist,
      *   or has a wrong format.
-     *   ToDO: I assume that the date validation is not required since
-     *    it is auto parsed in endpoint
-     *    DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME);
-     *   @throws ValidationException if current user does not
+     *  @throws ValidationException if current user does not
      *   participate in given groupID.
      */
     List <TimeIntervalByUser> getGroupInfoForSpecificDate (Long groupID, LocalDate date);
@@ -150,12 +140,14 @@ public interface GroupService {
      * @param UUID of the user in the group
      * @param date the end of the interval. If the time is of 00:00,
      *             then it will delete all intervals in that day.
+     * @throws ValidationException when UUID is wrong format or of other person.
      */
     void deleteInterval(String UUID, Timestamp date);
 
     /**
      * Leaves the group and deletes all intervals from that user.
-     * @param groupID of group to be exited from/
+     * @param groupID of group to be exited from.
+     * @throws ValidationException when group id is null or '0'.
      */
     void leaveGroup(Long groupID);
 
@@ -164,24 +156,26 @@ public interface GroupService {
      * When there is no such a relation of user and group -> null is returned.
      * @param groupID of group
      * @return unique UUID of group's member.
+     * @throws ValidationException when group id is null or '0'.
      */
     String getUUIDOfCurrentUserByGroupId(Long groupID);
 
     /**
      * Computes the time, that would work for most of the people
      * for this/next 6 days.
+     * If the time is epoch => no interval for 7 days is given.
      * If no one has interval for the day, then it will calculate the next day.
      * @param groupID of group, which time is needed.
-     * @return the time of next meeting.
-     * If the time is epoch => no interval for 7 days is given.
+     * @throws ValidationException when group id is null or '0'.
      */
-    Timestamp calculateNextMeetingByGroupId(Long groupID);
+    void calculateNextMeetingByGroupId(Long groupID);
 
     /**
      * Provides the member info of current user,
      * such as color or name by the given group ID.
      * @param UUID is a combo of the group and user
      * @return member info
+     * @throws ValidationException when UUID is wrong format.
      */
     GroupMember getGroupMemberInfoByUUID (String UUID);
 
@@ -190,6 +184,8 @@ public interface GroupService {
      * @param UUID is the unique group-user relationship.
      * @param color is the new value for change. Must be in hex format.
      * @param name is the new value for change.
+     * @throws ValidationException when UUID or color has wrong format or
+     * name is not correct (check in Validator nameCheck()).
      */
     void updateGroupMemberInfoByUUID (String UUID, String color, String name);
 }

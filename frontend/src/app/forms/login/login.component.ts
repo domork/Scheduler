@@ -6,6 +6,7 @@ import {AppComponent} from "../../app.component";
 import {Router} from "@angular/router";
 import {NotificationService} from "../../service/notification.service";
 
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -28,6 +29,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.notification.vanishAllNotifications();
     if (this.tokenStorage.getToken()) {
       this.isLoggedIn = true;
     }

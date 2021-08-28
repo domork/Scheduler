@@ -14,6 +14,7 @@
 </footer>
 
 <div class="container">
+  <div class="gif">
   <app-group-preferences *ngIf="selectedGroupMember"
                          [groupMember]="selectedGroupMember" [groupName]="selectedGroupName"
                          (quitGroup)="leaveGroup($event)"
@@ -36,7 +37,7 @@
     <i class="fas fa-user-cog"></i>
   </span>
       </th>
-      <th routerLink="/groups/{{item.id}}">{{item.name}}</th>
+      <th routerLink="/groups/{{item.id}}" [queryParams]="item.time_to_start?{date: item.time_to_start.toString().substring(0,10)}:{date: ''}">{{item.name}}</th>
       <td> {{parseTime(item)}}
       </td>
       <td>{{item.numOfRdyPeople}} of {{item.numOfAllPeople}} {{item.iPickedTime ? '✔️' : '✖️'}}</td>
@@ -45,5 +46,9 @@
 
     </tbody>
   </table>
+
+  <img *ngIf="fetchingGroups" src="../../../assets/waiting-gif/original.gif" alt="Fetching resources"  width="244" />
+  </div>
 </div>
+
 

@@ -7,15 +7,15 @@
 <section class="section">
   <form class="" name="form" (ngSubmit)="onSubmit()" novalidate>
     <div class="topDate">
-  <span class="icon is-large" (click)="setPrevDay();resetData()">
+  <span class="icon is-large" (click)="setDay(0)">
     <i class="fas fa-arrow-left fa-2x"></i>
   </span>
-      <div class="content is-medium">
+      <div class="content is-medium h1">
         <h1>
           {{currentDate.toLocaleDateString()}}
         </h1>
       </div>
-      <span class="icon is-large" (click)="setNextDay();resetData()">
+      <span class="icon is-large" (click)="setDay(1)">
          <i class="fas fa-arrow-right fa-2x"></i>
       </span>
 
@@ -36,12 +36,13 @@
 
           <tbody #table>
           <tr *ngFor="let time of dayTime">
-            <th>{{time%2==0?Math.floor(time/100) + ':00':'&nbsp;'}}</th>
+            <th>{{time % 2 == 0 ? Math.floor(time / 100) + ':00' : '&nbsp;'}}</th>
             <th *ngFor="let item of user_colors"
-            style="{{hourIsActive(time,item)}}"
-            (click)="setTime(time)">
+                style="{{hourIsActive(time,item)}}"
+                (click)="setTime(time)">
               <div class="field-wrapper">
-                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,time)" (click)="deleteInterval(time)"></div>
+                <div class="field-remove form-remove " *ngIf="deleteButtonIsOn(item,time)"
+                     (click)="deleteInterval(time)"></div>
               </div>
             </th>
           </tr>

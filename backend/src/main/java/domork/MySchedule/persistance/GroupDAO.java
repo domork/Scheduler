@@ -8,7 +8,6 @@ import domork.MySchedule.exception.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface GroupDAO {
@@ -56,11 +55,10 @@ public interface GroupDAO {
     /**
      * Gives back the group with the given name.
      * @param name of the group to provide.
-     * @return group with the given name.
      * @throws NotFoundException when no group
      * with given name is stored.
      */
-    Group getGroupByName(String name);
+    void getGroupByName(String name);
 
     /**
      * Adds a new person to the group.
@@ -99,6 +97,8 @@ public interface GroupDAO {
      *    time_end: user's start of time interval.
      *    color: in which color (HEX) should be the graph printed.
      *    name: representative name of user in the group.
+     *    @throws PersistenceException when something goes wrong with
+     *     the DB. (e.x. no connection).
      */
     List <TimeIntervalByUser> getGroupInfoForSpecificDate (Long groupID, LocalDate date);
 
@@ -113,6 +113,8 @@ public interface GroupDAO {
      *    time_end: user's start of time interval.
      *    color: in which color (HEX) should be the graph printed.
      *    name: representative name of user in the group.
+     * @throws PersistenceException when something goes wrong with
+     *  the DB. (e.x. no connection).
      */
     List <TimeIntervalByUser>
     getGroupInfoForSpecificDateWithFullIntervalsOnly(Long groupID, LocalDate date);
@@ -126,6 +128,8 @@ public interface GroupDAO {
      *        color: in which color (HEX) should be the graph printed.
      *        name: representative name of user in the group.
      * @return same interval, if it was successfully added.
+     * @throws PersistenceException when something goes wrong with
+     *  the DB. (e.x. no connection).
      */
     TimeIntervalByUser addNewInterval (TimeIntervalByUser timeIntervalByUser);
 
@@ -135,6 +139,8 @@ public interface GroupDAO {
      * @param UUID of user in specific group to check.
      * @param date the day, in which intervals will be returned.
      * @return the list of all intervals by a given user at specific date (date's day).
+     * @throws PersistenceException when something goes wrong with
+     * the DB. (e.x. no connection).
      */
     List <TimeIntervalByUser> getMemberInfoForSpecificDate (String UUID, LocalDate date);
 
@@ -144,12 +150,16 @@ public interface GroupDAO {
      * @param UUID of the user in the group
      * @param date the end of the interval. If the time is of 00:00,
      *             then it will delete all intervals in that day.
+     * @throws PersistenceException when something goes wrong with
+     * the DB. (e.x. no connection).
      */
     void deleteInterval(String UUID, Timestamp date);
 
     /**
      * Leaves the group and deletes all intervals from that user.
-     * @param groupID of group to be exited from/
+     * @param groupID of group to be exited from.
+     * @throws PersistenceException when something goes wrong with
+     * the DB. (e.x. no connection).
      */
     void leaveGroup(Long groupID);
 
@@ -158,24 +168,30 @@ public interface GroupDAO {
      * When there is no such a relation of user and group -> null is returned.
      * @param groupID of group
      * @return unique UUID of group's member.
+     * @throws PersistenceException when something goes wrong with
+     * the DB. (e.x. no connection).
      */
     String getUUIDOfCurrentUserByGroupId(Long groupID);
 
     /**
      * Computes the time, that would work for most of the people
      * for this/next 6 days.
+     * If the time is epoch => no interval for 7 days is given.
      * If no one has interval for the day, then it will calculate the next day.
      * @param groupID of group, which time is needed.
-     * @return the time of next meeting.
-     * If the time is epoch => no interval for 7 days is given.
+
+     * @throws PersistenceException when something goes wrong with
+     *  the DB. (e.x. no connection).
      */
-    Timestamp calculateNextMeetingByGroupId(Long groupID);
+    void calculateNextMeetingByGroupId(Long groupID);
 
     /**
      * Provides the member info of current user,
      * such as color or name by the given group ID.
      * @param UUID is a combo of the group and user
      * @return member info
+     * @throws PersistenceException when something goes wrong with
+     *  the DB. (e.x. no connection).
      */
     GroupMember getGroupMemberInfoByUUID (String UUID);
 
@@ -184,6 +200,8 @@ public interface GroupDAO {
      * @param UUID is the unique group-user relationship.
      * @param color is the new value for change. Must be in hex format.
      * @param name is the new value for change.
+     * @throws PersistenceException when something goes wrong with
+     *  the DB. (e.x. no connection).
      */
     void updateGroupMemberInfoByUUID (String UUID, String color, String name);
 }

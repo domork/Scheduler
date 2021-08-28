@@ -2,9 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {Group} from "../../utils/dto/group";
 import {GroupService} from "../../service/group.service";
 import {TokenStorageService} from "../../auth/token-storage.service";
-import {MatDialog} from '@angular/material/dialog';
 import {Router} from "@angular/router";
 import {GroupMember} from "../../utils/dto/group-member";
+import {NotificationService} from "../../service/notification.service";
 
 @Component({
   selector: 'app-my-groups',
@@ -17,16 +17,18 @@ export class MyGroupsComponent implements OnInit {
   myGroups: any[] = [];
   selectedGroupMember: GroupMember | undefined;
   selectedGroupName: string = '';
+  fetchingGroups: boolean = false;
 
   constructor(
     private groupService: GroupService,
     private tokenStorage: TokenStorageService,
-    private router: Router) {
+    private router: Router,
+    private notification: NotificationService) {
   }
 
   ngOnInit(): void {
-    this.getAllGroups();
     this.checkIfIsLoggedIn();
+    this.getAllGroups();
   }
 
   checkIfIsLoggedIn(): void {
@@ -35,6 +37,9 @@ export class MyGroupsComponent implements OnInit {
   }
 
   getAllGroups(): void {
+    if (!this.isLoggedIn)
+      return;
+    this.fetchingGroups=true;
     this.groupService.getAllGroups().subscribe(groups => {
       this.myGroups = groups;
       if (groups) {
@@ -53,14 +58,18 @@ export class MyGroupsComponent implements OnInit {
               this.myGroups[indexOfGroup].numOfAllPeople = setOfAllUsers.size;
               this.myGroups[indexOfGroup].numOfRdyPeople = setOfActiveUsers.size;
               this.myGroups[indexOfGroup].iPickedTime = setOfActiveUsers.has(group.userUUID);
-
+              this.fetchingGroups=false;
             }
           );
         })
       }
     }, err => {
-
-      console.log(err);
+      if (err.status === 404) {
+        if (err.error.message)
+          err.error.message = 'There are no groups yet. Create or join one ;)'
+        this.notification.sendError(err);
+      } else
+        this.notification.sendError(err);
     })
   }
 
@@ -80,7 +89,7 @@ export class MyGroupsComponent implements OnInit {
     this.groupService.getMemberInfoByUUID(group.userUUID).subscribe(data => {
       this.selectedGroupMember = data;
       this.selectedGroupMember.group_user_UUID = group.userUUID;
-    }, error => console.log(error));
+    }, error => this.notification.sendError(error));
     this.selectedGroupName = group.name;
   }
 
@@ -96,7 +105,7 @@ export class MyGroupsComponent implements OnInit {
         this.getAllGroups();
 
       }
-    }, error => console.log(error));
+    }, error => this.notification.sendError(error));
 
   }
 
@@ -105,6 +114,7 @@ export class MyGroupsComponent implements OnInit {
       this.resetSelectedData();
       this.getAllGroups();
     }, error => {
+      this.notification.sendError(error);
     })
   }
 }

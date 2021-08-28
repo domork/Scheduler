@@ -56,10 +56,10 @@ public class GroupEndpoint {
                             (groupMapper.dtoToEntity(groupDto))), HttpStatus.OK);
 
         } catch (ValidationException e) {
-            LOGGER.warn("POST GROUP: (" + groupDto + ") THROWS VALIDATION_EXCEPTION ({})", e.getMessage(), e);
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+            LOGGER.warn("POST GROUP: (" + groupDto + ") THROWS VALIDATION_EXCEPTION ({})", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage(),e);
         } catch (PersistenceException e) {
-            LOGGER.error("POST GROUP: (" + groupDto + ") THROWS PERSISTENCE_EXCEPTION ({})", e.getMessage(), e);
+            LOGGER.error("POST GROUP: (" + groupDto + ") THROWS PERSISTENCE_EXCEPTION ({})", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
@@ -118,9 +118,16 @@ public class GroupEndpoint {
                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate date) {
         LOGGER.info("GET GROUP INFO BY GROUP ID /{}", id);
 
-        return new ResponseEntity<>(
-                groupMapper.timeIntervalByUserListToDto
-                        (groupService.getGroupInfoForSpecificDate(id, date)), HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(
+                    groupMapper.timeIntervalByUserListToDto
+                            (groupService.getGroupInfoForSpecificDate(id, date)), HttpStatus.OK);
+        }catch (ValidationException e) {
+            LOGGER.warn("GET GROUP INFO BY USER ID ({}) FOR SPECIFIC DATE ({}) THROWS VALIDATION_EXCEPTION ({})",id,date, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        } catch (PersistenceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -130,11 +137,19 @@ public class GroupEndpoint {
                    @RequestBody TimeIntervalByUserDto timeIntervalByUserDto) {
         LOGGER.info("POST NEW INTERVAL ({}) IN GROUP ID /{}", timeIntervalByUserDto, id);
 
-        return new ResponseEntity<>
-                (groupMapper.timeIntervalByUserToDto(
-                        groupService.addNewInterval(
-                                groupMapper.dtoToTimeIntervalByUserTo(timeIntervalByUserDto),id))
-                        , HttpStatus.OK);
+        try {
+            return new ResponseEntity<>
+                    (groupMapper.timeIntervalByUserToDto(
+                            groupService.addNewInterval(
+                                    groupMapper.dtoToTimeIntervalByUserTo(timeIntervalByUserDto), id))
+                            , HttpStatus.OK);
+        }
+        catch (ValidationException e) {
+            LOGGER.warn("ADD NEW INTERVAL ({}) IN GROUP ID ({}) THROWS VALIDATION_EXCEPTION ({})",timeIntervalByUserDto,id, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        } catch (PersistenceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
 
@@ -145,22 +160,34 @@ public class GroupEndpoint {
                                                   @RequestParam(value = "UUID") String UUID) {
 
         LOGGER.info("DELETE INTERVAL WITH UUID({}) ON THIS DATE/{}", UUID, date);
-        Timestamp a=  Timestamp.valueOf(date);
-        groupService.deleteInterval(UUID, a);
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        try{
+            Timestamp a = Timestamp.valueOf(date);
+            groupService.deleteInterval(UUID, a);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        catch (ValidationException e) {
+            LOGGER.warn("DELETE INTERVAL WITH UUID({}) ON THIS DATE /{} THROWS VALIDATION_EXCEPTION ({})", UUID, date, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        } catch (PersistenceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
-    private Long getUserID() {
-        return ((UserPrinciple) SecurityContextHolder.getContext().
-                getAuthentication().getPrincipal()).getId();
-    }
+
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/{id}/leave")
     public ResponseEntity<Boolean> leaveGroup(@PathVariable("id") Long id){
         LOGGER.info("LEAVE GROUP WITH ID({}) ", id);
-        groupService.leaveGroup(id);
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        try{
+            groupService.leaveGroup(id);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } catch (ValidationException e) {
+            LOGGER.warn("LEAVE GROUP WITH ID({}) THROWS VALIDATION_EXCEPTION ({})", id, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        } catch (PersistenceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -168,7 +195,14 @@ public class GroupEndpoint {
     public ResponseEntity<GroupMemberDto> getGroupMemberInfoByUUID(@PathVariable("id") String UUID){
         LOGGER.info("GET GROUP MEMBER INFO BY GROUP ID ({}) ", UUID);
 
-        return new ResponseEntity<>(groupMapper.groupMemberToDto(groupService.getGroupMemberInfoByUUID(UUID)), HttpStatus.OK);
+        try{
+            return new ResponseEntity<>(groupMapper.groupMemberToDto(groupService.getGroupMemberInfoByUUID(UUID)), HttpStatus.OK);
+        } catch (ValidationException e) {
+            LOGGER.warn("GET GROUP MEMBER INFO BY GROUP ID ({}) THROWS VALIDATION_EXCEPTION ({})", UUID, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        } catch (PersistenceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -177,7 +211,18 @@ public class GroupEndpoint {
                                                                       @RequestParam(value = "color") String color,
                                                                       @RequestParam(value = "name") String name){
         LOGGER.info("UPDATE GROUP MEMBER INFO BY GROUP ID ({}), WITH COLOR {} AND NAME {}", UUID, color, name);
-        groupService.updateGroupMemberInfoByUUID(UUID,color,name);
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        try{
+            groupService.updateGroupMemberInfoByUUID(UUID, color, name);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }catch (ValidationException e) {
+            LOGGER.warn("UPDATE GROUP MEMBER INFO BY GROUP ID ({}), WITH COLOR {} AND NAME {}  THROWS VALIDATION_EXCEPTION ({})", UUID, color, name, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());
+        } catch (PersistenceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+    private Long getUserID() {
+        return ((UserPrinciple) SecurityContextHolder.getContext().
+                getAuthentication().getPrincipal()).getId();
     }
 }

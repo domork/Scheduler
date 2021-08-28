@@ -41,7 +41,9 @@ public class GroupServiceImpl implements GroupService {
     public Group createNewGroup(Group group) {
         LOGGER.trace("createNewGroup({})", group);
 
-        validator.groupCheck(group);
+        validator.timeCheck(group.getTime_to_start());
+        validator.nameCheck(group.getName());
+        validator.passwordCheck(group.getPassword());
         try {
             getGroupByName(group.getName());
         } catch (NotFoundException e) {
@@ -70,11 +72,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Group getGroupByName(String name) {
+    public void getGroupByName(String name) {
         LOGGER.trace("getGroupByName({})", name);
 
-        //validator.nameCheck(name);
-        return companyDAO.getGroupByName(name);
+        validator.nameCheck(name);
+        companyDAO.getGroupByName(name);
     }
 
     @Override
@@ -182,32 +184,44 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void deleteInterval(String UUID, Timestamp date) {
         date = truncateToMinutes(date);
+        if (companyDAO.getGroupMemberInfoByUUID(UUID).getUser_id().equals(this.getUserPrinciple().getId()))
+            throw new ValidationException("You cannot delete other interval yet.");
+        validator.UUIDCheck(UUID);
         companyDAO.deleteInterval(UUID, date);
     }
 
     @Override
     public void leaveGroup(Long groupID) {
+        if (groupID ==null || groupID ==0)
+            throw new ValidationException("To leave a group provide the group's ID please");
         companyDAO.leaveGroup(groupID);
     }
 
     @Override
     public String getUUIDOfCurrentUserByGroupId(Long groupID) {
+        if (groupID ==null || groupID ==0)
+            throw new ValidationException("To get a UUID provide the group's ID please");
         return companyDAO.getUUIDOfCurrentUserByGroupId(groupID);
     }
 
     @Override
-    public Timestamp calculateNextMeetingByGroupId(Long groupID) {
-        return companyDAO.calculateNextMeetingByGroupId(groupID);
+    public void calculateNextMeetingByGroupId(Long groupID) {
+        if (groupID ==null || groupID ==0)
+            throw new ValidationException("To calculate the next meeting provide the group's ID please");
+        companyDAO.calculateNextMeetingByGroupId(groupID);
     }
 
     @Override
     public GroupMember getGroupMemberInfoByUUID(String UUID) {
+        validator.UUIDCheck(UUID);
         return companyDAO.getGroupMemberInfoByUUID(UUID);
     }
 
     @Override
     public void updateGroupMemberInfoByUUID(String UUID, String color, String name) {
         validator.colorCheck(color);
+        validator.UUIDCheck(UUID);
+        validator.nameCheck(name);
         companyDAO.updateGroupMemberInfoByUUID(UUID, color, name);
     }
 

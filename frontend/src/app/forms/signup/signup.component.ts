@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {AuthLoginInfo} from "../../utils/dto/auth-form";
 import {AuthService} from "../../service/auth.service";
 import {Router} from "@angular/router";
+import {NotificationService} from "../../service/notification.service";
 
 @Component({
   selector: 'app-signup',
@@ -18,7 +19,8 @@ export class SignupComponent implements OnInit {
   errorMessage = '';
 
   constructor(private router: Router,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private notification: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -34,11 +36,11 @@ export class SignupComponent implements OnInit {
       data => {
         this.isSignedUp = true;
         this.isSignUpFailed = false;
+        this.notification.sendSuccess('Successfully registered! Please log in.')
         this.router.navigate(['/groups']);
       }, error => {
-        console.log(error);
        this.isSignUpFailed = true;
-
+        this.notification.sendError(error);
       }
     );
 

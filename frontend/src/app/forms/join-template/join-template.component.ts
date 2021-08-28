@@ -3,6 +3,7 @@ import {Component, OnInit} from '@angular/core';
 import {GroupService} from "../../service/group.service";
 import {JoinGroupForm} from "../../utils/dto/join-group-form";
 import {Router} from "@angular/router";
+import {NotificationService} from "../../service/notification.service";
 
 @Component({
   selector: 'app-join-template',
@@ -16,7 +17,8 @@ export class JoinTemplateComponent implements OnInit {
     '', '', '');
 
 
-  constructor(private router: Router, private groupService: GroupService) {
+  constructor(private router: Router, private groupService: GroupService,
+              private notification:NotificationService) {
   }
 
   ngOnInit(): void {
@@ -33,7 +35,8 @@ export class JoinTemplateComponent implements OnInit {
         this.joinGroupForm = data;
         this.router.navigate(['/groups']);
       }, error => {
-        console.log(error);
+        this.notification.sendError(error);
+
       }
     );
 

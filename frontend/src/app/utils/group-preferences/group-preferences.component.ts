@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 import {GroupMember} from "../dto/group-member";
+import {NotificationService} from "../../service/notification.service";
 
 @Component({
   selector: 'app-group-preferences',

@@ -3,6 +3,7 @@ import {CreateGroupForm} from "../../utils/dto/create-group-form";
 import {GroupService} from "../../service/group.service";
 import {Group} from "../../utils/dto/group";
 import {Router} from "@angular/router";
+import {NotificationService} from "../../service/notification.service";
 
 @Component({
   selector: 'app-create-group',
@@ -18,7 +19,8 @@ export class CreateGroupComponent implements OnInit {
     new Date(), '','', undefined,undefined,undefined)
 
   constructor(private groupService: GroupService,
-              private router: Router) {
+              private router: Router,
+              private notification: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -33,10 +35,11 @@ export class CreateGroupComponent implements OnInit {
     this.groupService.addGroup(this.createGroupForm).subscribe(
       data => {
         this.fetchedGroup = data;
+        this.notification.sendSuccess('Successfully created a group')
         this.router.navigate(['/groups']);
 
       }, error => {
-        console.log(error);
+        this.notification.sendError(error);
       }
     );
 

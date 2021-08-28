@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS group_members
     group_ID        SERIAL,
     user_ID         SERIAL,
     group_user_UUID VARCHAR(255) NOT NULL UNIQUE,
-    color           VARCHAR(7),
+    color           VARCHAR(7) UNIQUE ,
     name            VARCHAR(255) NOT NULL,
     FOREIGN KEY (group_ID) REFERENCES schedule_group (ID) ON DELETE CASCADE,
     FOREIGN KEY (user_ID) REFERENCES users (ID),
@@ -62,7 +62,7 @@ INSERT INTO roles(name)
 VALUES ('ROLE_ADMIN')
 ON CONFLICT DO NOTHING;
 
-/*CREATE OR REPLACE FUNCTION trigger_add_schedule_user_roles() RETURNS trigger AS
+/*CREATE OR REPLACE FUNCTION trigger_delete_old_time() RETURNS trigger AS
 $$
 BEGIN
     IF ()
@@ -80,6 +80,5 @@ CREATE TRIGGER tr2
     AFTER DELETE
     ON group_members
     FOR STATEMENT
-EXECUTE PROCEDURE trigger_add_schedule_user_roles();
-
+EXECUTE PROCEDURE trigger_delete_old_time();
 */
