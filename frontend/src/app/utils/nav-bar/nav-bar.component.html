@@ -17,7 +17,9 @@
       <a class="navbar-item" (click)="toggleMenu()" routerLink="/groups" >
         My groups
       </a>
-
+      <a class="navbar-item" (click)="toggleMenu()" routerLink="/demo" >
+        Demo
+      </a>
 
 
 
@@ -50,7 +52,7 @@
           <a *ngIf="!isLoggedIn()" class="button is-light" routerLink="/login" (click)="toggleMenu()">
             Log in
           </a>
-          <a *ngIf="isLoggedIn()" class="button is-info is-light" (click)="logout()" routerLink="/login" (click)="toggleMenu()">
+          <a *ngIf="isLoggedIn()" class="button is-info is-light" routerLink="/login" (click)="logout();toggleMenu()">
             Log out
           </a>
         </div>

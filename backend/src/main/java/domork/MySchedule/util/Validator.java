@@ -34,11 +34,11 @@ public interface Validator {
     void passwordCheck (String pass);
 
 
-    /**
-     * Checks, if the time_to_start is not null and is a valid time.
-     * @param time with given vars.
-     */
-    void timeCheck(Timestamp time);
+//    /**
+//     * Checks, if the time_to_start is not null and is a valid time.
+//     * @param time with given vars.
+//     */
+//    void timeCheck(Timestamp time);
 
     /**
      * Checks, if the group credentials is not null and:
@@ -90,4 +90,10 @@ public interface Validator {
      *  time_start < time_end.
      */
     void timeIntervalByUserCheck(TimeIntervalByUser t);
+
+    /**
+     * if s is not null, it must be maximum of 254 chars.
+     * @param s is a description
+     */
+    void descriptionCheck(String s);
 }

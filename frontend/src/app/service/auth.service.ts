@@ -28,4 +28,8 @@ export class AuthService {
   signUp(info: AuthLoginInfo): Observable<any> {
     return this.http.post(this.signupUrl, info, httpOptions);
   }
+
+  demo():Observable<any>{
+    return this.http.post(baseUri+'demo',null);
+  }
 }

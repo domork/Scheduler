@@ -8,23 +8,23 @@ public class GroupDto {
     private String password;
     private Timestamp time_to_start;
     private String description;
-    private String userUUID;
+    private String group_user_uuid;
 
-    public GroupDto(Long ID, String name, String password, Timestamp time_to_start, String description, String userUUID) {
+    public GroupDto(Long ID, String name, String password, Timestamp time_to_start, String description, String group_user_uuid) {
         this.ID = ID;
         this.name = name;
         this.password = password;
         this.time_to_start = time_to_start;
         this.description = description;
-        this.userUUID = userUUID;
+        this.group_user_uuid = group_user_uuid;
     }
 
-    public String getUserUUID() {
-        return userUUID;
+    public String getGroup_user_uuid() {
+        return group_user_uuid;
     }
 
-    public void setUserUUID(String userUUID) {
-        this.userUUID = userUUID;
+    public void setGroup_user_uuid(String group_user_uuid) {
+        this.group_user_uuid = group_user_uuid;
     }
 
     public GroupDto() {
@@ -78,7 +78,7 @@ public class GroupDto {
                 ", password='" + password + '\'' +
                 ", time_to_start=" + time_to_start +
                 ", description='" + description + '\'' +
-                ", userUUID='" + userUUID + '\'' +
+                ", userUUID='" + group_user_uuid + '\'' +
                 '}';
     }
 }

@@ -27,6 +27,7 @@ import {MatInputModule} from "@angular/material/input";
 import {NgxMatTimepickerModule} from "ngx-mat-timepicker";
 import {MatIconModule} from "@angular/material/icon";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { DemoPageComponent } from './page/demo-page/demo-page.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     MyGroupsComponent,
     GroupDetailComponent,
     GroupPreferencesComponent,
-    JoinTemplateComponent
+    JoinTemplateComponent,
+    DemoPageComponent
   ],
     imports: [
         BrowserModule,

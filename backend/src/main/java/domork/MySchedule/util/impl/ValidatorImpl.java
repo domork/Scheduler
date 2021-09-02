@@ -48,16 +48,6 @@ public class ValidatorImpl implements Validator {
 
     }
 
-    @Override
-    public void timeCheck(Timestamp time) {
-        if (time != null)
-            if (time.getTime() < (Time.now() - 60)) {
-                throw new ValidationException
-                        ("Group time should be chosen in the future. ");
-            } else throw new ValidationException
-                    ("Time was not provided.");
-    }
-
 
     @Override
     public void groupCredentialsCheck(GroupCredentials groupCredentials) {
@@ -121,6 +111,12 @@ public class ValidatorImpl implements Validator {
         else if (t.getTime_start().toLocalDateTime().getDayOfMonth() != t.getTime_end().toLocalDateTime().getDayOfMonth())
             throw new ValidationException("Interval must start and end at the same time.");
 
+    }
+
+    @Override
+    public void descriptionCheck(String s) {
+        if (s!=null && s.length()>254)
+            throw new ValidationException("Description is too long. Maximum is a length of 254. ");
     }
 
 }

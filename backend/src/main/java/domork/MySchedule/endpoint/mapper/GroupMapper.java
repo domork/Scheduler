@@ -17,7 +17,7 @@ import java.util.List;
 public class GroupMapper {
     public Group dtoToEntity (GroupDto groupDto) {
         return new Group(groupDto.getID(),groupDto.getName(), groupDto.getPassword(),
-                groupDto.getTime_to_start(), groupDto.getDescription(), groupDto.getUserUUID());
+                groupDto.getTime_to_start(), groupDto.getDescription(), groupDto.getGroup_user_uuid());
     }
     public GroupDto entityToDto (Group group) {
         return new GroupDto(group.getID(),group.getName(),group.getPassword(),

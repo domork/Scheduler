@@ -3,6 +3,7 @@ import {GroupService} from "../../service/group.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TimeIntervalByUser} from "../../utils/dto/time-interval-by-user";
 import {NotificationService} from "../../service/notification.service";
+
 @Component({
   selector: 'app-group-detail',
   templateUrl: './group-detail.component.html',
@@ -30,17 +31,17 @@ export class GroupDetailComponent implements OnInit {
 
   // @ts-ignore
   constructor(private groupService: GroupService, private route: ActivatedRoute,
-              private router:Router, private notification: NotificationService) {
+              private router: Router, private notification: NotificationService) {
     this.Math = Math;
   }
 
 
-  //please be patient :)
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params=>{
-        if (params.date){
-          this.currentDate = new Date(params.date);
-        }
+    //if param has a date => it will parse this one.
+    this.route.queryParams.subscribe(params => {
+      if (params.date) {
+        this.currentDate = new Date(params.date);
+      }
     })
     this.getGroupParticipantsForCurrentDay();
   }
@@ -56,10 +57,10 @@ export class GroupDetailComponent implements OnInit {
         this.addIntervalsToMap(this.arr[i]);
 
       }
-      this.fetchedData = true;
     }, error => {
-      this.fetchedData = true;
       this.notification.sendError(error);
+    }, () => {
+      this.fetchedData = true;
     })
   }
 
@@ -84,7 +85,8 @@ export class GroupDetailComponent implements OnInit {
   }
 
   addIntervalsToMap(interval: TimeIntervalByUser): void {
-
+    //If time is provided. Because in interval either both times are null or non-null,
+    //it's enough to make one check.
     if (interval.time_end) {
       let hourEnd = new Date(interval.time_end).getHours();
       let hourStart = new Date(interval.time_start as Date).getHours();
@@ -97,6 +99,7 @@ export class GroupDetailComponent implements OnInit {
       let text1 = bgc + ' border-radius: 7px 7px 0 0; border-bottom-width: 0;';
       let text2 = bgc + ' border-radius: 0 0 7px 7px; ';
       let text3 = bgc + ' border-radius: 10px;';
+      //it's a temp interval that shows after user clicks on the table.
       if (interval.color?.endsWith('temp')) {
         bgc = ' border-width: initial; border-color: black; '
         let bTop = ' border-top: none; border-bottom-color: black; border-bottom-width: thick; ';
@@ -111,10 +114,10 @@ export class GroupDetailComponent implements OnInit {
       let minuteEndInFirstQuarter = minuteEnd <= 15;
       let minuteEndInLastQuarter = minuteEnd > 45;
       /*
-      * 0 full
-      * 1 cut top
-      * 2 cut bottom
-      * 3 cut both
+      * 0 full       => | |
+      * 1 cut top    => |‾|
+      * 2 cut bottom => |_|
+      * 3 cut both   =>  ☐
       * */
 
       if (hoursDifference > 1) {
@@ -166,7 +169,7 @@ export class GroupDetailComponent implements OnInit {
         }
       }
     }
-
+    //eliminate the multiple instance creation of one user
     if (!this.usersInGroup.has(<string>interval.color?.replace('temp', ''))) {
 
       if (interval.color && interval.name) {
@@ -202,7 +205,7 @@ export class GroupDetailComponent implements OnInit {
 
       if (hourInMap[hourInMap.length - 1] &&
         hourInMap[hourInMap.length - 1][1] === color &&
-        ((hourInMap[hourInMap.length - 1][0] === 1 || hourInMap[hourInMap.length - 1][0] === 3)) || hour == 800) {
+        (((hourInMap[hourInMap.length - 1][0] === 1 || hourInMap[hourInMap.length - 1][0] === 3)) || hour == 800)) {
         return true;
       }
 
@@ -210,9 +213,9 @@ export class GroupDetailComponent implements OnInit {
     return false;
   }
 
-  setDay(i:number): void {
-    this.currentDate.setDate(this.currentDate.getDate() + (i?1:(-1)));
-    this.router.navigate([`/groups/${this.id}`],{queryParams: {date: this.currentDate.toISOString().substring(0,10)}});
+  setDay(i: number): void {
+    this.currentDate.setDate(this.currentDate.getDate() + (i ? 1 : (-1)));
+    this.router.navigate([`/groups/${this.id}`], {queryParams: {date: this.currentDate.toISOString().substring(0, 10)}});
     this.resetData();
 
     this.getGroupParticipantsForCurrentDay();
@@ -361,7 +364,8 @@ export class GroupDetailComponent implements OnInit {
         this.resetData();
         this.getGroupParticipantsForCurrentDay();
       }, error => {
-        this.notification.sendError(error);      }
+        this.notification.sendError(error);
+      }
     );
 
   }

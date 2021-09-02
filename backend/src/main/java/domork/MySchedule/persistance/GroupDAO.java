@@ -182,8 +182,9 @@ public interface GroupDAO {
 
      * @throws PersistenceException when something goes wrong with
      *  the DB. (e.x. no connection).
+     * @return the next time of meeting.
      */
-    void calculateNextMeetingByGroupId(Long groupID);
+    Timestamp calculateNextMeetingByGroupId(Long groupID);
 
     /**
      * Provides the member info of current user,
@@ -204,4 +205,13 @@ public interface GroupDAO {
      *  the DB. (e.x. no connection).
      */
     void updateGroupMemberInfoByUUID (String UUID, String color, String name);
+
+    /**
+     * Simply checks if the group with given ID already exists.
+     * @param groupID of group
+     * @return true if group exists.
+     * @throws PersistenceException when something goes wrong with
+     *  the DB. (e.x. no connection).
+     */
+    boolean groupByIdAlreadyExist(Long groupID);
 }

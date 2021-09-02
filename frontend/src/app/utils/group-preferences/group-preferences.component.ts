@@ -10,7 +10,7 @@ import {NotificationService} from "../../service/notification.service";
 })
 export class GroupPreferencesComponent implements OnInit {
 
-  @Input() groupMember: GroupMember = new GroupMember(-1,-1,'','','');
+  @Input() groupMember: GroupMember = new GroupMember(-1,-1,'','','','');
   @Input() groupName: string = '';
 
   @Output() close: EventEmitter<any> = new EventEmitter<any>();

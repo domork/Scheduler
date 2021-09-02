@@ -35,6 +35,7 @@ export class NotificationHubComponent implements OnInit {
   }
 
   public defaultServiceErrorHandling(error: any): void {
+    this.vanishSuccess();
     this.vanishError();
     (async () => {
 
@@ -57,6 +58,7 @@ export class NotificationHubComponent implements OnInit {
 
   public defaultServiceSuccessHandling(msg: string): void {
     this.vanishSuccess();
+    this.vanishError();
     (async () => {
       this.successMessage = msg;
       await this.delay(7000);

@@ -14,7 +14,7 @@ import {NotificationService} from "../../service/notification.service";
 export class MyGroupsComponent implements OnInit {
   isLoggedIn = false;
 
-  myGroups: any[] = [];
+  myGroups: Group[] = [];
   selectedGroupMember: GroupMember | undefined;
   selectedGroupName: string = '';
   fetchingGroups: boolean = false;
@@ -39,7 +39,7 @@ export class MyGroupsComponent implements OnInit {
   getAllGroups(): void {
     if (!this.isLoggedIn)
       return;
-    this.fetchingGroups=true;
+    this.fetchingGroups = true;
     this.groupService.getAllGroups().subscribe(groups => {
       this.myGroups = groups;
       if (groups) {
@@ -57,8 +57,9 @@ export class MyGroupsComponent implements OnInit {
               let indexOfGroup = this.myGroups.indexOf(group);
               this.myGroups[indexOfGroup].numOfAllPeople = setOfAllUsers.size;
               this.myGroups[indexOfGroup].numOfRdyPeople = setOfActiveUsers.size;
-              this.myGroups[indexOfGroup].iPickedTime = setOfActiveUsers.has(group.userUUID);
-              this.fetchingGroups=false;
+              this.myGroups[indexOfGroup].iPickedTime = setOfActiveUsers.has(group.group_user_uuid );
+
+              this.fetchingGroups = false;
             }
           );
         })
@@ -70,6 +71,8 @@ export class MyGroupsComponent implements OnInit {
         this.notification.sendError(err);
       } else
         this.notification.sendError(err);
+    }, () => {
+      this.fetchingGroups = false;
     })
   }
 
@@ -86,9 +89,10 @@ export class MyGroupsComponent implements OnInit {
   }
 
   onGroupPreferencesClicked(group: any): void {
-    this.groupService.getMemberInfoByUUID(group.userUUID).subscribe(data => {
+    this.groupService.getMemberInfoByUUID(group.group_user_uuid).subscribe(data => {
       this.selectedGroupMember = data;
-      this.selectedGroupMember.group_user_UUID = group.userUUID;
+      this.selectedGroupMember.group_user_UUID = group.group_user_uuid;
+      this.selectedGroupMember.description = group.description;
     }, error => this.notification.sendError(error));
     this.selectedGroupName = group.name;
   }

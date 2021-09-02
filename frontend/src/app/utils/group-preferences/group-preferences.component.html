@@ -2,8 +2,11 @@
   <div class="modal is-active">
     <div class="modal-background " (click)="closeModal()">
     </div>
+
     <div class="modal-content">
-      {{groupName}} Options:
+      <div class="description">
+      {{groupName}}:     {{groupMember.description}}
+      </div>
       <div class="container" [ngClass]="editButtonClicked?'edit-view':''">
         <ng-container *ngIf="editButtonClicked">
 

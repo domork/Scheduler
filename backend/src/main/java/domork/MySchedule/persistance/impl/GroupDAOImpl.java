@@ -13,6 +13,8 @@ import domork.MySchedule.exception.NotFoundException;
 import domork.MySchedule.exception.PersistenceException;
 import domork.MySchedule.exception.ValidationException;
 import domork.MySchedule.persistance.GroupDAO;
+import domork.MySchedule.security.model.Role;
+import domork.MySchedule.security.model.RoleName;
 import domork.MySchedule.security.services.UserPrinciple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ public class GroupDAOImpl implements GroupDAO {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final JdbcTemplate jdbcTemplate;
 
+
     public GroupDAOImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -38,14 +41,20 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public Group createNewGroup(Group group) {
         LOGGER.trace("createNewGroup({})", group);
+        final boolean isDemo = this.getUserPrinciple().getAuthorities().iterator().next().getAuthority().
+                equals(RoleName.ROLE_DEMO.toString());
+        boolean negID =  group.getID()!=null&&group.getID()<0&&isDemo;
         try {
-            final String sql = "INSERT INTO schedule_group " +
-                    "(name, password, description, time_to_start) VALUES (?,?,?,?);";
+
+            final String sql = "INSERT INTO schedule_group (" +
+                    (negID?"id, ":"")+"name, password, description, time_to_start) VALUES ("+(negID?"?, ":"")+"?,?,?,?);";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement statement =
                         connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 int paramIndex = 1;
+                if (negID)
+                statement.setLong(paramIndex++,group.getID());
                 statement.setString(paramIndex++, group.getName());
                 statement.setString(paramIndex++, group.getPassword());
                 statement.setString(paramIndex++, group.getDescription());
@@ -53,9 +62,13 @@ public class GroupDAOImpl implements GroupDAO {
                 return statement;
             }, keyHolder);
             group.setID(((Number) Objects.requireNonNull(keyHolder.getKeys()).get("id")).longValue());
-            String UUID = addMemberToTheGroup(new GroupMember(group.getID(),
-                    this.getUserPrinciple().getId(),
-                    null, randomHexColor(), getUserPrinciple().getUsername())).getGroup_user_UUID();
+
+            String UUID = addMemberToTheGroup(
+                    new GroupMember(
+                            group.getID(), this.getUserPrinciple().getId(),
+                            null, randomHexColor(), getUserPrinciple().getUsername()
+                    )
+            ).getGroup_user_UUID();
 
             group.setUserUUID(UUID);
             addMemberRoleToTheGroup(UUID, "admin");
@@ -159,7 +172,9 @@ public class GroupDAOImpl implements GroupDAO {
             return groupMember;
         } catch (DataAccessException e) {
             LOGGER.error("Could not add member ({}) to the group", groupMember, e);
-            throw new PersistenceException("Could not add member (" + groupMember + ") to the group");
+            if (Objects.requireNonNull(e.getMessage()).contains("duplicate key value violates unique"))
+                throw new PersistenceException("You are already in the group!");
+            throw new PersistenceException("Could not add member (" + groupMember.getName() + ") to the group");
         }
     }
 
@@ -334,7 +349,7 @@ public class GroupDAOImpl implements GroupDAO {
     @Override
     public String getUUIDOfCurrentUserByGroupId(Long groupID) {
         LOGGER.trace("getUUIDOfCurrentUserByGroupId with ID {}", groupID);
-       try {
+        try {
             String sql = "SELECT group_user_uuid FROM group_members WHERE group_id = ?" +
                     " AND user_id = ?";
             List<String> list = jdbcTemplate.query(sql, preparedStatement -> {
@@ -343,17 +358,16 @@ public class GroupDAOImpl implements GroupDAO {
                     }
                     , this::getUUIDFromMapRow);
             if (list.isEmpty())
-                throw new NotFoundException("nope");
+                throw new NotFoundException("Current user does not participate in this group.");
             return list.get(0);
+        } catch (DataAccessException e) {
+            LOGGER.error("Could not get UUID of group by it's id {}", groupID, e);
+            throw new PersistenceException("Could not get UUID of group by it's id " + groupID);
         }
-       catch (DataAccessException e) {
-           LOGGER.error("Could not get UUID of group by it's id {}", groupID, e);
-           throw new PersistenceException("Could not get UUID of group by it's id "+ groupID);
-       }
     }
 
     @Override
-    public void calculateNextMeetingByGroupId(Long groupID) {
+    public Timestamp calculateNextMeetingByGroupId(Long groupID) {
         LOGGER.trace("calculateNextMeetingByGroupId with ID {}", groupID);
 
         try {
@@ -365,8 +379,12 @@ public class GroupDAOImpl implements GroupDAO {
             int hourEnd;
             int minuteStart;
             int minuteEnd;
+
+            //check for the next 7 days, if at least 1 interval is at the next day.
             for (int i = 0; i < 7; i++) {
                 temp = this.getGroupInfoForSpecificDateWithFullIntervalsOnly(groupID, (LocalDate.now().plusDays(i)));
+
+                //if current day is empty, the next day is chosen.
                 if (!temp.isEmpty()) {
                     for (TimeIntervalByUser t : temp) {
                         localDateTime = t.getTime_end().toLocalDateTime();
@@ -375,10 +393,28 @@ public class GroupDAOImpl implements GroupDAO {
                         localDateTime = t.getTime_start().toLocalDateTime();
                         hourStart = localDateTime.getHour();
                         minuteStart = localDateTime.getMinute();
+                        /*
+                          * the for loop add the hour difference.
+                          * E.x. 14:30-16:00 =>
+                          *                     14:00 ++
+                          *                     14:30 ++
+                          *                     15:00 ++
+                          *                     15:30 ++
+                          *                     16:00 ++
+                          *                     16:30 ++
+
+                         * */
                         for (int j = 0; j <= hourEnd - hourStart; j++) {
                             hours[hourEnd - j]++;
                             minutes[hourEnd - j]++;
                         }
+                        /*
+                        the next if statements check, if bounds are violated.
+                         * E.x. 14:30-16:00 =>
+                         *                     14:00 --
+                         *                     16:00 --
+                         *                     16:30 --
+                         */
                         if (minuteEnd < 45) {
                             minutes[hourEnd]--;
                             if (minuteEnd < 15) {
@@ -410,33 +446,32 @@ public class GroupDAOImpl implements GroupDAO {
                     Timestamp time = Timestamp.valueOf(localDateTime.withHour(pos).withMinute(isHours ? 0 : 30));
                     String sql = "UPDATE schedule_group SET time_to_start = ? WHERE id =?";
                     jdbcTemplate.update(sql, time, groupID);
-                    return ;
+                    return time;
                 }
             }
             String sql = "UPDATE schedule_group SET time_to_start = NULL WHERE id =?";
             jdbcTemplate.update(sql, groupID);
-        }
-        catch (DataAccessException e) {
+        } catch (DataAccessException e) {
             LOGGER.error("Could not calculate next meeting by group ID {}", groupID, e);
-            throw new PersistenceException("Could not calculate next meeting by group ID {}"+ groupID);
+            throw new PersistenceException("Could not calculate next meeting by group ID {}" + groupID);
         }
+        return null;
     }
 
     @Override
     public GroupMember getGroupMemberInfoByUUID(String UUID) {
         LOGGER.trace("getGroupMemberInfoByGroupID with ID {}", UUID);
-       try {
+        try {
             String sql = "SELECT * FROM group_members WHERE group_user_uuid=?";
             List<GroupMember> groupMember = jdbcTemplate.query
                     (sql, preparedStatement -> preparedStatement.setString(1, UUID), this::groupMemberMapRow);
             if (groupMember.isEmpty())
                 throw new NotFoundException("You are either not part of this group or this group doesn't exist.");
             return groupMember.get(0);
+        } catch (DataAccessException e) {
+            LOGGER.error("Could not get group member info by UUID  {}", UUID, e);
+            throw new PersistenceException("Could not get group member info by UUID " + UUID);
         }
-       catch (DataAccessException e) {
-           LOGGER.error("Could not get group member info by UUID  {}", UUID, e);
-           throw new PersistenceException("Could not get group member info by UUID " + UUID);
-       }
     }
 
     @Override
@@ -445,11 +480,26 @@ public class GroupDAOImpl implements GroupDAO {
         try {
             String sql = "UPDATE group_members SET color = ?, name=? WHERE group_user_uuid =?";
             jdbcTemplate.update(sql, color, name, UUID);
+        } catch (DataAccessException e) {
+            LOGGER.error("Could not update group member info by UUID {} with color {} and name {}", UUID, color, name, e);
+            throw new PersistenceException
+                    ("Could not update group member info by UUID " + UUID + " with color " + color + " and name  " + name);
+        }
+    }
+
+    @Override
+    public boolean groupByIdAlreadyExist(Long groupID) {
+        LOGGER.trace("groupByIdAlreadyExist ({})", groupID);
+        try {
+            String sql = "SELECT * FROM schedule_group WHERE id = ?";
+
+            List<Group> list =jdbcTemplate.query(sql,preparedStatement -> preparedStatement.setLong(1, groupID),this::mapRow);
+            return !list.isEmpty();
         }
         catch (DataAccessException e) {
-            LOGGER.error("Could not update group member info by UUID {} with color {} and name {}", UUID,color,name, e);
+            LOGGER.error("Could not get group info by group id {} ", groupID, e);
             throw new PersistenceException
-                    ("Could not update group member info by UUID "+UUID+" with color "+color+" and name  " +name );
+                    ("Could not get group info by group id "+groupID);
         }
     }
 

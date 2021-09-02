@@ -45,7 +45,7 @@ public class GroupEndpoint {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')")
     @PostMapping
     public ResponseEntity<GroupDto> createNewGroup(@RequestBody GroupDto groupDto) {
         LOGGER.info("POST NEW GROUP: " + BASE_URL + "/{}", groupDto);
@@ -64,7 +64,7 @@ public class GroupEndpoint {
         }
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')")
     @PostMapping(value = "/join")
     public ResponseEntity<GroupMemberDto> joinGroupByNameAndPassword(@RequestBody GroupCredentialsDto groupCredentialsDto) {
         LOGGER.info("JOIN GROUP BY NAME AND PASSWORD /{}" + BASE_URL, groupCredentialsDto);
@@ -88,7 +88,7 @@ public class GroupEndpoint {
     }
 
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')")
     @GetMapping
     public ResponseEntity<List<GroupDto>> getGroupsByID() {
         Long userID = getUserID();
@@ -99,7 +99,7 @@ public class GroupEndpoint {
             userService.userExists(userID);
             return new ResponseEntity<>(groupMapper.entityListToDtoList(groupService.getGroupsByID(userID)), HttpStatus.OK);
         } catch (NotFoundException e) {
-            LOGGER.warn("GET GROUPS BY ID   (" + userID + ") THROWS NOT_FOUND_EXCEPTION ({})", e.getMessage(), e);
+            LOGGER.warn("GET GROUPS BY ID   (" + userID + ") THROWS NOT_FOUND_EXCEPTION ({})", e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (ValidationException e) {
             LOGGER.warn("GET GROUPS BY ID   (" + userID + ") THROWS VALIDATION_EXCEPTION ({})", e.getMessage(), e);
@@ -110,7 +110,7 @@ public class GroupEndpoint {
         }
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')" )
     @GetMapping(value = "/{id}")
     public ResponseEntity<List<TimeIntervalByUserDto>>
     getGroupInfoForSpecificDate(@PathVariable("id") Long id,
@@ -130,7 +130,7 @@ public class GroupEndpoint {
         }
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')")
     @PostMapping(value = "/{id}")
     public ResponseEntity<TimeIntervalByUserDto>
     addNewInterval(@PathVariable("id") Long id,
@@ -153,7 +153,7 @@ public class GroupEndpoint {
     }
 
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')")
     @DeleteMapping(value = "/")
     public ResponseEntity<Boolean> deleteInterval(@RequestParam(value = "date")
                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date,
@@ -175,7 +175,7 @@ public class GroupEndpoint {
 
 
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')")
     @PostMapping(value = "/{id}/leave")
     public ResponseEntity<Boolean> leaveGroup(@PathVariable("id") Long id){
         LOGGER.info("LEAVE GROUP WITH ID({}) ", id);
@@ -190,7 +190,7 @@ public class GroupEndpoint {
         }
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')")
     @GetMapping(value = "/{id}/memberInfo")
     public ResponseEntity<GroupMemberDto> getGroupMemberInfoByUUID(@PathVariable("id") String UUID){
         LOGGER.info("GET GROUP MEMBER INFO BY GROUP ID ({}) ", UUID);
@@ -205,7 +205,7 @@ public class GroupEndpoint {
         }
     }
 
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('DEMO')")
     @PostMapping(value = "/{id}/memberInfo")
     public ResponseEntity<Boolean> updateGroupMemberInfoByUUID(@PathVariable("id") String UUID,
                                                                       @RequestParam(value = "color") String color,

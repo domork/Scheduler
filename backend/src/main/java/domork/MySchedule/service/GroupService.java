@@ -168,7 +168,7 @@ public interface GroupService {
      * @param groupID of group, which time is needed.
      * @throws ValidationException when group id is null or '0'.
      */
-    void calculateNextMeetingByGroupId(Long groupID);
+    Timestamp calculateNextMeetingByGroupId(Long groupID);
 
     /**
      * Provides the member info of current user,
@@ -188,4 +188,11 @@ public interface GroupService {
      * name is not correct (check in Validator nameCheck()).
      */
     void updateGroupMemberInfoByUUID (String UUID, String color, String name);
+
+    /**
+     * Simply checks if the group with given ID already exists.
+     * @param groupID of group
+     * @return true if group exists.
+     */
+    boolean groupByIdAlreadyExist(Long groupID);
 }

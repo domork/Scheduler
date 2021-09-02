@@ -1,10 +1,13 @@
 package domork.MySchedule.security.model;
 
 import org.hibernate.annotations.NaturalId;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +31,10 @@ public class User{
     @Size(min=6, max = 100)
     private String password;
 
+    @NotBlank
+    @DateTimeFormat
+    private Timestamp registrationTime;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -36,12 +43,18 @@ public class User{
 
     public User() {}
 
-    public User( String username, String password) {
+    public User(Long id, String username, String password, Timestamp registrationTime) {
+        this.id = id;
         this.username = username;
         this.password = password;
+        this.registrationTime = registrationTime;
     }
 
-
+    public User(String username, String password, Timestamp registrationTime) {
+        this.username = username;
+        this.password = password;
+        this.registrationTime = registrationTime;
+    }
 
     public Long getId() {
         return id;
