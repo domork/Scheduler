@@ -10,7 +10,7 @@ You have a calendar where you can have time intervals. If another person added a
 
 Log in to your account at the right top corner. If you want to use it without signing up, you can try the demo as well. Make sure you don't provide any personal data!
 
-https://user-images.githubusercontent.com/61231287/132006420-934ef3b7-8cd3-448b-8324-b3d4feaf3c35.mp4
+https://user-images.githubusercontent.com/61231287/132008110-235c9df0-a566-4cca-9f75-0dcf82c03c06.mp4
 
 ### Add group ➕
 
