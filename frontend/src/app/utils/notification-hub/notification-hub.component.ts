@@ -1,5 +1,8 @@
 import { Component, OnInit} from '@angular/core';
 import {NotificationService} from "../../service/notification.service";
+import {interval} from "rxjs";
+import {ThemePalette} from "@angular/material/core";
+import {repeatGroups} from "@angular/compiler/src/shadow_css";
 
 
 
@@ -13,7 +16,9 @@ export class NotificationHubComponent implements OnInit {
 
  successMessage = '';
  errorMessage = '';
-
+ progressbarValue = 100;
+ curSec: number = 0;
+ color: ThemePalette = "warn"
 
   constructor(private service:NotificationService) {
     service.notification = this;
@@ -51,6 +56,8 @@ export class NotificationHubComponent implements OnInit {
       else {
         this.errorMessage = error.error.message;
       }
+      this.color = "warn";
+      this.startTimer(65);
       await this.delay(7000);
       this.vanishError();
     })()
@@ -61,9 +68,26 @@ export class NotificationHubComponent implements OnInit {
     this.vanishError();
     (async () => {
       this.successMessage = msg;
+      this.color = "primary";
+      this.startTimer(65);
       await this.delay(7000);
       this.vanishSuccess();
     })();
+  }
+
+
+  startTimer(seconds: number) {
+    const time = seconds;
+    const timer$ = interval(100);
+
+    const sub = timer$.subscribe((sec) => {
+      this.progressbarValue = 100 - sec * 100 / seconds;
+      this.curSec = sec;
+
+      if (this.curSec === seconds) {
+        sub.unsubscribe();
+      }
+    });
   }
 
 }

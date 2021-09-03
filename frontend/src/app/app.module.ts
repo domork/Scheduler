@@ -29,6 +29,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { DemoPageComponent } from './page/demo-page/demo-page.component';
 import { IssueReporterComponent } from './page/issue-reporter/issue-reporter.component';
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
   declarations: [
@@ -47,24 +48,25 @@ import { IssueReporterComponent } from './page/issue-reporter/issue-reporter.com
     DemoPageComponent,
     IssueReporterComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    ColorSketchModule,
-    MatDialogModule,
-    ColorChromeModule,
-    MatFormFieldModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatInputModule,
-    NgxMatTimepickerModule.setLocale('en-GB'),
-    MatIconModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        ColorSketchModule,
+        MatDialogModule,
+        ColorChromeModule,
+        MatFormFieldModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatInputModule,
+        NgxMatTimepickerModule.setLocale('en-GB'),
+        MatIconModule,
+        MatProgressSpinnerModule,
+        ReactiveFormsModule,
+        MatProgressBarModule
+    ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })

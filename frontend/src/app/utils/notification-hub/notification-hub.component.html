@@ -1,11 +1,15 @@
 <div class="wrapper">
+
   <div *ngIf="errorMessage" class="notification" id="error">
     <button class="delete" (click)="this.vanishError();"></button>
     {{ errorMessage }}
+    <mat-progress-bar mode="determinate" [value]="progressbarValue" [color]="color"></mat-progress-bar>
   </div>
-  <div *ngIf="successMessage" class="notification">
-  {{ successMessage }}
+  <div *ngIf="successMessage" class="notification" style="padding-bottom: 1em">
+    {{ successMessage }}
     <button class="delete" (click)="this.vanishSuccess();"></button>
+    <mat-progress-bar mode="determinate" [value]="progressbarValue" [color]="color"></mat-progress-bar>
+
   </div>
 
 </div>

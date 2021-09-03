@@ -71,6 +71,8 @@ export class MyGroupsComponent implements OnInit {
         this.notification.sendError(err);
       } else
         this.notification.sendError(err);
+      this.fetchingGroups = false;
+
     }, () => {
       this.fetchingGroups = false;
     })
@@ -93,6 +95,7 @@ export class MyGroupsComponent implements OnInit {
       this.selectedGroupMember = data;
       this.selectedGroupMember.group_user_UUID = group.group_user_uuid;
       this.selectedGroupMember.description = group.description;
+
     }, error => this.notification.sendError(error));
     this.selectedGroupName = group.name;
   }
@@ -115,6 +118,7 @@ export class MyGroupsComponent implements OnInit {
 
   editMemberInfo(data: any): void {
     this.groupService.updateMemberInfoByUUID(data.group_user_UUID, data.name, data.color).subscribe(data => {
+      this.notification.sendSuccess('Successfully updated');
       this.resetSelectedData();
       this.getAllGroups();
     }, error => {

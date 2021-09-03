@@ -33,6 +33,7 @@ export class JoinTemplateComponent implements OnInit {
     this.groupService.joinGroup(this.joinGroupForm).subscribe(
       data => {
         this.joinGroupForm = data;
+        this.notification.sendSuccess('Successfully joined a group')
         this.router.navigate(['/groups']);
       }, error => {
         this.notification.sendError(error);

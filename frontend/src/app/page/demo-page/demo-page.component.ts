@@ -30,6 +30,7 @@ export class DemoPageComponent implements OnInit {
         this.tokenStorage.saveToken(data.accessToken);
         this.tokenStorage.saveAuthorities(data.authorities);
         this.tokenStorage.saveUsername(data.username);
+        this.notification.sendSuccess('Now you are in the demo mode. Check out your groups')
 
         this.router.navigate(['/']);
       }, error => {

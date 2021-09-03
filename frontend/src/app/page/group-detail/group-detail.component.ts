@@ -62,6 +62,7 @@ export class GroupDetailComponent implements OnInit {
     }, () => {
       this.fetchedData = true;
     });
+
   }
 
   setInMap(hour: number, temp: any[]): void {
