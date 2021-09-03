@@ -26,9 +26,7 @@ public class UserPrinciple implements UserDetails {
                          String username, String password,
                          Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-
         this.username = username;
-
         this.password = password;
         this.authorities = authorities;
     }
@@ -49,9 +47,6 @@ public class UserPrinciple implements UserDetails {
     public Long getId() {
         return id;
     }
-
-
-
 
 
     @Override

@@ -7,7 +7,7 @@ import { MyProfileComponent } from './page/about/my-profile.component';
 import { SchedulerComponent } from './page/scheduler/scheduler.component';
 import { httpInterceptorProviders } from './auth/auth-interceptor';
 import { LoginComponent } from './forms/login/login.component';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { NavBarComponent } from './utils/nav-bar/nav-bar.component';
 import { NotificationHubComponent } from './utils/notification-hub/notification-hub.component';
 import { SignupComponent } from './forms/signup/signup.component';
@@ -28,6 +28,7 @@ import {NgxMatTimepickerModule} from "ngx-mat-timepicker";
 import {MatIconModule} from "@angular/material/icon";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { DemoPageComponent } from './page/demo-page/demo-page.component';
+import { IssueReporterComponent } from './page/issue-reporter/issue-reporter.component';
 
 @NgModule({
   declarations: [
@@ -43,24 +44,27 @@ import { DemoPageComponent } from './page/demo-page/demo-page.component';
     GroupDetailComponent,
     GroupPreferencesComponent,
     JoinTemplateComponent,
-    DemoPageComponent
+    DemoPageComponent,
+    IssueReporterComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        HttpClientModule,
-        FormsModule,
-        BrowserAnimationsModule,
-        ColorSketchModule,
-        MatDialogModule,
-        ColorChromeModule,
-        MatFormFieldModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatInputModule,
-        NgxMatTimepickerModule.setLocale('en-GB'),
-        MatIconModule,
-        MatProgressSpinnerModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    ColorSketchModule,
+    MatDialogModule,
+    ColorChromeModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    NgxMatTimepickerModule.setLocale('en-GB'),
+    MatIconModule,
+    MatProgressSpinnerModule,
+    ReactiveFormsModule
+  ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })

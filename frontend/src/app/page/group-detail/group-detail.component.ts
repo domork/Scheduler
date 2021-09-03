@@ -61,7 +61,7 @@ export class GroupDetailComponent implements OnInit {
       this.notification.sendError(error);
     }, () => {
       this.fetchedData = true;
-    })
+    });
   }
 
   setInMap(hour: number, temp: any[]): void {

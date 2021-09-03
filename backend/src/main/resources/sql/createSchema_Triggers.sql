@@ -26,6 +26,15 @@ INSERT INTO roles(name)
 VALUES ('ROLE_DEMO')
 ON CONFLICT DO NOTHING;
 
+CREATE TABLE IF NOT EXISTS issue_messages
+(
+    message       VARCHAR(255) NOT NULL,
+    id            SERIAL,
+    name          VARCHAR(255),
+    creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id, creation_time)
+);
+
 CREATE TABLE IF NOT EXISTS schedule_group
 (
     ID            SERIAL PRIMARY KEY,
@@ -156,20 +165,20 @@ BEGIN
                (NEW.ID, -11, uuid11, random_color(), 'Napoléon Bonaparte'),
                (NEW.ID, -12, uuid12, random_color(), 'Petar');
         INSERT INTO time_of_unique_user_in_group (group_user_UUID, time_start, time_end)
-        VALUES (uuid1, nextDay + '09:30:00'::time, nextDay + '10:30:00'::time),
-               (uuid1, nextDay + '12:30:00'::time, nextDay + '16:00:00'::time),
-               (uuid2, nextDay + '15:30:00'::time, nextDay + '18:30:00'::time),
-               (uuid3, nextDay + '08:00:00'::time, nextDay + '10:00:00'::time),
-               (uuid4, nextDay + '11:00:00'::time, nextDay + '14:30:00'::time),
-               (uuid5, nextDay + '11:00:00'::time, nextDay + '19:00:00'::time),
-               (uuid6, nextDay + '16:30:00'::time, nextDay + '19:30:00'::time),
-               (uuid7, nextDay + '20:30:00'::time, nextDay + '22:00:00'::time),
-               (uuid8, nextDay + '08:00:00'::time, nextDay + '11:00:00'::time),
-               (uuid9, nextDay + '13:30:00'::time, nextDay + '18:30:00'::time),
-               (uuid10, nextDay + '09:30:00'::time, nextDay + '12:30:00'::time),
-               (uuid10, nextDay + '15:30:00'::time, nextDay + '18:30:00'::time),
-               (uuid10, nextDay + '20:00:00'::time, nextDay + '22:00:00'::time),
-               (uuid11, nextDay + '15:30:00'::time, nextDay + '17:30:00'::time);
+        VALUES (uuid1, nextDay + '07:30:00'::time, nextDay + '08:30:00'::time),
+               (uuid1, nextDay + '10:30:00'::time, nextDay + '14:00:00'::time),
+               (uuid2, nextDay + '13:30:00'::time, nextDay + '16:30:00'::time),
+               (uuid3, nextDay + '06:00:00'::time, nextDay + '08:00:00'::time),
+               (uuid4, nextDay + '09:00:00'::time, nextDay + '12:30:00'::time),
+               (uuid5, nextDay + '09:00:00'::time, nextDay + '17:00:00'::time),
+               (uuid6, nextDay + '14:30:00'::time, nextDay + '17:30:00'::time),
+               (uuid7, nextDay + '18:30:00'::time, nextDay + '20:00:00'::time),
+               (uuid8, nextDay + '06:00:00'::time, nextDay + '09:00:00'::time),
+               (uuid9, nextDay + '11:30:00'::time, nextDay + '16:30:00'::time),
+               (uuid10, nextDay + '07:30:00'::time, nextDay + '10:30:00'::time),
+               (uuid10, nextDay + '13:30:00'::time, nextDay + '16:30:00'::time),
+               (uuid10, nextDay + '18:00:00'::time, nextDay + '20:00:00'::time),
+               (uuid11, nextDay + '13:30:00'::time, nextDay + '15:30:00'::time);
 
     ELSIF (NEW.name LIKE '%Medium Random Group #%') THEN
         INSERT INTO group_members (group_id, user_id, group_user_UUID, color, name)
@@ -184,15 +193,15 @@ BEGIN
                 'Very_very_very_long_name so you could scroll like a boss/in');
 
         INSERT INTO time_of_unique_user_in_group (group_user_UUID, time_start, time_end)
-        VALUES (uuid1, nextDay + '09:30:00'::time, nextDay + '10:30:00'::time),
-               (uuid1, nextDay + '12:30:00'::time, nextDay + '16:00:00'::time),
-               (uuid2, nextDay + '15:30:00'::time, nextDay + '18:30:00'::time),
-               (uuid3, nextDay + '08:00:00'::time, nextDay + '10:00:00'::time),
-               (uuid4, nextDay + '11:00:00'::time, nextDay + '14:30:00'::time),
-               (uuid5, nextDay + '11:00:00'::time, nextDay + '19:00:00'::time),
-               (uuid6, nextDay + '16:30:00'::time, nextDay + '19:30:00'::time),
-               (uuid7, nextDay + '20:30:00'::time, nextDay + '22:00:00'::time),
-               (uuid8, nextDay + '08:00:00'::time, nextDay + '11:00:00'::time);
+        VALUES (uuid1, nextDay + '07:30:00'::time, nextDay + '08:30:00'::time),
+               (uuid1, nextDay + '10:30:00'::time, nextDay + '14:00:00'::time),
+               (uuid2, nextDay + '13:30:00'::time, nextDay + '16:30:00'::time),
+               (uuid3, nextDay + '06:00:00'::time, nextDay + '08:00:00'::time),
+               (uuid4, nextDay + '09:00:00'::time, nextDay + '12:30:00'::time),
+               (uuid5, nextDay + '09:00:00'::time, nextDay + '17:00:00'::time),
+               (uuid6, nextDay + '14:30:00'::time, nextDay + '17:30:00'::time),
+               (uuid7, nextDay + '18:30:00'::time, nextDay + '20:00:00'::time),
+               (uuid8, nextDay + '06:00:00'::time, nextDay + '09:00:00'::time);
 
     ELSIF (NEW.name LIKE '%Small Random Group #%') THEN
         INSERT INTO group_members (group_id, user_id, group_user_UUID, color, name)
@@ -236,6 +245,24 @@ begin
     return result;
 end;
 $$ language plpgsql ^;
+
+
+CREATE OR REPLACE FUNCTION trigger_delete_group_if_no_participants_left() RETURNS trigger AS
+$$
+BEGIN
+    IF NOT EXISTS(SELECT * FROM schedule_group s join group_members gm on s.ID = gm.group_ID AND gm.group_ID=OLD.group_ID ) THEN
+        DELETE FROM schedule_group s WHERE OLD.group_ID =s.id;
+    END IF;
+    RETURN NEW;
+end
+$$ LANGUAGE plpgsql ^;
+
+DROP TRIGGER IF EXISTS tr5 on group_members;
+CREATE TRIGGER tr5
+    AFTER DELETE
+    ON group_members
+    FOR EACH ROW
+EXECUTE PROCEDURE trigger_delete_group_if_no_participants_left();
 
 /*
 CREATE OR REPLACE FUNCTION trigger_add_new_member_check() RETURNS trigger AS

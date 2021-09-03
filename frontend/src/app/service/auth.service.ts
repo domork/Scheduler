@@ -32,4 +32,8 @@ export class AuthService {
   demo():Observable<any>{
     return this.http.post(baseUri+'demo',null);
   }
+
+  report(s:string):Observable<any>{
+    return this.http.post(baseUri+'report',s);
+  }
 }

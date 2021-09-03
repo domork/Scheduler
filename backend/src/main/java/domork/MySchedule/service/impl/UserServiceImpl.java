@@ -1,5 +1,6 @@
 package domork.MySchedule.service.impl;
 
+import domork.MySchedule.exception.ValidationException;
 import domork.MySchedule.persistance.UserDAO;
 import domork.MySchedule.service.UserService;
 import domork.MySchedule.util.Validator;
@@ -25,5 +26,15 @@ public class UserServiceImpl implements UserService {
     public boolean userExists(Long ID) {
         LOGGER.trace("userExists({})", ID);
         return userDAO.userExists(ID);
+    }
+
+    @Override
+    public void reportAnIssue(String s) {
+        LOGGER.trace("reportAnIssue({})", s);
+        if (s==null)
+            throw new ValidationException("Message must be given.");
+        else if (s.length()>255)
+            throw new ValidationException("Message can have max. 255 characters.");
+        userDAO.reportAnIssue(s);
     }
 }

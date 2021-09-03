@@ -9,4 +9,11 @@ public interface UserService {
      * @throws ValidationException if ID is null.
      */
     boolean userExists (Long ID);
+
+    /**
+     * Submits the message from user when something is wrong. (hopefully)
+     * @param s is the message to save.
+     * @throws ValidationException if message is null or longer than 255 chars.
+     */
+    void reportAnIssue (String s);
 }

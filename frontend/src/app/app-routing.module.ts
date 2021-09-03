@@ -10,6 +10,7 @@ import {GroupDetailComponent} from "./page/group-detail/group-detail.component";
 import {GroupPreferencesComponent} from "./utils/group-preferences/group-preferences.component";
 import {JoinTemplateComponent} from "./forms/join-template/join-template.component";
 import {DemoPageComponent} from "./page/demo-page/demo-page.component";
+import {IssueReporterComponent} from "./page/issue-reporter/issue-reporter.component";
 
 const routes: Routes = [
   {path:'', component: SchedulerComponent},
@@ -21,8 +22,8 @@ const routes: Routes = [
   {path:'groups/join',component:JoinTemplateComponent},
   {path:'groups/:id', component: GroupDetailComponent},
   {path:'groups/:id/preferences', component: GroupPreferencesComponent},
-  {path:'demo',component:DemoPageComponent}
-
+  {path:'demo',component:DemoPageComponent},
+  {path:'issue',component:IssueReporterComponent}
 ];
 
 @NgModule({

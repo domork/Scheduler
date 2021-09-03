@@ -1,10 +1,12 @@
 package domork.MySchedule.persistance.impl;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.google.common.hash.Hashing;
 import domork.MySchedule.endpoint.entity.Group;
 import domork.MySchedule.endpoint.entity.GroupCredentials;
 import domork.MySchedule.endpoint.entity.GroupMember;
@@ -56,7 +58,8 @@ public class GroupDAOImpl implements GroupDAO {
                 if (negID)
                 statement.setLong(paramIndex++,group.getID());
                 statement.setString(paramIndex++, group.getName());
-                statement.setString(paramIndex++, group.getPassword());
+                statement.setString(paramIndex++, Hashing.sha512().hashString(group.getPassword(), StandardCharsets.UTF_8)
+                        .toString());
                 statement.setString(paramIndex++, group.getDescription());
                 statement.setTimestamp(paramIndex, group.getTime_to_start());
                 return statement;
@@ -96,7 +99,8 @@ public class GroupDAOImpl implements GroupDAO {
 
             List<Group> groups = jdbcTemplate.query(sql, preparedStatement -> {
                 preparedStatement.setString(1, groupCredentials.getName());
-                preparedStatement.setString(2, groupCredentials.getPassword());
+                preparedStatement.setString(2, Hashing.sha512().hashString(groupCredentials.getPassword(), StandardCharsets.UTF_8)
+                        .toString());
             }, this::mapRow);
             if (groups.isEmpty()) {
                 throw new ValidationException("The credentials are wrong.");
@@ -159,7 +163,7 @@ public class GroupDAOImpl implements GroupDAO {
             final String sql = "INSERT INTO group_members (group_id, user_id, group_user_UUID, color, name) VALUES (?,?,?,?,?);";
             jdbcTemplate.update(connection -> {
                 PreparedStatement statement =
-                        connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                        connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS);
                 int paramIndex = 1;
                 statement.setLong(paramIndex++, groupMember.getGroup_id());
                 statement.setLong(paramIndex++, groupMember.getUser_id());

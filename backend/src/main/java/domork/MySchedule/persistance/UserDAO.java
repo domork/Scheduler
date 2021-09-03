@@ -10,4 +10,10 @@ public interface UserDAO {
      * @throws NotFoundException when no user with given ID exists.
      */
     boolean userExists (Long ID);
+
+    /**
+     * Submits the message from user when something is wrong. (hopefully)
+     * @param s is the message to save.
+     */
+    void reportAnIssue (String s);
 }
